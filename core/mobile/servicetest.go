@@ -78,11 +78,11 @@ func StartServiceTest(platform PlatformInterface, request *TestRequest, handler 
 			options.Only[id] = true
 		}
 	}
-	env, err := prepareTestEnv(nil, false, platform, request)
+	testCtx := probe.TestContext()
+	env, err := prepareTestEnv(testCtx, nil, false, platform, request)
 	if err != nil {
 		return err
 	}
-	testCtx := probe.TestContext()
 	timeout := time.Duration(request.TimeoutMs) * time.Millisecond
 	go func() {
 		defer handler.OnDone()

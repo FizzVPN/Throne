@@ -13,5 +13,7 @@ source_dir=$(go list -m -f '{{.Dir}}' "$module")
 cp -R "$source_dir" "$stage/xray"
 chmod -R u+w "$stage/xray"
 (cd "$stage/xray" && patch -f -F 0 -p1 < "$stage/core/patches/xray-mux-context.patch")
+(cd "$stage/xray" && patch -f -F 0 -p1 < "$stage/core/patches/xray-probe-lifetime.patch")
+(cd "$stage/xray" && patch -f -F 0 -p1 < "$stage/core/patches/xray-vless-preconnect.patch")
 go mod edit "-replace=$module=../xray"
 "$@"

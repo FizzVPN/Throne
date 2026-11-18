@@ -1,0 +1,88 @@
+diff --git a/core/xray.go b/core/xray.go
+index dd2e41b..f23f381 100644
+--- a/core/xray.go
++++ b/core/xray.go
+@@ -204,6 +204,9 @@ func initInstanceWithConfig(config *Config, server *Instance) (bool, error) {
+ 	// handler's context (and thus every dial context derived from it) carries
+ 	// the pointer. The application populates it after New via the Set* methods.
+ 	server.throneWiring = &internet.ThroneWiring{}
++	if server.ctx.Done() != nil {
++		server.throneWiring.Lifetime = server.ctx
++	}
+ 	server.ctx = internet.ContextWithThroneWiring(server.ctx, server.throneWiring)
+ 
+ 	for _, appSettings := range config.App {
+diff --git a/transport/internet/dialer.go b/transport/internet/dialer.go
+index 10cea69..d0c01b0 100644
+--- a/transport/internet/dialer.go
++++ b/transport/internet/dialer.go
+@@ -47,6 +47,9 @@ func RegisterTransportDialer(protocol string, dialer dialFunc) error {
+ 
+ // Dial dials a internet connection towards the given destination.
+ func Dial(ctx context.Context, dest net.Destination, streamSettings *MemoryStreamConfig) (stat.Connection, error) {
++	if w := ThroneWiringFromContext(ctx); w != nil && w.Lifetime != nil && w.Lifetime.Err() != nil {
++		return nil, w.Lifetime.Err()
++	}
+ 	if dest.Network == net.Network_TCP {
+ 		if streamSettings == nil {
+ 			s, err := ToMemoryStreamConfig(nil)
+@@ -247,6 +250,28 @@ func checkAddressPortStrategy(ctx context.Context, dest net.Destination, sockopt
+ 
+ // DialSystem calls system dialer to create a network connection.
+ func DialSystem(ctx context.Context, dest net.Destination, sockopt *SocketConfig) (net.Conn, error) {
++	wiring := ThroneWiringFromContext(ctx)
++	if wiring == nil || wiring.Lifetime == nil {
++		return dialSystem(ctx, dest, sockopt, wiring)
++	}
++	owner := wiring.Lifetime
++	if err := owner.Err(); err != nil {
++		return nil, err
++	}
++	// Mux, DNS and HTTP transports can dial with a detached request context.
++	dialCtx, cancel := context.WithCancel(ctx)
++	stop := context.AfterFunc(owner, cancel)
++	defer stop()
++	defer cancel()
++	conn, err := dialSystem(dialCtx, dest, sockopt, wiring)
++	if conn != nil {
++		// A transport may already be waiting for a handshake on the returned socket.
++		context.AfterFunc(owner, func() { conn.Close() })
++	}
++	return conn, err
++}
++
++func dialSystem(ctx context.Context, dest net.Destination, sockopt *SocketConfig, wiring *ThroneWiring) (net.Conn, error) {
+ 	var src net.Address
+ 	outbounds := session.OutboundsFromContext(ctx)
+ 	var outboundName string
+@@ -266,7 +291,6 @@ func DialSystem(ctx context.Context, dest net.Destination, sockopt *SocketConfig
+ 	// DNS resolver), injected onto the instance after core.New. It is nil for
+ 	// validation and latency/URL-test instances, which fall back to the plain
+ 	// dial path below.
+-	wiring := ThroneWiringFromContext(ctx)
+ 	var (
+ 		throneResolver dns.Client
+ 		throneStrategy DomainStrategy
+@@ -328,6 +352,9 @@ func DialSystem(ctx context.Context, dest net.Destination, sockopt *SocketConfig
+ 			finalStrategy = finalStrategy.GetDynamicStrategy(origTargetAddr.Family())
+ 		}
+ 		ips, err := LookupForIPWithClient(resolveClient, dest.Address.Domain(), finalStrategy, src)
++		if wiring != nil && wiring.Lifetime != nil && wiring.Lifetime.Err() != nil {
++			return nil, wiring.Lifetime.Err()
++		}
+ 		if err != nil {
+ 			errors.LogErrorInner(ctx, err, "failed to resolve ip")
+ 			if resolveStrategy.ForceIP() {
+diff --git a/transport/internet/throne.go b/transport/internet/throne.go
+index 7a3614b..f66957b 100644
+--- a/transport/internet/throne.go
++++ b/transport/internet/throne.go
+@@ -60,6 +60,8 @@ import (
+ // (validation, latency/URL tests) simply dial unbound and unmarked, exactly as
+ // before this mechanism existed.
+ type ThroneWiring struct {
++	// Set at construction for short-lived probe instances, before workers can detach.
++	Lifetime     context.Context
+ 	mu           sync.RWMutex
+ 	iface        string
+ 	mark         uint32
