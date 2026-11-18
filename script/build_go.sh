@@ -5,6 +5,7 @@ TAGS="with_clash_api,with_quic,with_wireguard,with_utls,with_dhcp,with_tailscale
 
 rm -rf $DEST
 mkdir -p $DEST
+DEST=$(cd "$DEST" && pwd)
 
 [[ "$GOOS" =~ legacy$ ]] && IS_LEGACY=true && GOCMD="$PWD/golang.org/go/bin/go" && GOOS="${GOOS%legacy}" || { IS_LEGACY=false; GOCMD="go"; }
 # a go.mod newer than the patched toolchain must fail the build, not auto-fetch an unpatched official Go
@@ -62,5 +63,5 @@ if [[ "$GOOS" == "darwin" ]]; then
   done
 fi
 VERSION_SINGBOX=$(go list -m -f '{{.Version}}' github.com/sagernet/sing-box)
-$GOCMD build -v -o $DEST -trimpath -ldflags "-w -s -X 'github.com/sagernet/sing-box/constant.Version=${VERSION_SINGBOX}' -X 'internal/godebug.defaultGODEBUG=multipathtcp=0' -checklinkname=0" -tags "$TAGS"
+bash patches/with-xray-mux.sh "$GOCMD" build -v -o "$DEST" -trimpath -ldflags "-w -s -X 'github.com/sagernet/sing-box/constant.Version=${VERSION_SINGBOX}' -X 'internal/godebug.defaultGODEBUG=multipathtcp=0' -checklinkname=0" -tags "$TAGS"
 popd

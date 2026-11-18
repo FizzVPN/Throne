@@ -54,7 +54,7 @@ build() {
     export CGO_LDFLAGS="${LDFLAGS} -fuse-ld=lld -fno-lto"
 
     VERSION_SINGBOX=$(go list -m -f '{{.Version}}' github.com/sagernet/sing-box)
-    go build -o "${srcdir}/build" \
+    bash patches/with-xray-mux.sh go build -o "${srcdir}/build" \
         -trimpath \
         -buildmode=pie \
         -mod=readonly \
