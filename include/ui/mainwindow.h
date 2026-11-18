@@ -568,7 +568,7 @@ private:
     QHash<int, QString> m_scannerNames;
     bool m_scannerPanelShown = false;
 
-    void CheckUpdate();
+    void CheckUpdate(bool automatic = false);
 
     void OpenDashboard();
 

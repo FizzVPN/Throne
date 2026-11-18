@@ -1,3 +1,11 @@
+#### 1.4.3
+
+* Check for client updates from FizzVPN/Throne. The default is once a day; set the interval to 0 in Basic Settings > General > Updates and Downloads to check manually instead. Updates are never installed automatically.
+* Keep Xray's DNS resolver for Mux connections and stop VLESS preconnections when a profile test ends.
+* Give Xray test connections using finalmask at least 10 seconds. XHTTP download legs using xdns also get time to start their DNS tunnel.
+* Use a five-second default for profile tests without changing saved timeouts, and add Yandex DoH to the direct DNS presets.
+* Start in advanced mode on new installs and switch existing installs once. You can still switch back to simple mode.
+
 #### 1.4.2
 
 * Add Tor as an egress option **1**

@@ -274,6 +274,7 @@ DialogBasicSettings::DialogBasicSettings(QWidget *parent)
     ui->test_timeout->setText(Int2String(snapshot_.speed_test_timeout_ms));
     ui->simple_down_url->setText(snapshot_.simple_dl_url);
     ui->allow_beta->setChecked(snapshot_.allow_beta_update);
+    ui->app_update_check_days->setValue(snapshot_.app_update_check_days);
     ui->disable_mixed_inbound->setChecked(snapshot_.disable_mixed_inbound);
     S_LOAD_BOOL(inbound_auth)
     S_LOAD_STRING(inbound_user)
@@ -658,6 +659,7 @@ void DialogBasicSettings::accept() {
     proposed.url_test_timeout_ms = ui->url_timeout->text().trimmed().toInt();
     proposed.speed_test_timeout_ms = ui->test_timeout->text().trimmed().toInt();
     proposed.allow_beta_update = ui->allow_beta->isChecked();
+    proposed.app_update_check_days = ui->app_update_check_days->value();
     proposed.disable_mixed_inbound = ui->disable_mixed_inbound->isChecked();
     proposed.reset_proxy_on_disable_sp = ui->reset_proxy_on_disable_sp->isChecked();
     S_SAVE_BOOL(inbound_auth)

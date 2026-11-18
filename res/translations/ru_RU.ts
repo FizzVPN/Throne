@@ -482,6 +482,14 @@ Outbound: %4</translation>
         <translation>Откл. сворачивание в трей</translation>
     </message>
     <message>
+        <source>Check for application updates (days)</source>
+        <translation>Интервал проверки обновлений программы (в днях)</translation>
+    </message>
+    <message>
+        <source>Off (0)</source>
+        <translation>Отключено (0)</translation>
+    </message>
+    <message>
         <source>Allow updating to beta versions</source>
         <translation>Разрешить обновление до бета-версий</translation>
     </message>

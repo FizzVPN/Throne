@@ -2,6 +2,7 @@
 #include "NkrVersion.h"
 
 #include <QApplication>
+#include <QDateTime>
 #include <QDesktopServices>
 #include <QDir>
 #include <QDirIterator>
@@ -398,7 +399,67 @@ void MainWindow::OpenDashboard() {
     });
 }
 
-void MainWindow::CheckUpdate() {
+namespace {
+struct ClientUpdate {
+    QString tag, downloadUrl, releaseUrl, notes, error;
+    bool preRelease = false;
+};
+
+ClientUpdate fetchClientUpdate(const QString &search, bool allowBeta) {
+    ClientUpdate result;
+    // Releases carry no checksum or signature, so TLS is all that vouches for the download URL and the archive.
+    HttpGetOptions options;
+    options.strictTls = true;
+    const auto repoApi = QStringLiteral("https://api.github.com/repos/FizzVPN/Throne");
+    auto resp = NetworkRequestHelper::HttpGet(repoApi + QStringLiteral("/releases"), options);
+    if (!resp.error.isEmpty()) {
+        result.error = resp.error + "\n" + resp.data;
+        return result;
+    }
+
+    QJsonArray array = QString2QJsonArray(resp.data);
+    for (const QJsonValue value : array) {
+        QJsonObject release = value.toObject();
+        if (release["prerelease"].toBool() && !allowBeta) continue;
+        for (const QJsonValue asset : release["assets"].toArray()) {
+            if (asset["name"].toString().contains(search) && asset["name"].toString().section('.', -1) == QString("zip")) {
+                result.preRelease = release["prerelease"].toBool();
+                result.releaseUrl = release["html_url"].toString();
+                result.tag = release["tag_name"].toString();
+                result.downloadUrl = asset["browser_download_url"].toString();
+                break;
+            }
+        }
+        if (!result.downloadUrl.isEmpty()) break;
+    }
+
+    if (result.downloadUrl.isEmpty() || !isNewer(result.tag)) return {};
+
+    options.headers = {{"Accept", "application/vnd.github.raw+json"}};
+    const auto changelog = NetworkRequestHelper::HttpGet(
+        repoApi + QStringLiteral("/contents/CHANGELOG.md?ref=") +
+            QString::fromLatin1(QUrl::toPercentEncoding(result.tag)), options);
+    result.notes = changelog.error.isEmpty() ? releaseNotes(QString::fromUtf8(changelog.data), result.tag) : QString();
+    return result;
+}
+} // namespace
+
+void MainWindow::CheckUpdate(bool automatic) {
+    const auto &settings = Configs::dataManager->settingsRepo;
+    if (!ui->actionCheck_For_Update->isEnabled() || settings->prepare_exit) return;
+    const auto now = QDateTime::currentSecsSinceEpoch();
+    if (automatic) {
+        const qint64 interval = qint64(settings->app_update_check_days) * 86400;
+        const auto last = settings->app_update_last_check;
+        if (interval <= 0 || (last > 0 && last <= now && now - last < interval)) return;
+    }
+    if (auto *open = findChild<DialogUpdate *>()) {
+        if (!automatic) {
+            open->raise();
+            open->activateWindow();
+        }
+        return;
+    }
     QString search;
 #ifdef Q_OS_WIN
 #  ifdef Q_PROCESSOR_ARM_64
@@ -429,55 +490,25 @@ void MainWindow::CheckUpdate() {
 #  endif
 #endif
     if (search.isEmpty()) {
-        runOnUiThread([=,this] {
-            MessageBoxWarning(QObject::tr("Update"), QObject::tr("Not official support platform"));
-        });
+        if (!automatic) MessageBoxWarning(QObject::tr("Update"), QObject::tr("Not official support platform"));
         return;
     }
 
-    // Releases carry no checksum or signature, so TLS is all that vouches for the download URL and the archive.
-    HttpGetOptions options;
-    options.strictTls = true;
-    auto resp = NetworkRequestHelper::HttpGet("https://api.github.com/repos/throneproj/Throne/releases", options);
-    if (!resp.error.isEmpty()) {
-        runOnUiThread([=,this] {
-            MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(resp.error + "\n" + resp.data));
-        });
-        return;
-    }
-
-    QString release_tag, release_download_url, release_url;
-    bool pre_release = false;
-    QJsonArray array = QString2QJsonArray(resp.data);
-    for (const QJsonValue value : array) {
-        QJsonObject release = value.toObject();
-        if (release["prerelease"].toBool() && !Configs::dataManager->settingsRepo->allow_beta_update) continue;
-        for (const QJsonValue asset : release["assets"].toArray()) {
-            if (asset["name"].toString().contains(search) && asset["name"].toString().section('.', -1) == QString("zip")) {
-                pre_release = release["prerelease"].toBool();
-                release_url = release["html_url"].toString();
-                release_tag = release["tag_name"].toString();
-                release_download_url = asset["browser_download_url"].toString();
-                break;
-            }
+    settings->app_update_last_check = now;
+    settings->Save();
+    ui->actionCheck_For_Update->setEnabled(false);
+    const auto finished = [this, automatic](const ClientUpdate &update) {
+        ui->actionCheck_For_Update->setEnabled(true);
+        const auto &prefs = Configs::dataManager->settingsRepo;
+        if (prefs->prepare_exit || (automatic && prefs->app_update_check_days <= 0)) return;
+        if (!update.error.isEmpty()) {
+            if (!automatic) MessageBoxWarning(QObject::tr("Update"), QObject::tr("Requesting update error: %1").arg(update.error));
+            return;
         }
-        if (!release_download_url.isEmpty()) break;
-    }
-
-    if (release_download_url.isEmpty() || !isNewer(release_tag)) {
-        runOnUiThread([=,this] {
-            MessageBoxInfo(QObject::tr("Update"), QObject::tr("No update"));
-        });
-        return;
-    }
-
-    options.headers = {{"Accept", "application/vnd.github.raw+json"}};
-    const auto changelog = NetworkRequestHelper::HttpGet(
-        QStringLiteral("https://api.github.com/repos/throneproj/Throne/contents/CHANGELOG.md?ref=") +
-            QString::fromLatin1(QUrl::toPercentEncoding(release_tag)), options);
-    const auto notes = changelog.error.isEmpty() ? releaseNotes(QString::fromUtf8(changelog.data), release_tag) : QString();
-
-    runOnUiThread([=,this] {
+        if (update.tag.isEmpty() || (update.preRelease && !prefs->allow_beta_update)) {
+            if (!automatic) MessageBoxInfo(QObject::tr("Update"), QObject::tr("No update"));
+            return;
+        }
         const auto headless = Sys::HostPresence::OtherHeadless();
         const bool headlessSameInstall = headless && Sys::HostPresence::SameInstall(*headless, QCoreApplication::applicationDirPath());
         bool allow_updater = !Configs::dataManager->settingsRepo->flag_use_appdata;
@@ -489,9 +520,9 @@ void MainWindow::CheckUpdate() {
         const auto notice = headlessSameInstall
             ? tr("Update is unavailable while a background Throne (PID %1) runs from this installation; stop it first.").arg(headless->pid)
             : QString();
-        auto *dialog = new DialogUpdate(release_tag, pre_release, notes, QUrl(release_url), allow_updater, notice, this);
+        auto *dialog = new DialogUpdate(update.tag, update.preRelease, update.notes, QUrl(update.releaseUrl), allow_updater, notice, this);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
-        connect(dialog, &DialogUpdate::updateRequested, this, [=,this] {
+        connect(dialog, &DialogUpdate::updateRequested, this, [this, release_download_url = update.downloadUrl] {
             runOnNewThread([=,this] {
                 if (!mu_download_update.tryLock()) {
                     runOnUiThread([=,this](){
@@ -522,5 +553,11 @@ void MainWindow::CheckUpdate() {
             });
         });
         dialog->open();
+    };
+    runOnNewThread([self = QPointer<MainWindow>(this), search, allowBeta = settings->allow_beta_update, finished] {
+        const auto update = fetchClientUpdate(search, allowBeta);
+        runOnUiThread([self, finished, update] {
+            if (self) finished(update);
+        });
     });
 }

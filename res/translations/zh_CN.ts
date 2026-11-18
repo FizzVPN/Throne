@@ -825,6 +825,14 @@ Outbound: %4</source>
         <translation>Xray VLESS 首选项</translation>
     </message>
     <message>
+        <source>Check for application updates (days)</source>
+        <translation>检查应用更新的间隔（天）</translation>
+    </message>
+    <message>
+        <source>Off (0)</source>
+        <translation>关闭（0）</translation>
+    </message>
+    <message>
         <source>Allow updating to beta versions</source>
         <translation>允许更新到 beta 版</translation>
     </message>

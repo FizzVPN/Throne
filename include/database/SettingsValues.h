@@ -110,6 +110,8 @@ namespace Configs {
         int speed_test_timeout_ms = 5000;
         QString simple_dl_url = "http://cachefly.cachefly.net/1mb.test";
         bool allow_beta_update = false;
+        int app_update_check_days = 1;
+        qint64 app_update_last_check = 0;
         bool use_custom_icons = false;
         bool follow_status_in_taskbar = true;
         bool skip_delete_confirmation = false;

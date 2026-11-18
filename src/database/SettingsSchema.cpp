@@ -121,6 +121,8 @@ namespace Configs::SettingsSchema {
                 {"speed_test_timeout_ms", &SettingsValues::speed_test_timeout_ms},
                 {"simple_dl_url", &SettingsValues::simple_dl_url},
                 {"allow_beta_update", &SettingsValues::allow_beta_update},
+                {"app_update_check_days", &SettingsValues::app_update_check_days, Portable, NoEffect, IntRange{0, 365}},
+                {"app_update_last_check", &SettingsValues::app_update_last_check, Device},
                 {"use_custom_icons", &SettingsValues::use_custom_icons, Portable, UiTrayIcon},
                 {"follow_status_in_taskbar", &SettingsValues::follow_status_in_taskbar, Portable, UiTrayIcon},
                 {"skip_delete_confirmation", &SettingsValues::skip_delete_confirmation},

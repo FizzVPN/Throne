@@ -185,13 +185,33 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_12">
           <item row="0" column="0">
+           <widget class="QLabel" name="app_update_check_days_label">
+            <property name="text">
+             <string>Check for application updates (days)</string>
+            </property>
+            <property name="buddy">
+             <cstring>app_update_check_days</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="app_update_check_days">
+            <property name="specialValueText">
+             <string>Off (0)</string>
+            </property>
+            <property name="maximum">
+             <number>365</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
            <widget class="QCheckBox" name="allow_beta">
             <property name="text">
              <string>Allow updating to beta versions</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
+          <item row="2" column="0" colspan="2">
            <widget class="QCheckBox" name="net_use_proxy">
             <property name="toolTip">
              <string>Send subscription updates and downloads through the proxy.</string>
@@ -201,7 +221,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="3" column="0" colspan="2">
            <widget class="QCheckBox" name="net_insecure">
             <property name="uiLevel" stdset="0">
              <string notr="true">advanced</string>

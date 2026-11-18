@@ -1299,6 +1299,14 @@ To fix this, share the hotspot from the throne-tun adapter instead of &quot;%1&q
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Check for application updates (days)</source>
+        <translation>فاصلهٔ بررسی به‌روزرسانی برنامه (روز)</translation>
+    </message>
+    <message>
+        <source>Off (0)</source>
+        <translation>غیرفعال (۰)</translation>
+    </message>
+    <message>
         <source>Allow updating to beta versions</source>
         <translation type="unfinished"></translation>
     </message>

@@ -340,7 +340,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         m_autoSelectorDialog->raise();
         m_autoSelectorDialog->activateWindow();
     });
-    connect(ui->actionCheck_For_Update, &QAction::triggered, this, [=,this] { runOnNewThread([=,this] { CheckUpdate(); }); });
+    connect(ui->actionCheck_For_Update, &QAction::triggered, this, [this] { CheckUpdate(); });
     connect(ui->actionAbout, &QAction::triggered, this, [=, this] {
         USE_DIALOG(DialogAbout)
     });
@@ -363,6 +363,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     if (!QFile::exists(QApplication::applicationDirPath() + "/updater") && !QFile::exists(QApplication::applicationDirPath() + "/updater.exe"))
     {
         ui->actionCheck_For_Update->setDisabled(true);
+    } else {
+        // Compare wall-clock time so sleep, restarts and changes to the interval are respected.
+        auto *timer = new QTimer(this);
+        timer->setTimerType(Qt::VeryCoarseTimer);
+        connect(timer, &QTimer::timeout, this, [this] { CheckUpdate(true); });
+        timer->start(std::chrono::minutes(1));
+        QTimer::singleShot(std::chrono::seconds(15), this, [this] { CheckUpdate(true); });
     }
 
     setupConnectionList();
