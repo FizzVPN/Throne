@@ -3,6 +3,7 @@
 #include <QUuid>
 
 #include "include/database/SettingsSchema.h"
+#include "include/database/MarkersRepo.h"
 #include "include/global/Utils.hpp"
 #include "include/global/Validation.hpp"
 #include "include/sys/UrlScheme.hpp"
@@ -11,6 +12,13 @@ namespace Configs {
     SettingsRepo::SettingsRepo(Database& database) : db(database) {
         url_scheme_auto_register = UrlScheme_AutoRegisterByDefault();
         createTables();
+        db.transaction(Markers::AdvancedInterface, [&] {
+            if (!db.queryThrow("SELECT 1 FROM markers WHERE key = ?", Markers::AdvancedInterface)->executeStep()) {
+                db.execThrow("UPDATE settings SET value = 'false' WHERE key = 'simple_mode'");
+                db.execThrow("INSERT INTO markers (key) VALUES (?)", Markers::AdvancedInterface);
+            }
+            return true;
+        });
         loadAllSettings();
         // An empty secret disables authentication on the API service outright.
         if (core_box_api_secret.isEmpty()) {
@@ -33,9 +41,7 @@ namespace Configs {
         auto query = db.query("SELECT key, value FROM settings");
         if (!query) return;
 
-        bool freshInstall = true;
         while (query->executeStep()) {
-            freshInstall = false;
             const QString key = QString::fromStdString(query->getColumn(0).getText());
             std::string raw = query->getColumn(1).getText();
             const QString str = QString::fromStdString(raw);
@@ -52,7 +58,6 @@ namespace Configs {
             }
             if (const auto *entry = SettingsSchema::Find(key)) SettingsSchema::Parse(*this, *entry, str);
         }
-        if (freshInstall) simple_mode = true;
         // Builds before 1.2.1 saved the translated interval label ("5 мин.", "۱۰ دقیقه"), which the core rejects.
         if (!Validation::Duration(ntp_interval).isEmpty()) {
             QString minutes;

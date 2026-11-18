@@ -13,6 +13,8 @@
 #endif
 
 namespace Configs {
+    inline constexpr int kDefaultUrlTestTimeoutMs = 5000;
+
     // Loopback/broadcast are deliberately absent: routing them into the tun breaks the sing-box <-> Xray bridges and local DNS.
     inline QStringList defaultTunPrivateRanges() {
         return {"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "169.254.0.0/16", "224.0.0.0/4",
@@ -32,7 +34,7 @@ namespace Configs {
         QString exit_lookup_provider = "auto";
         // Service Check ids turned off; checks that a newer definitions revision adds stay on.
         QStringList service_check_disabled = {};
-        int url_test_timeout_ms = 3000;
+        int url_test_timeout_ms = kDefaultUrlTestTimeoutMs;
         bool disable_tray = false;
         int test_concurrent = 10;
         bool disable_traffic_stats = false;
@@ -112,7 +114,7 @@ namespace Configs {
         bool follow_status_in_taskbar = true;
         bool skip_delete_confirmation = false;
         bool show_config_security = false;
-        // UI only: config generation never reads it. A fresh install starts simple, an upgraded one advanced.
+        // UI only: config generation never reads it.
         bool simple_mode = false;
         // -1 until a filter column has been used.
         int last_filter_column = -1;

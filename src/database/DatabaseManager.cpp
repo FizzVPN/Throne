@@ -134,9 +134,9 @@ namespace Configs {
         groupsRepo = std::make_unique<GroupsRepo>(db);
         routesRepo = std::make_unique<RoutesRepo>(db);
         otpProfilesRepo = std::make_unique<OtpProfilesRepo>(db);
+        markersRepo = std::make_unique<MarkersRepo>(db);
         settingsRepo = std::make_unique<SettingsRepo>(db);
         trafficStatsRepo = std::make_unique<TrafficStatsRepo>(statsDb);
-        markersRepo = std::make_unique<MarkersRepo>(db);
         ipListsRepo = std::make_unique<IpListsRepo>(scanDb);
         ipScansRepo = std::make_unique<IpScansRepo>(scanDb);
         ipScansRepo->NormalizeInterrupted();
