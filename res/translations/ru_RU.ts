@@ -6820,6 +6820,18 @@ Close without saving?</source>
 <context>
     <name>EditCustom</name>
     <message>
+        <source>Routing rule exit</source>
+        <translation>Выход для правил маршрутизации</translation>
+    </message>
+    <message>
+        <source>Automatic (single proxy)</source>
+        <translation>Автоматически (единственный прокси)</translation>
+    </message>
+    <message>
+        <source>Unavailable: %1</source>
+        <translation>Недоступен: %1</translation>
+    </message>
+    <message>
         <source>Core</source>
         <translation>Ядро</translation>
     </message>
@@ -15363,6 +15375,30 @@ Remove that endpoint from this routing profile as well?</source>
 </context>
 <context>
     <name>Validation</name>
+    <message>
+        <source>The Xray config has invalid or ambiguous outbound tags or routing fields.</source>
+        <translation>В конфигурации Xray некорректные или неоднозначные теги выходов либо поля маршрутизации.</translation>
+    </message>
+    <message>
+        <source>This Xray config has no proxy outbound for routing rules.</source>
+        <translation>В конфигурации Xray нет прокси-выхода для правил маршрутизации.</translation>
+    </message>
+    <message>
+        <source>Choose a tagged proxy under Routing rule exit in the Xray profile editor. Untagged outbounds must be named before they can be selected.</source>
+        <translation>Откройте профиль Xray и выберите «Выход для правил маршрутизации». Если у выхода нет тега, сначала задайте его в JSON.</translation>
+    </message>
+    <message>
+        <source>An Xray routing script cannot be combined with a Throne bridge rule.</source>
+        <translation>Скрипт маршрутизации Xray несовместим с правилом для моста Throne.</translation>
+    </message>
+    <message>
+        <source>An Xray full config used in a routing rule cannot have a group front or landing proxy.</source>
+        <translation>Полную конфигурацию Xray можно использовать в правиле только без входного и выходного прокси группы.</translation>
+    </message>
+    <message>
+        <source>This rule uses the proxy in %1. The profile's own routing rules do not apply to this traffic.</source>
+        <translation>Для этого правила используется прокси профиля «%1». Внутренние правила маршрутизации профиля к этому трафику не применяются.</translation>
+    </message>
     <message>
         <source>Add at least one profile to the chain.</source>
         <translation>Добавьте в цепочку хотя бы один профиль.</translation>

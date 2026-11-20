@@ -3750,6 +3750,18 @@ Close without saving?</source>
 <context>
     <name>EditCustom</name>
     <message>
+        <source>Routing rule exit</source>
+        <translation>خروجی قانون مسیریابی</translation>
+    </message>
+    <message>
+        <source>Automatic (single proxy)</source>
+        <translation>خودکار (یک پروکسی)</translation>
+    </message>
+    <message>
+        <source>Unavailable: %1</source>
+        <translation>در دسترس نیست: %1</translation>
+    </message>
+    <message>
         <source>Core</source>
         <translation>هسته</translation>
     </message>
@@ -7068,6 +7080,30 @@ Remove that endpoint from this routing profile as well?</source>
 </context>
 <context>
     <name>Validation</name>
+    <message>
+        <source>The Xray config has invalid or ambiguous outbound tags or routing fields.</source>
+        <translation>برچسب‌های خروجی یا فیلدهای مسیریابی پیکربندی Xray نامعتبر یا مبهم است.</translation>
+    </message>
+    <message>
+        <source>This Xray config has no proxy outbound for routing rules.</source>
+        <translation>این پیکربندی Xray خروجی پروکسی برای قوانین مسیریابی ندارد.</translation>
+    </message>
+    <message>
+        <source>Choose a tagged proxy under Routing rule exit in the Xray profile editor. Untagged outbounds must be named before they can be selected.</source>
+        <translation>در ویرایشگر پروفایل Xray، در بخش «خروجی قانون مسیریابی» یک پروکسی برچسب‌دار انتخاب کنید. خروجی‌های بدون برچسب ابتدا باید نام‌گذاری شوند.</translation>
+    </message>
+    <message>
+        <source>An Xray routing script cannot be combined with a Throne bridge rule.</source>
+        <translation>اسکریپت مسیریابی Xray را نمی‌توان با قانون پل Throne ترکیب کرد.</translation>
+    </message>
+    <message>
+        <source>An Xray full config used in a routing rule cannot have a group front or landing proxy.</source>
+        <translation>پیکربندی کامل Xray در یک قانون مسیریابی نمی‌تواند پروکسی ورودی یا خروجی گروه داشته باشد.</translation>
+    </message>
+    <message>
+        <source>This rule uses the proxy in %1. The profile's own routing rules do not apply to this traffic.</source>
+        <translation>این قانون از پروکسی %1 استفاده می‌کند. قوانین مسیریابی خود پروفایل روی این ترافیک اعمال نمی‌شوند.</translation>
+    </message>
     <message>
         <source>%1: %2</source>
         <translation>%1: %2</translation>

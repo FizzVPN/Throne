@@ -1,6 +1,7 @@
 #include "include/configs/outbounds/custom.h"
 
 #include "include/configs/common/OutboundFactory.h"
+#include "include/configs/generate_internal.h"
 #include "include/configs/common/utils.h"
 #include "include/configs/outbounds/xrayVless.h"
 #include "include/global/Utils.hpp"
@@ -623,6 +624,69 @@ namespace Configs
     bool StripXrayStreamKeyLog(QJsonObject& stream, const QString& at, Validation::Issues& issues)
     {
         return stripXrayKeyLog(stream, at, issues);
+    }
+
+    BuildResult XrayRuleConfig(QJsonObject config, const QString &selected, QStringList *choices) {
+        const auto invalid = [] {
+            return BuildResult{{}, QCoreApplication::translate("Validation", "The Xray config has invalid or ambiguous outbound tags or routing fields.")};
+        };
+        const auto outKeys = keysNamed(config, "outbounds");
+        if (outKeys.size() != 1 || !config.value(outKeys.first()).isArray()) return invalid();
+        auto outs = config.take(outKeys.first()).toArray();
+        QSet<QString> used;
+        QList<qsizetype> proxies;
+        qsizetype chosen = -1;
+        for (qsizetype i = 0; i < outs.size(); ++i) {
+            const auto out = outs.at(i).toObject();
+            const auto protocol = xrayAgreedProtocol(out);
+            const auto tags = keysNamed(out, "tag");
+            if (!protocol || protocol->isEmpty() || tags.size() > 1 ||
+                (!tags.isEmpty() && !out.value(tags.first()).isString())) return invalid();
+            const auto tag = customValueNamed(out, "tag").toString();
+            if (!tag.isEmpty()) {
+                if (used.contains(tag)) return invalid();
+                used.insert(tag);
+            }
+            if (isXrayInfra(*protocol)) continue;
+            proxies << i;
+            if (tag.isEmpty()) continue;
+            if (choices) *choices << tag;
+            if (tag == selected) chosen = i;
+        }
+        if (selected.isEmpty() && proxies.size() == 1) chosen = proxies.first();
+        if (chosen < 0) {
+            if (proxies.isEmpty())
+                return {{}, QCoreApplication::translate("Validation", "This Xray config has no proxy outbound for routing rules.")};
+            return {{}, QCoreApplication::translate("Validation", "Choose a tagged proxy under Routing rule exit in the Xray profile editor. Untagged outbounds must be named before they can be selected.")};
+        }
+        auto proxy = outs.at(chosen).toObject();
+        auto tag = customValueNamed(proxy, "tag").toString();
+        if (tag.isEmpty()) {
+            tag = QStringLiteral("throne-rule-exit");
+            while (used.contains(tag)) tag += u'_';
+            for (const auto &key : keysNamed(proxy, "tag")) proxy.remove(key);
+            proxy.insert("tag", tag);
+            outs[chosen] = proxy;
+        }
+        config.insert("outbounds", outs);
+
+        // Only the bridge accepts clients. Do not open the original listeners or apply process-wide options twice.
+        for (const auto *section : {"inbounds", "api", "metrics", "reverse", "env", "geodata"})
+            for (const auto &key : keysNamed(config, section)) config.remove(key);
+        const auto routingKeys = keysNamed(config, "routing");
+        if (routingKeys.size() > 1 || (!routingKeys.isEmpty() && !config.value(routingKeys.first()).isObject())) return invalid();
+        auto routing = routingKeys.isEmpty() ? QJsonObject{} : config.take(routingKeys.first()).toObject();
+        const auto ruleKeys = keysNamed(routing, "rules");
+        if (ruleKeys.size() > 1 || (!ruleKeys.isEmpty() && !routing.value(ruleKeys.first()).isArray())) return invalid();
+        for (const auto &key : keysNamed(routing, "script")) {
+            if (!routing.value(key).toString().isEmpty())
+                return {{}, QCoreApplication::translate("Validation", "An Xray routing script cannot be combined with a Throne bridge rule.")};
+        }
+        auto rules = ruleKeys.isEmpty() ? QJsonArray{} : routing.take(ruleKeys.first()).toArray();
+        rules.prepend(QJsonObject{{"type", "field"}, {"inboundTag", QJsonArray{gen::tags::xrayFullConfigIn}}, {"outboundTag", tag}});
+        routing.insert("rules", rules);
+        config.insert("routing", routing);
+        return {config, {}};
     }
 
     namespace Checks {

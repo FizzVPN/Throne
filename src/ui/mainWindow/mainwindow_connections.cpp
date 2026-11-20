@@ -59,10 +59,11 @@ namespace
 
     struct RoutableServer { int id; QString label; QString fullLabel; };
 
-    // What generate.cpp refuses as a rule's outbound or as a hop of one: extra cores and full configs.
-    bool UnroutableProfile(const std::shared_ptr<Configs::Profile>& profile)
+    // A standalone Xray full config can be a rule target, but not a hop of a rule's chain.
+    bool UnroutableProfile(const std::shared_ptr<Configs::Profile>& profile, bool chainHop)
     {
-        if (!profile || !profile->outbound || profile->outbound->IsExtraCore() || profile->outbound->IsXrayFullConfig()) return true;
+        if (!profile || !profile->outbound || profile->outbound->IsExtraCore()) return true;
+        if (profile->outbound->IsXrayFullConfig()) return chainHop;
         const auto* custom = profile->Custom();
         return custom && custom->type == Configs::Custom::CustomFullConfig;
     }
@@ -79,7 +80,7 @@ namespace
         for (const auto& [id, name] : FixProfileDisplayName(mapped)) names.insert(id, name);
         for (const int id : repo->GetProfileIdsByType("extracore")) names.remove(id);
         for (const auto& profile : repo->GetProfileBatch(repo->GetProfileIdsByType("custom")))
-            if (UnroutableProfile(profile)) names.remove(profile->id);
+            if (UnroutableProfile(profile, false)) names.remove(profile->id);
 
         const auto chains = repo->GetProfileBatch(repo->GetProfileIdsByType("chain"));
         QList<int> hopIDs;
@@ -93,7 +94,7 @@ namespace
             const bool usable = chain && !chain->list.isEmpty()
                 && std::all_of(chain->list.cbegin(), chain->list.cend(), [&hops](int hopID) {
                        const auto hop = hops.value(hopID);
-                       return !UnroutableProfile(hop) && hop->type != "chain" && hop->type != "autoselector";
+                       return !UnroutableProfile(hop, true) && hop->type != "chain" && hop->type != "autoselector";
                    });
             if (!usable) names.remove(profile->id);
         }

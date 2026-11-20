@@ -16,12 +16,15 @@ namespace Configs
 
         QString config;
         QString type;
+        // Local preference for using this profile as a routing rule target, not part of the Xray JSON.
+        QString routeExitTag;
 
         bool ParseFromJson(const QJsonObject &object) override {
             if (object.isEmpty()) return false;
             if (object.contains("name")) name = object["name"].toString();
             if (object.contains("subtype")) type = object["subtype"].toString().trimmed();
             if (object.contains("config")) config = object["config"].toString();
+            routeExitTag = object.value("route_exit_tag").toString();
             return true;
         }
 
@@ -31,6 +34,7 @@ namespace Configs
             object["type"] = "custom";
             object["subtype"] = type;
             object["config"] = config;
+            if (type == CustomXrayFullConfig && !routeExitTag.isEmpty()) object["route_exit_tag"] = routeExitTag;
             return object;
         }
 
@@ -120,6 +124,9 @@ namespace Configs
             return {};
         }
     };
+
+    // Builds an isolated copy, or returns an error instead of falling back to Xray's first outbound.
+    BuildResult XrayRuleConfig(QJsonObject config, const QString &selected, QStringList *choices = nullptr);
 
     namespace Checks {
         // Valid JSON (line and column on a syntax error) with what the subtype needs: a type, a protocol or an outbounds list.

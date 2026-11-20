@@ -6766,6 +6766,18 @@ Close without saving?</source>
 <context>
     <name>EditCustom</name>
     <message>
+        <source>Routing rule exit</source>
+        <translation>路由规则出口</translation>
+    </message>
+    <message>
+        <source>Automatic (single proxy)</source>
+        <translation>自动（仅一个代理）</translation>
+    </message>
+    <message>
+        <source>Unavailable: %1</source>
+        <translation>不可用：%1</translation>
+    </message>
+    <message>
         <source>Core</source>
         <translation>核心</translation>
     </message>
@@ -15271,6 +15283,30 @@ Remove that endpoint from this routing profile as well?</source>
 </context>
 <context>
     <name>Validation</name>
+    <message>
+        <source>The Xray config has invalid or ambiguous outbound tags or routing fields.</source>
+        <translation>Xray 配置中的出站标签或路由字段无效或存在歧义。</translation>
+    </message>
+    <message>
+        <source>This Xray config has no proxy outbound for routing rules.</source>
+        <translation>此 Xray 配置没有可用于路由规则的代理出站。</translation>
+    </message>
+    <message>
+        <source>Choose a tagged proxy under Routing rule exit in the Xray profile editor. Untagged outbounds must be named before they can be selected.</source>
+        <translation>请在 Xray 配置编辑器的“路由规则出口”中选择带标签的代理。没有标签的出站需先命名。</translation>
+    </message>
+    <message>
+        <source>An Xray routing script cannot be combined with a Throne bridge rule.</source>
+        <translation>Xray 路由脚本不能与 Throne 桥接规则同时使用。</translation>
+    </message>
+    <message>
+        <source>An Xray full config used in a routing rule cannot have a group front or landing proxy.</source>
+        <translation>用于路由规则的完整 Xray 配置不能带有组的前置或落地代理。</translation>
+    </message>
+    <message>
+        <source>This rule uses the proxy in %1. The profile's own routing rules do not apply to this traffic.</source>
+        <translation>此规则使用 %1 中的代理。配置自身的路由规则不适用于这些流量。</translation>
+    </message>
     <message>
         <source>Add at least one profile to the chain.</source>
         <translation>添加至少一个配置档到链。</translation>

@@ -9,6 +9,10 @@
 
 EditCustom::EditCustom(QWidget *parent) : QWidget(parent), ui(new Ui::EditCustom) {
     ui->setupUi(this);
+    connect(ui->config_simple, &QPlainTextEdit::textChanged, this, [this] {
+        if (preset_core == Configs::Custom::CustomXrayFullConfig)
+            refreshRouteExits(ui->routeExit->currentData().toString());
+    });
     ui->config_simple->setPlaceholderText(
         "example:\n"
         "  server-address: \"127.0.0.1:%mapping_port%\"\n"
@@ -20,6 +24,17 @@ EditCustom::EditCustom(QWidget *parent) : QWidget(parent), ui(new Ui::EditCustom
 
 EditCustom::~EditCustom() {
     delete ui;
+}
+
+void EditCustom::refreshRouteExits(const QString &selected) {
+    QStringList tags;
+    Configs::XrayRuleConfig(QString2QJsonObject(ui->config_simple->toPlainText()), selected, &tags);
+    ui->routeExit->clear();
+    ui->routeExit->addItem(tr("Automatic (single proxy)"), QString());
+    for (const auto &tag : tags) ui->routeExit->addItem(tag, tag);
+    if (!selected.isEmpty() && !tags.contains(selected))
+        ui->routeExit->addItem(tr("Unavailable: %1").arg(selected), selected);
+    ui->routeExit->setCurrentIndex(selected.isEmpty() ? 0 : ui->routeExit->findData(selected));
 }
 
 void EditCustom::onStart(std::shared_ptr<Configs::Profile> _ent) {
@@ -68,7 +83,9 @@ void EditCustom::onStart(std::shared_ptr<Configs::Profile> _ent) {
     } else {
         ui->core_l->setText(tr("Please fill the complete config."));
     }
-    ui->w_ext1->hide();
+    const bool fullXray = preset_core == Configs::Custom::CustomXrayFullConfig;
+    ui->w_ext1->setVisible(fullXray);
+    if (fullXray) refreshRouteExits(outbound->routeExitTag);
     ui->w_ext2->hide();
 }
 
@@ -82,6 +99,8 @@ bool EditCustom::onEnd() {
 
     outbound->config = ui->config_simple->toPlainText();
     outbound->type = preset_core;
+    if (preset_core == Configs::Custom::CustomXrayFullConfig)
+        outbound->routeExitTag = ui->routeExit->currentData().toString();
 
     return true;
 }
