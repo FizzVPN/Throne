@@ -1,5 +1,6 @@
 #### 1.4.3
 
+* Show Throne FizzVPN and the build version in the main window title.
 * Route individual apps or domains through a custom Xray profile. Pick an exit if the JSON has more than one proxy. A routing profile or an individual server can also tell Xray to ignore its built-in rules for Throne traffic.
 * Hide empty quick lists in the routing editor. Use the arrow next to New rule to fill one again.
 * Check for client updates from FizzVPN/Throne. The default is once a day; set the interval to 0 in Basic Settings > General > Updates and Downloads to check manually instead. Updates are never installed automatically.

@@ -273,8 +273,7 @@ void MainWindow::refresh_status(const QString &traffic_update) {
         if (settings->kill_switch && killSwitchState == Sys::KillSwitch::State::Failed) {
             tt << "[" + (killSwitchBlocking ? tr("Kill switch is blocking traffic") : tr("Kill switch: not active")) + "]";
         }
-        tt << software_name;
-        if (!isTray) tt << QString(NKR_VERSION);
+        tt << (isTray ? software_name : QStringLiteral("Throne FizzVPN " NKR_VERSION).trimmed());
         if (!activeRouteName.isEmpty()) {
             tt << "[" + activeRouteName + "]";
         }
