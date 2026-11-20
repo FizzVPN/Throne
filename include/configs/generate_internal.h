@@ -184,6 +184,7 @@ namespace Configs {
             std::shared_ptr<Profile> ent = std::make_shared<Profile>(nullptr, nullptr);
             // The routing profile this build uses (BuildSingBoxConfig only).
             int routeId = -1;
+            bool ignoreXrayRouting = false;
             // That routing profile's DNS; routeOwnsDns also overrides the global DNS object.
             RouteDns dns;
             bool routeOwnsDns = false;

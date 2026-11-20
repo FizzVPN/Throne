@@ -3750,8 +3750,16 @@ Close without saving?</source>
 <context>
     <name>EditCustom</name>
     <message>
-        <source>Routing rule exit</source>
-        <translation>خروجی قانون مسیریابی</translation>
+        <source>Xray proxy exit</source>
+        <translation>خروجی پروکسی Xray</translation>
+    </message>
+    <message>
+        <source>Ignore built-in Xray routing rules</source>
+        <translation>نادیده گرفتن قوانین مسیریابی داخلی Xray</translation>
+    </message>
+    <message>
+        <source>When enabled, traffic from Throne uses the selected proxy exit. A Throne routing rule that selects this profile always uses that exit.</source>
+        <translation>با فعال کردن این گزینه، ترافیک Throne از خروجی پروکسی انتخاب‌شده می‌گذرد. اگر یک قانون مسیریابی Throne این پروفایل را انتخاب کند، ترافیک آن قانون همیشه از همین خروجی عبور می‌کند.</translation>
     </message>
     <message>
         <source>Automatic (single proxy)</source>
@@ -5781,6 +5789,18 @@ Error: %2</source>
 <context>
     <name>RouteItem</name>
     <message>
+        <source>About this option</source>
+        <translation>دربارهٔ این گزینه</translation>
+    </message>
+    <message>
+        <source>Ignore built-in Xray routing rules</source>
+        <translation>نادیده گرفتن قوانین مسیریابی داخلی Xray</translation>
+    </message>
+    <message>
+        <source>Xray sends Throne traffic through the selected proxy, even if the JSON says direct.</source>
+        <translation>حتی اگر در JSON مسیر direct تعیین شده باشد، Xray ترافیک Throne را از پروکسی انتخاب‌شده می‌فرستد.</translation>
+    </message>
+    <message>
         <source>Routing Profile</source>
         <translation>نمایهٔ مسیریابی</translation>
     </message>
@@ -7089,8 +7109,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>این پیکربندی Xray خروجی پروکسی برای قوانین مسیریابی ندارد.</translation>
     </message>
     <message>
-        <source>Choose a tagged proxy under Routing rule exit in the Xray profile editor. Untagged outbounds must be named before they can be selected.</source>
-        <translation>در ویرایشگر پروفایل Xray، در بخش «خروجی قانون مسیریابی» یک پروکسی برچسب‌دار انتخاب کنید. خروجی‌های بدون برچسب ابتدا باید نام‌گذاری شوند.</translation>
+        <source>Choose a tagged proxy under Xray proxy exit in the profile editor. Untagged outbounds must be named before they can be selected.</source>
+        <translation>در ویرایشگر پروفایل، در بخش «خروجی پروکسی Xray» یک پروکسی برچسب‌دار انتخاب کنید. خروجی‌های بدون برچسب ابتدا باید نام‌گذاری شوند.</translation>
     </message>
     <message>
         <source>An Xray routing script cannot be combined with a Throne bridge rule.</source>

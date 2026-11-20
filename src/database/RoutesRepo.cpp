@@ -63,6 +63,7 @@ namespace Configs {
                 dns_json TEXT NOT NULL DEFAULT '',
                 custom_dns INTEGER NOT NULL DEFAULT 0,
                 source_gid INTEGER NOT NULL DEFAULT -1,
+                ignore_xray_routing INTEGER NOT NULL DEFAULT 0,
                 created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
                 updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
             )
@@ -91,6 +92,8 @@ namespace Configs {
             db.exec("ALTER TABLE route_profiles ADD COLUMN custom_dns INTEGER NOT NULL DEFAULT 0");
         if (!routeProfilesColumnExists("source_gid"))
             db.exec("ALTER TABLE route_profiles ADD COLUMN source_gid INTEGER NOT NULL DEFAULT -1");
+        if (!routeProfilesColumnExists("ignore_xray_routing"))
+            db.exec("ALTER TABLE route_profiles ADD COLUMN ignore_xray_routing INTEGER NOT NULL DEFAULT 0");
 
         db.exec(R"(
             CREATE TABLE IF NOT EXISTS route_rules (
@@ -185,6 +188,7 @@ namespace Configs {
         routeProfile->id = json["id"].toInt();
         routeProfile->name = json["name"].toString();
         routeProfile->defaultOutboundID = json["defaultOutboundID"].toInt();
+        routeProfile->ignoreXrayRouting = json["ignoreXrayRouting"].toBool();
         routeProfile->isRaw = json["isRaw"].toBool();
         routeProfile->rawRoute = json["rawRoute"].toString();
         routeProfile->preventModifications = json["preventModifications"].toBool();
@@ -226,8 +230,8 @@ namespace Configs {
         db.execThrow(R"(
             INSERT INTO route_profiles (id, name, default_outbound_id, is_raw, raw_route, prevent_modifications,
                 is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids,
-                inner_hop_endpoint_ids, dns_json, custom_dns, source_gid)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                inner_hop_endpoint_ids, dns_json, custom_dns, source_gid, ignore_xray_routing)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 name = excluded.name, default_outbound_id = excluded.default_outbound_id,
                 is_raw = excluded.is_raw, raw_route = excluded.raw_route,
@@ -238,6 +242,7 @@ namespace Configs {
                 inner_hop_endpoint_ids = excluded.inner_hop_endpoint_ids,
                 dns_json = excluded.dns_json, custom_dns = excluded.custom_dns,
                 source_gid = excluded.source_gid,
+                ignore_xray_routing = excluded.ignore_xray_routing,
                 updated_at = strftime('%s', 'now')
         )",
             id,
@@ -254,7 +259,8 @@ namespace Configs {
             innerHopsJson.toStdString(),
             dnsJson.toStdString(),
             routeProfile->customDns ? 1 : 0,
-            routeProfile->source_gid
+            routeProfile->source_gid,
+            routeProfile->ignoreXrayRouting ? 1 : 0
         );
 
         db.execThrow("DELETE FROM route_rules WHERE route_profile_id = ?", id);
@@ -318,6 +324,7 @@ namespace Configs {
             json["dns"] = dnsDoc.object();
         json["customDns"] = stmt.getColumn(13).getInt() != 0;
         json["sourceGid"] = stmt.getColumn(14).getInt();
+        json["ignoreXrayRouting"] = stmt.getColumn(15).getInt() != 0;
         return routeProfileFromJson(json);
     }
 
@@ -345,7 +352,7 @@ namespace Configs {
         auto profileQuery = db.query(R"(
             SELECT id, name, default_outbound_id, is_raw, raw_route, prevent_modifications,
                    is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids,
-                   inner_hop_endpoint_ids, dns_json, custom_dns, source_gid
+                   inner_hop_endpoint_ids, dns_json, custom_dns, source_gid, ignore_xray_routing
             FROM route_profiles WHERE id = ?
         )", id);
         if (!profileQuery || !profileQuery->executeStep()) {
@@ -516,7 +523,7 @@ namespace Configs {
         QList<int> idsInOrder;
         QSet<int> cachedProfiles;
 
-        auto profileQuery = db.query("SELECT id, name, default_outbound_id, is_raw, raw_route, prevent_modifications, is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids, inner_hop_endpoint_ids, dns_json, custom_dns, source_gid FROM route_profiles ORDER BY id");
+        auto profileQuery = db.query("SELECT id, name, default_outbound_id, is_raw, raw_route, prevent_modifications, is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids, inner_hop_endpoint_ids, dns_json, custom_dns, source_gid, ignore_xray_routing FROM route_profiles ORDER BY id");
         if (!profileQuery) return routeProfiles;
 
         QMutexLocker locker(&mutex);

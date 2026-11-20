@@ -40,8 +40,8 @@ namespace Subscription {
         }
 
         QByteArray contentKeyOf(const Configs::Profile &ent) {
-            auto json = ent.outbound->ExportToJson();
-            if (ent.outbound->IsXrayFullConfig()) json.remove("route_exit_tag");
+            const auto *custom = ent.Custom();
+            const auto json = custom ? custom->SubscriptionJson() : ent.outbound->ExportToJson();
             return digest(QJsonDocument(json).toJson(QJsonDocument::Compact));
         }
 
@@ -1285,8 +1285,10 @@ namespace Subscription {
                 auto oldEnt = profilesRepo->GetProfile(oldId);
                 const auto newEnt = profilesRepo->GetProfile(newId);
                 if (oldEnt != nullptr && newEnt != nullptr) {
-                    if (oldEnt->outbound->IsXrayFullConfig() && newEnt->outbound->IsXrayFullConfig())
+                    if (oldEnt->outbound->IsXrayFullConfig() && newEnt->outbound->IsXrayFullConfig()) {
                         newEnt->Custom()->routeExitTag = oldEnt->Custom()->routeExitTag;
+                        newEnt->Custom()->ignoreXrayRouting = oldEnt->Custom()->ignoreXrayRouting;
+                    }
                     oldEnt->outbound = newEnt->outbound;
                     // Still stamped with the temporary row's id; VPN credential overrides are keyed by it.
                     oldEnt->outbound->profile_id = oldId;

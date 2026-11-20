@@ -6766,8 +6766,16 @@ Close without saving?</source>
 <context>
     <name>EditCustom</name>
     <message>
-        <source>Routing rule exit</source>
-        <translation>路由规则出口</translation>
+        <source>Xray proxy exit</source>
+        <translation>Xray 代理出站</translation>
+    </message>
+    <message>
+        <source>Ignore built-in Xray routing rules</source>
+        <translation>忽略 Xray 内置路由规则</translation>
+    </message>
+    <message>
+        <source>When enabled, traffic from Throne uses the selected proxy exit. A Throne routing rule that selects this profile always uses that exit.</source>
+        <translation>启用后，来自 Throne 的流量会使用所选代理出站。如果 Throne 路由规则指定了此配置，该规则的流量始终使用此出站。</translation>
     </message>
     <message>
         <source>Automatic (single proxy)</source>
@@ -13608,6 +13616,18 @@ Windows 随后会忽略让 Throne 自身连接不进入 Tun 的适配器绑定�
 <context>
     <name>RouteItem</name>
     <message>
+        <source>About this option</source>
+        <translation>关于此选项</translation>
+    </message>
+    <message>
+        <source>Ignore built-in Xray routing rules</source>
+        <translation>忽略 Xray 内置路由规则</translation>
+    </message>
+    <message>
+        <source>Xray sends Throne traffic through the selected proxy, even if the JSON says direct.</source>
+        <translation>即使 JSON 规则指定直连，Xray 也会通过所选代理转发来自 Throne 的流量。</translation>
+    </message>
+    <message>
         <source>Routing Profile</source>
         <translation>路由配置档</translation>
     </message>
@@ -15292,8 +15312,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>此 Xray 配置没有可用于路由规则的代理出站。</translation>
     </message>
     <message>
-        <source>Choose a tagged proxy under Routing rule exit in the Xray profile editor. Untagged outbounds must be named before they can be selected.</source>
-        <translation>请在 Xray 配置编辑器的“路由规则出口”中选择带标签的代理。没有标签的出站需先命名。</translation>
+        <source>Choose a tagged proxy under Xray proxy exit in the profile editor. Untagged outbounds must be named before they can be selected.</source>
+        <translation>请在配置编辑器的“Xray 代理出站”中选择带标签的代理。没有标签的出站需先命名。</translation>
     </message>
     <message>
         <source>An Xray routing script cannot be combined with a Throne bridge rule.</source>

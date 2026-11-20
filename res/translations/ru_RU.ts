@@ -6820,8 +6820,16 @@ Close without saving?</source>
 <context>
     <name>EditCustom</name>
     <message>
-        <source>Routing rule exit</source>
-        <translation>Выход для правил маршрутизации</translation>
+        <source>Xray proxy exit</source>
+        <translation>Прокси-выход Xray</translation>
+    </message>
+    <message>
+        <source>Ignore built-in Xray routing rules</source>
+        <translation>Игнорировать встроенные правила маршрутизации Xray</translation>
+    </message>
+    <message>
+        <source>When enabled, traffic from Throne uses the selected proxy exit. A Throne routing rule that selects this profile always uses that exit.</source>
+        <translation>При включении трафик из Throne идёт через выбранный прокси-выход. Если профиль выбран в правиле маршрутизации Throne, для трафика этого правила прокси-выход используется независимо от галочки.</translation>
     </message>
     <message>
         <source>Automatic (single proxy)</source>
@@ -13668,6 +13676,18 @@ To fix this, share the hotspot from the throne-tun adapter instead of &quot;%1&q
 <context>
     <name>RouteItem</name>
     <message>
+        <source>About this option</source>
+        <translation>Об этой настройке</translation>
+    </message>
+    <message>
+        <source>Ignore built-in Xray routing rules</source>
+        <translation>Игнорировать встроенные правила маршрутизации Xray</translation>
+    </message>
+    <message>
+        <source>Xray sends Throne traffic through the selected proxy, even if the JSON says direct.</source>
+        <translation>Xray отправит трафик Throne через выбранный прокси, даже если в JSON указан direct.</translation>
+    </message>
+    <message>
         <source>Routing Profile</source>
         <translation>Профиль маршрутизации</translation>
     </message>
@@ -15384,8 +15404,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>В конфигурации Xray нет прокси-выхода для правил маршрутизации.</translation>
     </message>
     <message>
-        <source>Choose a tagged proxy under Routing rule exit in the Xray profile editor. Untagged outbounds must be named before they can be selected.</source>
-        <translation>Откройте профиль Xray и выберите «Выход для правил маршрутизации». Если у выхода нет тега, сначала задайте его в JSON.</translation>
+        <source>Choose a tagged proxy under Xray proxy exit in the profile editor. Untagged outbounds must be named before they can be selected.</source>
+        <translation>Выберите «Прокси-выход Xray» в редакторе профиля. Если у нужного выхода нет тега, сначала задайте его в JSON.</translation>
     </message>
     <message>
         <source>An Xray routing script cannot be combined with a Throne bridge rule.</source>

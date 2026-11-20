@@ -188,6 +188,7 @@ namespace Configs {
                 ctx.error = "Routing profile does not exist, try resetting the routing profile in Routing Settings";
                 return;
             }
+            ctx.ignoreXrayRouting = routeChain->ignoreXrayRouting;
             // A verbatim raw profile takes no twins, and an unreachable bridge still starts a tun.
             ctx.l3Bridge = l3BridgeEnabled(ctx) && !(routeChain->isRaw && routeChain->preventModifications);
 

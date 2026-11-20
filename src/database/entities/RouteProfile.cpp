@@ -189,6 +189,7 @@ namespace Configs {
             Rules.push_back(std::make_shared<RouteRule>(*item));
         }
         defaultOutboundID = other.defaultOutboundID;
+        ignoreXrayRouting = other.ignoreXrayRouting;
         isRaw = other.isRaw;
         rawRoute = other.rawRoute;
         preventModifications = other.preventModifications;
@@ -711,6 +712,7 @@ namespace Configs {
             return root;
         }
         root["default_outbound"] = outboundIDToString(defaultOutboundID);
+        if (ignoreXrayRouting) root["ignore_xray_routing"] = true;
         QSet<int> sharedEndpoints;
         for (const auto& entry: endpointsArr) {
             const QJsonObject obj = entry.toObject();
@@ -798,6 +800,7 @@ namespace Configs {
             profile->id = -1;
             profile->name = root.value("name").toString();
             const QString defaultOutbound = root.value("default_outbound").toString();
+            profile->ignoreXrayRouting = root.value("ignore_xray_routing").toBool();
             profile->defaultOutboundID = stringToOutboundID(defaultOutbound);
             if (!defaultOutbound.isEmpty() && outboundIDToString(profile->defaultOutboundID) != defaultOutbound) {
                 appendWarning(warnings, QCoreApplication::translate("Validation", "The default outbound \"%1\" is unknown, so proxy is used.").arg(defaultOutbound));
@@ -1095,6 +1098,7 @@ namespace Configs {
 
     bool RouteProfile::IsEmpty() {
         if (isRaw) return rawRoute.trimmed().isEmpty();
+        if (ignoreXrayRouting) return false;
         for (const auto& item: Rules) {
             if (!item->isEmpty()) return false;
         }

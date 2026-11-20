@@ -626,7 +626,7 @@ namespace Configs
         return stripXrayKeyLog(stream, at, issues);
     }
 
-    BuildResult XrayRuleConfig(QJsonObject config, const QString &selected, QStringList *choices) {
+    BuildResult PinXrayExit(QJsonObject config, const QString &selected, XrayExitUse use, QStringList *choices) {
         const auto invalid = [] {
             return BuildResult{{}, QCoreApplication::translate("Validation", "The Xray config has invalid or ambiguous outbound tags or routing fields.")};
         };
@@ -657,7 +657,7 @@ namespace Configs
         if (chosen < 0) {
             if (proxies.isEmpty())
                 return {{}, QCoreApplication::translate("Validation", "This Xray config has no proxy outbound for routing rules.")};
-            return {{}, QCoreApplication::translate("Validation", "Choose a tagged proxy under Routing rule exit in the Xray profile editor. Untagged outbounds must be named before they can be selected.")};
+            return {{}, QCoreApplication::translate("Validation", "Choose a tagged proxy under Xray proxy exit in the profile editor. Untagged outbounds must be named before they can be selected.")};
         }
         auto proxy = outs.at(chosen).toObject();
         auto tag = customValueNamed(proxy, "tag").toString();
@@ -670,9 +670,11 @@ namespace Configs
         }
         config.insert("outbounds", outs);
 
-        // Only the bridge accepts clients. Do not open the original listeners or apply process-wide options twice.
-        for (const auto *section : {"inbounds", "api", "metrics", "reverse", "env", "geodata"})
-            for (const auto &key : keysNamed(config, section)) config.remove(key);
+        if (use == XrayExitUse::RuleTarget) {
+            // A separate route target must not reopen listeners or apply process-wide options twice.
+            for (const auto *section : {"inbounds", "api", "metrics", "reverse", "env", "geodata"})
+                for (const auto &key : keysNamed(config, section)) config.remove(key);
+        }
         const auto routingKeys = keysNamed(config, "routing");
         if (routingKeys.size() > 1 || (!routingKeys.isEmpty() && !config.value(routingKeys.first()).isObject())) return invalid();
         auto routing = routingKeys.isEmpty() ? QJsonObject{} : config.take(routingKeys.first()).toObject();
@@ -800,7 +802,7 @@ namespace Configs
             const auto egress = firstXrayEgress(obj["outbounds"].toArray());
             if (!egress.isEmpty()) ob = xrayOutboundIdentity(egress);
         }
-        if (ob.isEmpty()) return ExportToJson();
+        if (ob.isEmpty()) return SubscriptionJson();
         return QJsonObject{{"subtype", type}, {"ob", ob}};
     }
 

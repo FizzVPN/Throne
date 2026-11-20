@@ -451,7 +451,7 @@ namespace Configs {
                 if (group && (group->front_proxy_id >= 0 || group->landing_proxy_id >= 0))
                     return QCoreApplication::translate("Validation", "An Xray full config used in a routing rule cannot have a group front or landing proxy.");
                 const auto *custom = ent->Custom();
-                const auto pinned = XrayRuleConfig(QString2QJsonObject(custom->config), custom->routeExitTag);
+                const auto pinned = PinXrayExit(QString2QJsonObject(custom->config), custom->routeExitTag, XrayExitUse::RuleTarget);
                 if (!pinned.error.isEmpty()) return pinned.error;
                 severity = Validation::Severity::Warning;
                 return QCoreApplication::translate("Validation", "This rule uses the proxy in %1. The profile's own routing rules do not apply to this traffic.").arg(name);

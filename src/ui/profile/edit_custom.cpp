@@ -6,6 +6,7 @@
 
 #include <QMessageBox>
 #include <QClipboard>
+#include <QSignalBlocker>
 
 EditCustom::EditCustom(QWidget *parent) : QWidget(parent), ui(new Ui::EditCustom) {
     ui->setupUi(this);
@@ -28,7 +29,8 @@ EditCustom::~EditCustom() {
 
 void EditCustom::refreshRouteExits(const QString &selected) {
     QStringList tags;
-    Configs::XrayRuleConfig(QString2QJsonObject(ui->config_simple->toPlainText()), selected, &tags);
+    Configs::PinXrayExit(QString2QJsonObject(ui->config_simple->toPlainText()), selected, Configs::XrayExitUse::Profile, &tags);
+    const QSignalBlocker block(ui->routeExit);
     ui->routeExit->clear();
     ui->routeExit->addItem(tr("Automatic (single proxy)"), QString());
     for (const auto &tag : tags) ui->routeExit->addItem(tag, tag);
@@ -85,8 +87,11 @@ void EditCustom::onStart(std::shared_ptr<Configs::Profile> _ent) {
     }
     const bool fullXray = preset_core == Configs::Custom::CustomXrayFullConfig;
     ui->w_ext1->setVisible(fullXray);
-    if (fullXray) refreshRouteExits(outbound->routeExitTag);
-    ui->w_ext2->hide();
+    ui->w_ext2->setVisible(fullXray);
+    if (fullXray) {
+        refreshRouteExits(outbound->routeExitTag);
+        ui->ignoreXrayRouting->setChecked(outbound->ignoreXrayRouting);
+    }
 }
 
 bool EditCustom::onEnd() {
@@ -99,8 +104,10 @@ bool EditCustom::onEnd() {
 
     outbound->config = ui->config_simple->toPlainText();
     outbound->type = preset_core;
-    if (preset_core == Configs::Custom::CustomXrayFullConfig)
+    if (preset_core == Configs::Custom::CustomXrayFullConfig) {
         outbound->routeExitTag = ui->routeExit->currentData().toString();
+        outbound->ignoreXrayRouting = ui->ignoreXrayRouting->isChecked();
+    }
 
     return true;
 }
@@ -111,6 +118,13 @@ void EditCustom::bindValidation(Validation::Form &form) {
     form.bind(ui->config_simple, [this](const QString &text) { return Configs::Checks::CustomConfig(preset_core, text); }, this)
         .raw()
         .label(tr("Config"));
+    if (preset_core == Configs::Custom::CustomXrayFullConfig) {
+        form.addRule({ui->routeExit, ui->ignoreXrayRouting, ui->config_simple}, [this]() -> QString {
+            if (!ui->ignoreXrayRouting->isChecked()) return {};
+            return Configs::PinXrayExit(QString2QJsonObject(ui->config_simple->toPlainText()),
+                                        ui->routeExit->currentData().toString(), Configs::XrayExitUse::Profile).error;
+        }, this, Validation::Severity::Error, ui->routeExitLabel->text());
+    }
 }
 
 void EditCustom::on_as_json_clicked() {

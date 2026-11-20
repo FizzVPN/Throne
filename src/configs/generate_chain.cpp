@@ -372,8 +372,9 @@ namespace Configs {
                     out.error = "Custom Xray full config is not valid JSON";
                     return out;
                 }
-                if (req.pinXrayRuleExit) {
-                    auto pinned = XrayRuleConfig(std::move(userXrayConfig), custom->routeExitTag);
+                if (req.pinXrayRuleExit || ctx.ignoreXrayRouting || custom->ignoreXrayRouting) {
+                    auto pinned = PinXrayExit(std::move(userXrayConfig), custom->routeExitTag,
+                                              req.pinXrayRuleExit ? XrayExitUse::RuleTarget : XrayExitUse::Profile);
                     if (!pinned.error.isEmpty()) {
                         out.error = custom->DisplayName() + ": " + pinned.error;
                         return out;

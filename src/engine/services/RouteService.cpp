@@ -412,6 +412,7 @@ namespace Engine::RouteService {
             std::optional<QString> rawRoute;
             std::optional<QString> remoteUrl;
             std::optional<bool> preventModifications;
+            std::optional<bool> ignoreXrayRouting;
             std::optional<bool> autoUpdate;
             std::optional<bool> customDns;
             std::optional<int> defaultOutbound;
@@ -421,6 +422,7 @@ namespace Engine::RouteService {
             if (auto error = routeServiceReadInt(body, QStringLiteral("default_outbound"), &defaultOutbound)) return error;
             if (auto error = routeServiceReadString(body, QStringLiteral("raw_route"), &rawRoute)) return error;
             if (auto error = routeServiceReadBool(body, QStringLiteral("prevent_modifications"), &preventModifications)) return error;
+            if (auto error = routeServiceReadBool(body, QStringLiteral("ignore_xray_routing"), &ignoreXrayRouting)) return error;
             if (auto error = routeServiceReadString(body, QStringLiteral("remote_url"), &remoteUrl)) return error;
             if (auto error = routeServiceReadBool(body, QStringLiteral("auto_update"), &autoUpdate)) return error;
             if (auto error = routeServiceReadBool(body, QStringLiteral("custom_dns"), &customDns)) return error;
@@ -434,6 +436,8 @@ namespace Engine::RouteService {
             if (preventModifications.value_or(false) && !raw) {
                 return routeServiceBad(QStringLiteral("\"prevent_modifications\" applies only to raw routing profiles"));
             }
+            if (ignoreXrayRouting.value_or(false) && raw)
+                return routeServiceBad(QStringLiteral("\"ignore_xray_routing\" applies only to structured routing profiles"));
             if (remoteUrl && !remote && !remoteUrl->isEmpty()) {
                 return routeServiceBad(QStringLiteral("\"remote_url\" applies only to remote routing profiles"));
             }
@@ -472,6 +476,7 @@ namespace Engine::RouteService {
 
             if (name) route.name = name->trimmed();
             if (defaultOutbound) route.defaultOutboundID = *defaultOutbound;
+            if (!raw && ignoreXrayRouting) route.ignoreXrayRouting = *ignoreXrayRouting;
             if (raw && rawRoute) {
                 // Stored the way the window's raw editor stores it; validation reports a text that is not an object.
                 const auto document = QJsonDocument::fromJson(rawRoute->toUtf8());
@@ -563,6 +568,7 @@ namespace Engine::RouteService {
         return {
             {"kind", kind},
             {"default_outbound", route.defaultOutboundID},
+            {"ignore_xray_routing", route.ignoreXrayRouting},
             {"rules", rules},
             {"simple", QJsonObject{
                 {"proxy", route.GetSimpleRules(Configs::proxy)},

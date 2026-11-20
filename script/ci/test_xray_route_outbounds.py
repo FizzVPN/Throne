@@ -87,6 +87,54 @@ def check(exe, root):
     with closing(sqlite3.connect(db)) as c:
         assert json.loads(c.execute("SELECT outbound_json FROM profiles WHERE id=13").fetchone()[0]) == us
 
+    # No rule references US1: only its local preference can pin the main instance.
+    with closing(sqlite3.connect(db)) as c, c:
+        c.execute("INSERT INTO route_profiles(id,name) VALUES(78,'Default only')")
+        c.execute("UPDATE settings SET value='78' WHERE key='current_route_id'")
+    for profile_on, route_on in ((False, False), (False, True), (True, True), (True, False), (False, False)):
+        with closing(sqlite3.connect(db)) as c, c:
+            c.execute("UPDATE route_profiles SET ignore_xray_routing=? WHERE id=78", (route_on,))
+        set_us(dict(us, ignore_xray_routing=profile_on))
+        dump()
+        for file in ("profile-13.json", "profile-13.tun.json", "profile-13.test.json"):
+            doc = read(file)
+            assert "error" not in doc, doc.get("error")
+            xray = doc["xray_full_configs"][0] if file.endswith(".test.json") else doc["xray"]
+            rules = xray["routing"]["rules"]
+            if profile_on or route_on:
+                pin, rest = rules
+                assert pin["inboundTag"] == ["throne-bridge"] and pin["outboundTag"] == "exit" and rest == original
+            else:
+                assert rules == [original]
+            if not file.endswith(".test.json"):
+                assert full["inbounds"][0] in xray["inbounds"]  # ordinary launches retain original listeners
+        with closing(sqlite3.connect(db)) as c:
+            stored = json.loads(c.execute("SELECT outbound_json FROM profiles WHERE id=13").fetchone()[0])
+            assert stored == dict(us, ignore_xray_routing=profile_on)
+    # Group routing overrides the global route, including for pre-connection tests.
+    with closing(sqlite3.connect(db)) as c, c:
+        c.execute("INSERT INTO route_profiles(id,name,ignore_xray_routing) VALUES(79,'Pinned',1)")
+        c.execute("UPDATE groups SET route_id=79 WHERE id=?", (group,))
+    dump()
+    for file in ("profile-13.json", "profile-13.tun.json", "profile-13.test.json"):
+        doc = read(file)
+        xray = doc["xray_full_configs"][0] if file.endswith(".test.json") else doc["xray"]
+        assert xray["routing"]["rules"][0]["outboundTag"] == "exit"
+    set_us(dict(us, route_exit_tag="missing"))
+    dump()
+    assert read("profile-13.json").get("error")
+    with closing(sqlite3.connect(db)) as c, c:
+        c.execute("UPDATE groups SET route_id=-1 WHERE id=?", (group,))
+    set_us(dict(nl, name="US1", ignore_xray_routing=True))
+    dump()
+    assert read("profile-13.json")["xray"]["routing"]["rules"][0]["outboundTag"] == "exit"
+    for invalid in ("", "missing", "direct"):
+        set_us(dict(us, ignore_xray_routing=True, route_exit_tag=invalid))
+        dump()
+        assert read("profile-13.json").get("error")
+    with closing(sqlite3.connect(db)) as c, c:
+        c.execute("UPDATE settings SET value=? WHERE key='current_route_id'", (str(route),))
+
     for bad in [dict(us, route_exit_tag=""), dict(us, route_exit_tag="missing"), dict(us, route_exit_tag="direct"),
                 dict(us, config=json.dumps(dict(full, outbounds=[direct, proxy("direct", 21003)]))),
                 dict(us, route_exit_tag="", config=json.dumps(dict(full, outbounds=[direct])))]:

@@ -217,6 +217,7 @@ namespace RouteUpdate {
                 return nullptr;
             }
             profile->customDns = false;
+            profile->ignoreXrayRouting = false;
             profile->dns.reset();
             profile->endpointProfileIDs.clear();
             profile->innerHopEndpointIDs.clear();

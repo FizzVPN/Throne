@@ -16,8 +16,9 @@ namespace Configs
 
         QString config;
         QString type;
-        // Local preference for using this profile as a routing rule target, not part of the Xray JSON.
+        // Local routing preferences, kept separate from the subscription's Xray JSON.
         QString routeExitTag;
+        bool ignoreXrayRouting = false;
 
         bool ParseFromJson(const QJsonObject &object) override {
             if (object.isEmpty()) return false;
@@ -25,16 +26,18 @@ namespace Configs
             if (object.contains("subtype")) type = object["subtype"].toString().trimmed();
             if (object.contains("config")) config = object["config"].toString();
             routeExitTag = object.value("route_exit_tag").toString();
+            ignoreXrayRouting = object.value("ignore_xray_routing").toBool();
             return true;
         }
 
+        QJsonObject SubscriptionJson() const {
+            return {{"name", name}, {"type", "custom"}, {"subtype", type}, {"config", config}};
+        }
+
         QJsonObject ExportToJson() override {
-            QJsonObject object;
-            object["name"] = name;
-            object["type"] = "custom";
-            object["subtype"] = type;
-            object["config"] = config;
+            auto object = SubscriptionJson();
             if (type == CustomXrayFullConfig && !routeExitTag.isEmpty()) object["route_exit_tag"] = routeExitTag;
+            if (type == CustomXrayFullConfig && ignoreXrayRouting) object["ignore_xray_routing"] = true;
             return object;
         }
 
@@ -125,8 +128,9 @@ namespace Configs
         }
     };
 
-    // Builds an isolated copy, or returns an error instead of falling back to Xray's first outbound.
-    BuildResult XrayRuleConfig(QJsonObject config, const QString &selected, QStringList *choices = nullptr);
+    enum class XrayExitUse { Profile, RuleTarget };
+    // Pins traffic from Throne's bridge without changing what other inbounds do.
+    BuildResult PinXrayExit(QJsonObject config, const QString &selected, XrayExitUse use, QStringList *choices = nullptr);
 
     namespace Checks {
         // Valid JSON (line and column on a syntax error) with what the subtype needs: a type, a protocol or an outbounds list.

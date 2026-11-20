@@ -65,6 +65,7 @@ namespace Configs {
         QString name = "";
         QList<std::shared_ptr<RouteRule>> Rules;
         int defaultOutboundID = proxyID;
+        bool ignoreXrayRouting = false;
 
         // rawRoute is a whole sing-box `route` JSON object; preventModifications uses it verbatim, otherwise Throne still injects its plumbing.
         bool isRaw = false;
