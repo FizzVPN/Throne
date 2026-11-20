@@ -28,7 +28,7 @@ env:
   THRONE_API_REF: ${{ vars.THRONE_API_REF || 'b5758e3ca341aab6d4124aedc4d04845ca1ab069' }}
 jobs:
   lint:
-    if: github.event_name != 'push' || github.event.created
+    if: github.event_name != 'push' || !github.event.deleted
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -42,7 +42,7 @@ jobs:
         run: bash ./script/release_notes.sh "$INPUT_VERSION" > /dev/null
   # Separate from lint so that its Qt download never holds up the builds: no job needs it.
   translations:
-    if: github.event_name != 'push' || github.event.created
+    if: github.event_name != 'push' || !github.event.deleted
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -61,7 +61,7 @@ jobs:
       - name: Checking translation coverage
         run: python3 -I script/check_translations.py --lupdate "$QT_ROOT_DIR/bin/lupdate"
   build-go:
-    if: github.event_name != 'push' || github.event.created
+    if: github.event_name != 'push' || !github.event.deleted
     permissions:
       contents: read
     strategy:
@@ -173,7 +173,7 @@ jobs:
           path: artifacts.tgz
           compression-level: 0
   build-android:
-    if: github.event_name != 'push' || github.event.created
+    if: github.event_name != 'push' || !github.event.deleted
     permissions:
       contents: read
     runs-on: ubuntu-22.04
@@ -1309,6 +1309,10 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - pack
+      - translations
+    concurrency:
+      group: throne-release-${{ inputs.tag || github.ref_name }}
+      cancel-in-progress: false
     permissions:
       contents: write
       actions: read
@@ -1344,13 +1348,24 @@ jobs:
             sed "s|{{TAG}}|$TAG|g; s|{{REPO}}|$REPO|g" .github/release_template.md
           } > "$RUNNER_TEMP/release.md"
       - name: Publish tagged release
-        if: github.event_name == 'push' && github.event.created
+        if: github.event_name == 'push' && !github.event.deleted
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
+          test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$INPUT_VERSION" --jq .sha)" = "$GITHUB_SHA"
           test -s "deployment/Throne-$INPUT_VERSION-windows64.zip"
-          gh release create "$INPUT_VERSION" deployment/* --repo "$GITHUB_REPOSITORY" --verify-tag \
-            --title "$INPUT_VERSION" --notes-file "$RUNNER_TEMP/release.md"
+          if gh release view "$INPUT_VERSION" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' > "$RUNNER_TEMP/old-assets"; then
+            # Do not start replacing downloads if any existing package is missing from the build.
+            while IFS= read -r asset; do
+              test -s "deployment/$asset" || { echo "::error::Missing release asset: $asset"; exit 1; }
+            done < "$RUNNER_TEMP/old-assets"
+            gh release upload "$INPUT_VERSION" deployment/* --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$INPUT_VERSION" --repo "$GITHUB_REPOSITORY" --notes-file "$RUNNER_TEMP/release.md"
+          else
+            gh release create "$INPUT_VERSION" deployment/* --repo "$GITHUB_REPOSITORY" --verify-tag \
+              --title "$INPUT_VERSION" --notes-file "$RUNNER_TEMP/release.md"
+          fi
       - name: PreRelease
         if: github.event.inputs.publish == 'p'
         run: |
