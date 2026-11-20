@@ -5957,8 +5957,8 @@ Close without saving?</source>
         <translation>Также преобразует адреса прокси-серверов в IP</translation>
     </message>
     <message>
-        <source>Add</source>
-        <translation>Добавить</translation>
+        <source>Add server</source>
+        <translation>Добавить сервер</translation>
     </message>
     <message>
         <source>Recent</source>
@@ -10516,6 +10516,10 @@ Error: %1</source>
         <translation>Скорость</translation>
     </message>
     <message>
+        <source>Services</source>
+        <translation>Сервисы</translation>
+    </message>
+    <message>
         <source>Sort by:</source>
         <translation>Сортировать по:</translation>
     </message>
@@ -11370,6 +11374,14 @@ Restart Throne as administrator to use Tun mode and the kill switch.</source>
     <message>
         <source>Download routing profile</source>
         <translation>Скачать профиль маршрутизации</translation>
+    </message>
+    <message>
+        <source>Choose profile:</source>
+        <translation>Выберите профиль:</translation>
+    </message>
+    <message>
+        <source>More</source>
+        <translation>Ещё</translation>
     </message>
     <message>
         <source>%1 (downloading)</source>
@@ -13868,8 +13880,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Продолжить редактирование</translation>
     </message>
     <message>
-        <source>Everything else goes to</source>
-        <translation>Остальной трафик:</translation>
+        <source>Final Exit</source>
+        <translation>Конечный выход</translation>
     </message>
     <message>
         <source>Remote profile</source>
@@ -13949,6 +13961,14 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Core</source>
         <translation>Ядро</translation>
+    </message>
+    <message>
+        <source>capabilities</source>
+        <translation>возможности</translation>
+    </message>
+    <message>
+        <source>Admin</source>
+        <translation>Администратор</translation>
     </message>
     <message>
         <source>Network</source>
@@ -18617,8 +18637,8 @@ Remove that endpoint from this routing profile as well?</source>
 <context>
     <name>RouteEditor</name>
     <message>
-        <source>Unnamed rule</source>
-        <translation>Правило без названия</translation>
+        <source>Protocol</source>
+        <translation>Протокол</translation>
     </message>
     <message>
         <source>Proxy</source>
@@ -19094,12 +19114,12 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Маршрут по умолчанию. Всегда последний, задается над списком.</translation>
     </message>
     <message>
-        <source>Set above the list, under Everything else goes to.</source>
-        <translation>Задается над списком, в поле «Остальной трафик».</translation>
-    </message>
-    <message>
         <source>Quick list</source>
         <translation>Быстрый список</translation>
+    </message>
+    <message>
+        <source>empty</source>
+        <translation>пусто</translation>
     </message>
     <message>
         <source>Off · %1</source>
@@ -19114,18 +19134,6 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Конечная точка</translation>
     </message>
     <message>
-        <source>#</source>
-        <translation>#</translation>
-    </message>
-    <message>
-        <source>Then</source>
-        <translation>Действие</translation>
-    </message>
-    <message>
-        <source>Rule</source>
-        <translation>Правило</translation>
-    </message>
-    <message>
         <source>Rules</source>
         <translation>Правила</translation>
     </message>
@@ -19133,12 +19141,16 @@ Remove that endpoint from this routing profile as well?</source>
 <context>
     <name>RouteRuleEditor</name>
     <message>
-        <source>Name</source>
-        <translation>Название</translation>
+        <source>Rule name</source>
+        <translation>Название правила</translation>
     </message>
     <message>
-        <source>When</source>
-        <translation>Условия</translation>
+        <source>AND</source>
+        <translation>И</translation>
+    </message>
+    <message>
+        <source>OR</source>
+        <translation>ИЛИ</translation>
     </message>
     <message>
         <source>+ Add condition</source>
@@ -19147,10 +19159,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Invert: match only what this rule would not match</source>
         <translation>Инвертировать: срабатывать только на то, что не подходит под условия</translation>
-    </message>
-    <message>
-        <source>Then</source>
-        <translation>Действие</translation>
     </message>
     <message>
         <source>Default</source>
@@ -19213,16 +19221,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>sing-box JSON</translation>
     </message>
     <message>
-        <source>Any of these</source>
-        <translation>Любое из условий</translation>
-    </message>
-    <message>
-        <source>Any of these values</source>
-        <translation>Любое из значений</translation>
-    </message>
-    <message>
-        <source>+ Add</source>
-        <translation>+ Добавить</translation>
+        <source>Add a value</source>
+        <translation>Добавить значение</translation>
     </message>
     <message>
         <source>Choose app</source>
@@ -19250,6 +19250,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Delete</source>
         <translation>Удалить</translation>
+    </message>
+    <message>
+        <source>Filter rules</source>
+        <translation>Фильтр правил</translation>
     </message>
     <message>
         <source>Filter by name, domain or app</source>

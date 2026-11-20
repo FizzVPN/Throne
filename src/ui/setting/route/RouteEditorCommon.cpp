@@ -175,14 +175,6 @@ namespace RouteEditor {
             std::rotate(begin + target.first, begin + source.first, begin + source.first + source.count);
     }
 
-    QString RowTitle(const Configs::RouteProfile& profile, const Row& row) {
-        if (row.kind == RowKind::QuickList) return ListName(row.list);
-        if (row.first < 0 || row.first >= profile.Rules.size()) return {};
-        const auto& rule = profile.Rules[row.first];
-        if (row.kind == RowKind::Endpoint) return ProfileName(rule->outboundID);
-        return rule->name.trimmed().isEmpty() ? tr("Unnamed rule") : rule->name;
-    }
-
     const QList<Configs::simpleAction>& QuickListOrder() {
         static const QList<Configs::simpleAction> order = {Configs::bypass, Configs::proxy, Configs::block, Configs::warpBypass};
         return order;
@@ -506,6 +498,11 @@ namespace RouteEditor {
         };
         const char* label = labels.value(attr, nullptr);
         return label != nullptr ? tr(label) : attr;
+    }
+
+    QString ShortConditionLabel(const QString& attr) {
+        if (attr == QLatin1String("protocol")) return tr("Protocol");
+        return ConditionLabel(attr);
     }
 
     QList<ConditionGroup> ConditionMenu() {

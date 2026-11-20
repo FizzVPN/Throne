@@ -15,8 +15,8 @@
   </property>
   <layout class="QVBoxLayout" name="mainLayout">
    <item>
-    <layout class="QGridLayout" name="headerGrid">
-     <item row="0" column="0">
+    <layout class="QHBoxLayout" name="headerRow" stretch="0,1,0,0,0">
+     <item>
       <widget class="QLabel" name="nameLabel">
        <property name="text">
         <string>Name</string>
@@ -26,77 +26,77 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
+     <item>
       <widget class="QLineEdit" name="nameEdit"/>
      </item>
-     <item row="1" column="0">
+     <item>
+      <spacer name="headerGap">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Policy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>10</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
       <widget class="QLabel" name="defaultLabel">
        <property name="text">
-        <string>Everything else goes to</string>
+        <string>Final Exit</string>
        </property>
        <property name="buddy">
         <cstring>defaultCombo</cstring>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <layout class="QHBoxLayout" name="defaultRow">
-       <item>
-        <widget class="QComboBox" name="defaultCombo"/>
-       </item>
-       <item>
-        <spacer name="defaultSpacer">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
+     <item>
+      <widget class="QComboBox" name="defaultCombo"/>
      </item>
-     <item row="2" column="1">
-      <layout class="QHBoxLayout" name="xrayRoutingRow">
-       <item>
-        <widget class="QCheckBox" name="ignoreXrayRoutingCheck">
-         <property name="text">
-          <string>Ignore built-in Xray routing rules</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QToolButton" name="xrayRoutingInfo">
-         <property name="accessibleName"><string>About this option</string></property>
-         <property name="focusPolicy"><enum>Qt::FocusPolicy::StrongFocus</enum></property>
-         <property name="autoRaise"><bool>true</bool></property>
-         <property name="checkable"><bool>true</bool></property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="xrayRoutingSpacer">
-         <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
-         <property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property>
-        </spacer>
-       </item>
-      </layout>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="xrayRoutingRow">
+     <item>
+      <spacer name="xrayRoutingSpacer">
+       <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>0</width><height>0</height></size></property>
+      </spacer>
      </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="xrayRoutingHelp">
+     <item>
+      <widget class="QCheckBox" name="ignoreXrayRoutingCheck">
        <property name="text">
-        <string>Xray sends Throne traffic through the selected proxy, even if the JSON says direct.</string>
-       </property>
-       <property name="textFormat"><enum>Qt::TextFormat::PlainText</enum></property>
-       <property name="wordWrap"><bool>true</bool></property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Ignored" vsizetype="Preferred"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy>
+        <string>Ignore built-in Xray routing rules</string>
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QToolButton" name="xrayRoutingInfo">
+       <property name="accessibleName"><string>About this option</string></property>
+       <property name="focusPolicy"><enum>Qt::FocusPolicy::StrongFocus</enum></property>
+       <property name="autoRaise"><bool>true</bool></property>
+       <property name="checkable"><bool>true</bool></property>
+      </widget>
+     </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="xrayRoutingHelp">
+     <property name="text">
+      <string>Xray sends Throne traffic through the selected proxy, even if the JSON says direct.</string>
+     </property>
+     <property name="textFormat"><enum>Qt::TextFormat::PlainText</enum></property>
+     <property name="wordWrap"><bool>true</bool></property>
+     <property name="alignment"><set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignVCenter</set></property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Ignored" vsizetype="Preferred"><horstretch>0</horstretch><verstretch>0</verstretch></sizepolicy>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QFrame" name="remoteBox">

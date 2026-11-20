@@ -482,8 +482,8 @@
         <translation>نشانی سرورهای پروکسی را هم حل می‌کند</translation>
     </message>
     <message>
-        <source>Add</source>
-        <translation>افزودن</translation>
+        <source>Add server</source>
+        <translation>افزودن سرور</translation>
     </message>
     <message>
         <source>Recent</source>
@@ -4822,6 +4822,10 @@ Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Services</source>
+        <translation>سرویس‌ها</translation>
+    </message>
+    <message>
         <source>Latency</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5350,6 +5354,14 @@ Error: %1</source>
         <translation>دانلود نمایهٔ مسیریابی</translation>
     </message>
     <message>
+        <source>Choose profile:</source>
+        <translation>انتخاب نمایه:</translation>
+    </message>
+    <message>
+        <source>More</source>
+        <translation>بیشتر</translation>
+    </message>
+    <message>
         <source>Update rule-sets</source>
         <translation>به‌روزرسانی مجموعه‌قوانین</translation>
     </message>
@@ -5873,8 +5885,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>ادامهٔ ویرایش</translation>
     </message>
     <message>
-        <source>Everything else goes to</source>
-        <translation>بقیهٔ ترافیک:</translation>
+        <source>Final Exit</source>
+        <translation>خروجی نهایی</translation>
     </message>
     <message>
         <source>Remote profile</source>
@@ -7595,6 +7607,14 @@ Remove that endpoint from this routing profile as well?</source>
         <source>Exit IP</source>
         <translation>IP خروجی</translation>
     </message>
+    <message>
+        <source>Admin</source>
+        <translation>سرپرست</translation>
+    </message>
+    <message>
+        <source>capabilities</source>
+        <translation>قابلیت‌ها</translation>
+    </message>
 </context>
 <context>
     <name>QGnomeTheme</name>
@@ -8573,8 +8593,8 @@ Remove that endpoint from this routing profile as well?</source>
 <context>
     <name>RouteEditor</name>
     <message>
-        <source>Unnamed rule</source>
-        <translation>قانون بی‌نام</translation>
+        <source>Protocol</source>
+        <translation>پروتکل</translation>
     </message>
     <message>
         <source>Proxy</source>
@@ -9048,12 +9068,12 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>مسیر پیش‌فرض. همیشه آخر است و بالای فهرست تنظیم می‌شود.</translation>
     </message>
     <message>
-        <source>Set above the list, under Everything else goes to.</source>
-        <translation>بالای فهرست، در «بقیهٔ ترافیک» تنظیم می‌شود.</translation>
-    </message>
-    <message>
         <source>Quick list</source>
         <translation>فهرست سریع</translation>
+    </message>
+    <message>
+        <source>empty</source>
+        <translation>خالی</translation>
     </message>
     <message>
         <source>Off · %1</source>
@@ -9068,18 +9088,6 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>نقطهٔ پایانی</translation>
     </message>
     <message>
-        <source>#</source>
-        <translation>#</translation>
-    </message>
-    <message>
-        <source>Then</source>
-        <translation>اقدام</translation>
-    </message>
-    <message>
-        <source>Rule</source>
-        <translation>قانون</translation>
-    </message>
-    <message>
         <source>Rules</source>
         <translation>قوانین</translation>
     </message>
@@ -9087,12 +9095,16 @@ Remove that endpoint from this routing profile as well?</source>
 <context>
     <name>RouteRuleEditor</name>
     <message>
-        <source>Name</source>
-        <translation>نام</translation>
+        <source>Rule name</source>
+        <translation>نام قانون</translation>
     </message>
     <message>
-        <source>When</source>
-        <translation>شرط‌ها</translation>
+        <source>AND</source>
+        <translation>و</translation>
+    </message>
+    <message>
+        <source>OR</source>
+        <translation>یا</translation>
     </message>
     <message>
         <source>+ Add condition</source>
@@ -9101,10 +9113,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Invert: match only what this rule would not match</source>
         <translation>وارونه: فقط چیزی را بگیرد که این قانون در حالت عادی نمی‌گیرد</translation>
-    </message>
-    <message>
-        <source>Then</source>
-        <translation>اقدام</translation>
     </message>
     <message>
         <source>Default</source>
@@ -9167,16 +9175,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>sing-box JSON</translation>
     </message>
     <message>
-        <source>Any of these</source>
-        <translation>هر کدام از این‌ها</translation>
-    </message>
-    <message>
-        <source>Any of these values</source>
-        <translation>هر کدام از این مقدارها</translation>
-    </message>
-    <message>
-        <source>+ Add</source>
-        <translation>+ افزودن</translation>
+        <source>Add a value</source>
+        <translation>افزودن مقدار</translation>
     </message>
     <message>
         <source>Choose app</source>
@@ -9204,6 +9204,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Delete</source>
         <translation>حذف</translation>
+    </message>
+    <message>
+        <source>Filter rules</source>
+        <translation>فیلتر قوانین</translation>
     </message>
     <message>
         <source>Filter by name, domain or app</source>
