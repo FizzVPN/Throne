@@ -1332,7 +1332,7 @@ jobs:
           path: deployment
           compression-level: 0
       - name: Installing ghr
-        if: github.event_name == 'workflow_dispatch'
+        if: inputs.publish == 'p'
         run: |
           curl -fLo - https://github.com/tcnksm/ghr/releases/download/v0.18.5/ghr_v0.18.5_linux_amd64.tar.gz | tar xzv
           mv ghr*linux_amd64/ghr .
@@ -1347,13 +1347,19 @@ jobs:
             echo
             sed "s|{{TAG}}|$TAG|g; s|{{REPO}}|$REPO|g" .github/release_template.md
           } > "$RUNNER_TEMP/release.md"
-      - name: Publish tagged release
-        if: github.event_name == 'push' && !github.event.deleted
+      - name: Publish stable release
+        if: (github.event_name == 'push' && !github.event.deleted) || inputs.publish == 'r'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$INPUT_VERSION" --jq .sha)" = "$GITHUB_SHA"
+          tag_ref=$(git ls-remote --refs origin "refs/tags/$INPUT_VERSION")
+          if [[ -n "$tag_ref" || "$GITHUB_EVENT_NAME" == push ]]; then
+            test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$INPUT_VERSION" --jq .sha)" = "$GITHUB_SHA"
+            tag_args=(--verify-tag)
+          else
+            tag_args=(--target "$GITHUB_SHA")
+          fi
           test -s "deployment/Throne-$INPUT_VERSION-windows64.zip"
           if gh release view "$INPUT_VERSION" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name' > "$RUNNER_TEMP/old-assets"; then
             # Do not start replacing downloads if any existing package is missing from the build.
@@ -1363,17 +1369,13 @@ jobs:
             gh release upload "$INPUT_VERSION" deployment/* --repo "$GITHUB_REPOSITORY" --clobber
             gh release edit "$INPUT_VERSION" --repo "$GITHUB_REPOSITORY" --notes-file "$RUNNER_TEMP/release.md"
           else
-            gh release create "$INPUT_VERSION" deployment/* --repo "$GITHUB_REPOSITORY" --verify-tag \
+            gh release create "$INPUT_VERSION" deployment/* --repo "$GITHUB_REPOSITORY" "${tag_args[@]}" \
               --title "$INPUT_VERSION" --notes-file "$RUNNER_TEMP/release.md"
           fi
       - name: PreRelease
         if: github.event.inputs.publish == 'p'
         run: |
           ./ghr -prerelease -delete -c ${{ github.sha }} -t "${{ github.token }}" -n "${{ github.event.inputs.tag }}" -b "$(cat "$RUNNER_TEMP/release.md")" "${{ github.event.inputs.tag }}" deployment
-      - name: Release
-        if: github.event.inputs.publish == 'r'
-        run: |
-          ./ghr -delete -c ${{ github.sha }} -t "${{ github.token }}" -n "${{ github.event.inputs.tag }}" -b "$(cat "$RUNNER_TEMP/release.md")" "${{ github.event.inputs.tag }}" deployment
   # Updates the AUR package after a stable release.
   publish-aur:
     name: Publish AUR Package
