@@ -129,6 +129,7 @@ namespace Configs
     };
 
     enum class XrayExitUse { Profile, RuleTarget };
+    void IsolateXrayRuleTarget(QJsonObject &config);
     // Pins traffic from Throne's bridge without changing what other inbounds do.
     BuildResult PinXrayExit(QJsonObject config, const QString &selected, XrayExitUse use, QStringList *choices = nullptr);
 

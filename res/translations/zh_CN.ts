@@ -6774,8 +6774,8 @@ Close without saving?</source>
         <translation>忽略 Xray 内置路由规则</translation>
     </message>
     <message>
-        <source>When enabled, traffic from Throne uses the selected proxy exit. A Throne routing rule that selects this profile always uses that exit.</source>
-        <translation>启用后，来自 Throne 的流量会使用所选代理出站。如果 Throne 路由规则指定了此配置，该规则的流量始终使用此出站。</translation>
+        <source>When enabled, traffic from Throne uses the selected proxy exit. This can also be enabled in a routing profile or an individual rule.</source>
+        <translation>启用后，Throne 流量将使用所选代理出站。也可以在路由配置或单条规则中启用此选项。</translation>
     </message>
     <message>
         <source>Automatic (single proxy)</source>
@@ -11539,6 +11539,10 @@ Error: %2</source>
 <context>
     <name>QObject</name>
     <message>
+        <source>A rule cannot override Xray routing through a Tor or WARP exit. Use the routing profile setting instead.</source>
+        <translation>使用 Tor 或 WARP 出口时，无法为单条规则覆盖 Xray 路由。请在整个路由配置中启用此设置。</translation>
+    </message>
+    <message>
         <source>Auto Selector</source>
         <translation>自动选择器</translation>
     </message>
@@ -13632,8 +13636,8 @@ Windows 随后会忽略让 Throne 自身连接不进入 Tun 的适配器绑定�
         <translation>关于此选项</translation>
     </message>
     <message>
-        <source>Ignore built-in Xray routing rules</source>
-        <translation>忽略 Xray 内置路由规则</translation>
+        <source>Ignore built-in Xray routing rules for the whole profile</source>
+        <translation>为整个配置忽略 Xray 内置路由规则</translation>
     </message>
     <message>
         <source>Xray sends Throne traffic through the selected proxy, even if the JSON says direct.</source>
@@ -15344,8 +15348,12 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>用于路由规则的完整 Xray 配置不能带有组的前置或落地代理。</translation>
     </message>
     <message>
-        <source>This rule uses the proxy in %1. The profile's own routing rules do not apply to this traffic.</source>
-        <translation>此规则使用 %1 中的代理。配置自身的路由规则不适用于这些流量。</translation>
+        <source>Traffic uses the selected proxy in %1, ignoring its built-in Xray routing rules.</source>
+        <translation>流量将通过 %1 中选定的代理，忽略其内置 Xray 路由规则。</translation>
+    </message>
+    <message>
+        <source>Traffic uses the routing rules from the Xray config %1.</source>
+        <translation>流量将按 Xray 配置 %1 的内置路由规则转发。</translation>
     </message>
     <message>
         <source>Add at least one profile to the chain.</source>
@@ -18888,6 +18896,10 @@ Remove that endpoint from this routing profile as well?</source>
 </context>
 <context>
     <name>RouteRuleEditor</name>
+    <message>
+        <source>Ignore built-in Xray routing rules for this rule</source>
+        <translation>为此规则忽略 Xray 内置路由规则</translation>
+    </message>
     <message>
         <source>Rule name</source>
         <translation>规则名称</translation>

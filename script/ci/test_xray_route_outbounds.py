@@ -44,6 +44,8 @@ def check(exe, root):
 
     with closing(sqlite3.connect(db)) as c, c:
         group = c.execute("SELECT MIN(id) FROM groups").fetchone()[0]
+        # Exercise migration of existing named-outbound rules, not just a fresh schema.
+        c.execute("ALTER TABLE route_rules DROP COLUMN ignore_xray_routing")
         route = 77
         c.execute("INSERT INTO route_profiles(id,name) VALUES(?,?)", (route, "Country routes"))
         c.execute("UPDATE settings SET value=? WHERE key='current_route_id'", (str(route),))
@@ -86,6 +88,48 @@ def check(exe, root):
         assert exits == {21001, 21003}
     with closing(sqlite3.connect(db)) as c:
         assert json.loads(c.execute("SELECT outbound_json FROM profiles WHERE id=13").fetchone()[0]) == us
+
+    # Two rules may select NL1 but disagree about its JSON routing. Pinning the
+    # active proxy for just one domain must not change the fallback for everything else.
+    with closing(sqlite3.connect(db)) as c, c:
+        c.execute("UPDATE route_rules SET ignore_xray_routing=0 WHERE route_profile_id=77 AND rule_order=2")
+        for order, domain, pin in [(4, "pinned.test", 1), (5, "native.test", 0)]:
+            c.execute("INSERT INTO route_rules(route_profile_id,rule_order,domain_json,outbound_id,ignore_xray_routing) "
+                      "VALUES (77,?,?,-1,?)", (order, json.dumps([domain]), pin))
+    for global_pin in (False, True):
+        with closing(sqlite3.connect(db)) as c, c:
+            c.execute("UPDATE route_profiles SET ignore_xray_routing=? WHERE id=77", (global_pin,))
+        dump()
+        for file in ("profile-12.json", "profile-12.tun.json"):
+            doc = read(file)
+            sb = doc["singbox"]
+            assert sb["route"]["final"] == "proxy"
+            tags = {d: r["outbound"] for r in sb["route"]["rules"] if "outbound" in r for d in r.get("domain", [])}
+            assert tags["native.test"] == "proxy"
+            assert tags["pinned.test"] == ("proxy" if global_pin else tags["google.com"])
+            assert (tags["google.com"] == tags["ipify.org"]) == global_pin
+            assert tags["netflix.com"] not in (tags["google.com"], tags["ipify.org"])
+            assert (doc["xray"]["routing"]["rules"] == [original]) != global_pin
+            sides = doc["xray_full_configs"]
+            assert len(sides) == (2 if global_pin else 3)
+            assert all([b["tag"] for b in s["inbounds"]] == ["throne-bridge"] for s in sides)
+            native = [s for s in sides if s["routing"]["rules"] == [original]]
+            if global_pin:
+                assert not native
+            else:
+                side, = native
+                exit_out, = [o for o in side["outbounds"] if o["tag"] == "exit"]
+                assert exit_out["settings"]["servers"][0]["port"] == 21001
+    with closing(sqlite3.connect(db)) as c, c:
+        c.execute("UPDATE route_profiles SET ignore_xray_routing=0 WHERE id=77")
+        c.execute("DELETE FROM route_rules WHERE route_profile_id=77 AND rule_order>=4")
+        c.execute("UPDATE route_rules SET ignore_xray_routing=0 WHERE route_profile_id=77 AND outbound_id=13")
+    set_us(dict(us, route_exit_tag=""))
+    dump()
+    assert "error" not in read("profile-11.json")  # An unpinned config needs no preferred exit.
+    with closing(sqlite3.connect(db)) as c, c:
+        c.execute("UPDATE route_rules SET ignore_xray_routing=-1 WHERE route_profile_id=77")
+    set_us(us)
 
     # No rule references US1: only its local preference can pin the main instance.
     with closing(sqlite3.connect(db)) as c, c:

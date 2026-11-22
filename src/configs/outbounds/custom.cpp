@@ -626,6 +626,12 @@ namespace Configs
         return stripXrayKeyLog(stream, at, issues);
     }
 
+    void IsolateXrayRuleTarget(QJsonObject &config) {
+        // A separate rule target must not reopen listeners or apply process-wide options twice.
+        for (const auto *section : {"inbounds", "api", "metrics", "reverse", "env", "geodata"})
+            for (const auto &key : keysNamed(config, section)) config.remove(key);
+    }
+
     BuildResult PinXrayExit(QJsonObject config, const QString &selected, XrayExitUse use, QStringList *choices) {
         const auto invalid = [] {
             return BuildResult{{}, QCoreApplication::translate("Validation", "The Xray config has invalid or ambiguous outbound tags or routing fields.")};
@@ -670,11 +676,7 @@ namespace Configs
         }
         config.insert("outbounds", outs);
 
-        if (use == XrayExitUse::RuleTarget) {
-            // A separate route target must not reopen listeners or apply process-wide options twice.
-            for (const auto *section : {"inbounds", "api", "metrics", "reverse", "env", "geodata"})
-                for (const auto &key : keysNamed(config, section)) config.remove(key);
-        }
+        if (use == XrayExitUse::RuleTarget) IsolateXrayRuleTarget(config);
         const auto routingKeys = keysNamed(config, "routing");
         if (routingKeys.size() > 1 || (!routingKeys.isEmpty() && !config.value(routingKeys.first()).isObject())) return invalid();
         auto routing = routingKeys.isEmpty() ? QJsonObject{} : config.take(routingKeys.first()).toObject();

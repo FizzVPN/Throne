@@ -209,6 +209,39 @@ namespace Configs {
             preReqs.routing.outboundMap[warpBypassID] = exitWrapperOn() ? tags::warpBypass : tags::proxy;
             int suffix = 0;
             if (proxyPathUsesXray(ctx.ent)) ctx.proxyUsesXray = true;
+            // Rules using the same profile and policy share a bridge. The default "proxy" keeps its own routing.
+            std::map<std::pair<int, bool>, QString> xrayExits;
+            for (int i = 0; !routeChain->isRaw && i < routeChain->Rules.size(); ++i) {
+                const auto &rule = *routeChain->Rules.at(i);
+                if (rule.disabled || rule.type != custom) continue;
+                const auto action = rule.effective_action();
+                if (action != "route" && action != "bypass") continue;
+                const bool mainProxy = rule.outboundID == proxyID;
+                if (rule.outboundID < 0 && !(mainProxy && rule.pinsXrayExit())) continue;
+                const auto target = mainProxy ? ctx.ent : getProfile(rule.outboundID);
+                if (!target || !isXrayFullConfig(target)) continue;
+                const bool inherited = ctx.ignoreXrayRouting || target->Custom()->ignoreXrayRouting;
+                if (mainProxy && inherited) continue;
+                const bool pin = inherited || rule.pinsXrayExit();
+                const auto key = std::make_pair(target->id, pin);
+                if (mainProxy && exitWrapperOn()) {
+                    ctx.error = QObject::tr("A rule cannot override Xray routing through a Tor or WARP exit. Use the routing profile setting instead.");
+                    return;
+                }
+                if (!xrayExits.contains(key)) {
+                    if (const auto group = dataManager->groupsRepo->GetGroup(target->gid);
+                        group && (group->landing_proxy_id >= 0 || group->front_proxy_id >= 0)) {
+                        ctx.error = QCoreApplication::translate("Validation", "An Xray full config used in a routing rule cannot have a group front or landing proxy.");
+                        return;
+                    }
+                    const auto tag = hopTag(tags::routeChainPrefix, suffix++);
+                    xrayExits.emplace(key, tag);
+                    preReqs.routing.outboundMap.try_emplace(target->id, tag);
+                    preReqs.routing.routeOutboundGroups.append({{target->id}, nullptr, target, pin});
+                    ctx.proxyUsesXray = true;
+                }
+                preReqs.routing.ruleExitTags.insert(i, xrayExits.at(key));
+            }
             for (const auto &item: *neededOutbounds) {
                 if (item < 0 || preReqs.routing.outboundMap.contains(item)) continue;
                 auto neededEnt = getProfile(item);
@@ -270,7 +303,7 @@ namespace Configs {
                     if (group->front_proxy_id >= 0) hopIDs.append(group->front_proxy_id);
                 }
                 preReqs.routing.outboundMap[item] = hopTag(tags::routeChainPrefix, suffix);
-                preReqs.routing.routeOutboundGroups << RoutingDeps::RouteOutboundGroup{hopIDs, neededEnt->type == "chain" ? neededEnt : nullptr, neededEnt};
+                preReqs.routing.routeOutboundGroups << RoutingDeps::RouteOutboundGroup{hopIDs, neededEnt->type == "chain" ? neededEnt : nullptr, neededEnt, isXrayFullConfig(neededEnt)};
                 suffix += static_cast<int>(hopIDs.size());
             }
 

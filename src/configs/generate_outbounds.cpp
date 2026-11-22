@@ -480,7 +480,7 @@ namespace Configs {
                     .startSuffix = routeSuffix,
                     .xrayFullConfigPort = separateXray ? fullPorts.takeFirst() : -1,
                     .soleXrayInbound = separateXray,
-                    .pinXrayRuleExit = separateXray,
+                    .pinXrayRuleExit = separateXray ? std::optional<bool>(routeGroup.pinXrayExit) : std::nullopt,
                 });
                 absorbChain(ctx, out);
                 if (!ctx.error.isEmpty()) return;

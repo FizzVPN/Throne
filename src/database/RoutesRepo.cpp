@@ -11,7 +11,7 @@ namespace Configs {
         // ruleFromRow reads this order: the hand-written columns, then the attribute table's in table order.
         const std::string& routesRepoRuleColumns() {
             static const std::string columns = [] {
-                std::string out = "name, type, outbound_id, action, sniffers_json, disabled";
+                std::string out = "name, type, outbound_id, action, sniffers_json, disabled, ignore_xray_routing";
                 for (const auto& attr : RouteRule::attribute_table()) {
                     if (attr.column != nullptr) out += std::string(", ") + attr.column;
                 }
@@ -22,7 +22,7 @@ namespace Configs {
 
         const std::string& routesRepoRuleInsert() {
             static const std::string sql = [] {
-                std::string values = "?, ?, ?, ?, ?, ?, ?, ?";
+                std::string values = "?, ?, ?, ?, ?, ?, ?, ?, ?";
                 for (const auto& attr : RouteRule::attribute_table()) {
                     if (attr.column != nullptr) values += ", ?";
                 }
@@ -140,6 +140,7 @@ namespace Configs {
                 tls_fragment_fallback_delay TEXT,
                 tls_record_fragment INTEGER NOT NULL DEFAULT 0,
                 disabled INTEGER NOT NULL DEFAULT 0,
+                ignore_xray_routing INTEGER NOT NULL DEFAULT -1,
                 PRIMARY KEY (route_profile_id, rule_order),
                 FOREIGN KEY(route_profile_id) REFERENCES route_profiles(id) ON DELETE CASCADE
             )
@@ -162,6 +163,8 @@ namespace Configs {
             db.exec("ALTER TABLE route_rules ADD COLUMN tls_record_fragment INTEGER NOT NULL DEFAULT 0");
         if (!routeRulesColumnExists("disabled"))
             db.exec("ALTER TABLE route_rules ADD COLUMN disabled INTEGER NOT NULL DEFAULT 0");
+        if (!routeRulesColumnExists("ignore_xray_routing"))
+            db.exec("ALTER TABLE route_rules ADD COLUMN ignore_xray_routing INTEGER NOT NULL DEFAULT -1");
     }
 
     bool RoutesRepo::routeRulesColumnExists(const char* columnName) const {
@@ -269,9 +272,10 @@ namespace Configs {
         for (const auto& rule : routeProfile->Rules) {
             const RouteRule& r = *rule;
             const auto insert = db.queryThrow(routesRepoRuleInsert(), id, ruleOrder++, r.name.toStdString(), r.type, r.outboundID,
-                                              r.action.toStdString(), routesRepoListJson(r.sniffers), r.disabled ? 1 : 0);
+                                              r.action.toStdString(), routesRepoListJson(r.sniffers), r.disabled ? 1 : 0,
+                                              r.ignoreXrayRouting ? int(*r.ignoreXrayRouting) : -1);
             // Bound here, as execThrow takes a fixed argument list.
-            int index = 8;
+            int index = 9;
             for (const auto& attr : RouteRule::attribute_table()) {
                 if (attr.column == nullptr) continue;
                 ++index;
@@ -294,6 +298,8 @@ namespace Configs {
         rule->sniffers = routesRepoParseList(stmt.getColumn(col++).getText());
         // The editor used to switch endpoint rules off by accident; they cannot be disabled.
         rule->disabled = stmt.getColumn(col++).getInt() != 0 && rule->type != endpointPreferredBy;
+        const int pin = stmt.getColumn(col++).getInt();
+        rule->ignoreXrayRouting = pin < 0 ? std::nullopt : std::optional<bool>(pin != 0);
         for (const auto& attr : RouteRule::attribute_table()) {
             if (attr.column == nullptr) continue;
             const SQLite::Column column = stmt.getColumn(col++);

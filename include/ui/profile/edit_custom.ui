@@ -91,7 +91,7 @@
       </item>
       <item>
        <widget class="QLabel" name="ignoreXrayRoutingHint">
-        <property name="text"><string>When enabled, traffic from Throne uses the selected proxy exit. A Throne routing rule that selects this profile always uses that exit.</string></property>
+        <property name="text"><string>When enabled, traffic from Throne uses the selected proxy exit. This can also be enabled in a routing profile or an individual rule.</string></property>
         <property name="wordWrap"><bool>true</bool></property>
        </widget>
       </item>

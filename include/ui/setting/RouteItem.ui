@@ -71,7 +71,7 @@
      <item>
       <widget class="QCheckBox" name="ignoreXrayRoutingCheck">
        <property name="text">
-        <string>Ignore built-in Xray routing rules</string>
+          <string>Ignore built-in Xray routing rules for the whole profile</string>
        </property>
       </widget>
      </item>

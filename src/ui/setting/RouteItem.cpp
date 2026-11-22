@@ -148,6 +148,7 @@ static QJsonObject routeItemRuleJson(Configs::RouteRule& rule) {
     obj["name"] = rule.name;
     obj["type"] = Configs::ruleTypeToToken(rule.type);
     obj["disabled"] = rule.disabled;
+    if (rule.ignoreXrayRouting) obj["ignore_xray_routing"] = *rule.ignoreXrayRouting;
     return obj;
 }
 
@@ -243,6 +244,11 @@ void RouteItem::setupHeader() {
     }
     setDefaultOutbound(chain->defaultOutboundID);
     ui->ignoreXrayRoutingCheck->setChecked(chain->ignoreXrayRouting);
+    connect(ui->ignoreXrayRoutingCheck, &QCheckBox::toggled, this, [this](bool on) {
+        chain->ignoreXrayRouting = on;
+        if (rulesPage) rulesPage->reload();
+        if (form) form->refresh();
+    });
 
     auto *info = ui->xrayRoutingInfo;
     auto *help = ui->xrayRoutingHelp;

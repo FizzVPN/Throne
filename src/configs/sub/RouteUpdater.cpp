@@ -224,6 +224,7 @@ namespace RouteUpdate {
             QList<std::shared_ptr<Configs::RouteRule>> kept;
             for (const auto& rule : profile->Rules) {
                 if (subscriptionSafeRule(*rule)) {
+                    rule->ignoreXrayRouting = false;
                     kept << rule;
                     ++*imported;
                 } else {

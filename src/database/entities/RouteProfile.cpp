@@ -289,7 +289,7 @@ namespace Configs {
     // name, type, outbound and disabled, plus exactly the keys RouteRule::set_field_value stores.
     static bool isStorableRuleKey(const QString& key) {
         static const QSet<QString> keys = {
-            "name", "type", "outbound", "disabled",
+            "name", "type", "outbound", "disabled", "ignore_xray_routing",
             "ip_version", "network", "protocol", "inbound", "domain", "domain_suffix", "domain_keyword", "domain_regex",
             "source_ip_cidr", "source_ip_is_private", "ip_cidr", "ip_is_private", "source_port", "source_port_range",
             "port", "port_range", "process_name", "process_path", "process_path_regex", "package_name",
@@ -372,10 +372,15 @@ namespace Configs {
         }
         auto rule = std::make_shared<RouteRule>();
         // The caller sets it too; validation needs it now, since simple rules have fixed actions.
+        rule->ignoreXrayRouting.reset(); // Older shared rules did not carry an explicit choice.
         rule->type = tokenToRuleType(obj.value("type").toString());
         for (const auto& key: obj.keys()) {
             if (key == "name" || key == "type") continue;
             auto val = obj.value(key);
+            if (key == "ignore_xray_routing") {
+                if (val.isBool()) rule->ignoreXrayRouting = val.toBool();
+                continue;
+            }
             if (key == "disabled") {
                 rule->disabled = val.toBool();
                 continue;
@@ -894,7 +899,8 @@ namespace Configs {
         return res;
     }
 
-    QJsonArray RouteProfile::get_route_rules(bool forView, std::map<int, QString> outboundMap, QList<int>* sourceIndexes) {
+    QJsonArray RouteProfile::get_route_rules(bool forView, std::map<int, QString> outboundMap, QList<int>* sourceIndexes,
+                                            const QHash<int, QString>& ruleExitTags) {
         QJsonArray res;
         if (sourceIndexes) sourceIndexes->clear();
         bool added_adblock = false;
@@ -910,7 +916,8 @@ namespace Configs {
             const auto &item = Rules.at(index);
             if (item->disabled || (item->type != custom && item->isEmpty())) continue;
             auto outboundTag = QString();
-            if (outboundMap.contains(item->outboundID)) outboundTag = outboundMap[item->outboundID];
+            if (const auto it = ruleExitTags.constFind(static_cast<int>(index)); it != ruleExitTags.cend()) outboundTag = it.value();
+            else if (outboundMap.contains(item->outboundID)) outboundTag = outboundMap[item->outboundID];
             // an endpoint that left the list has no tag to gate on; skip instead of aborting the build
             if (!forView && item->type == endpointPreferredBy && outboundTag.isEmpty()) {
                 MW_show_log("Skipping an endpoint rule whose endpoint is no longer in the routing profile");

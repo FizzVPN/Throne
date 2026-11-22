@@ -372,14 +372,16 @@ namespace Configs {
                     out.error = "Custom Xray full config is not valid JSON";
                     return out;
                 }
-                if (req.pinXrayRuleExit || ctx.ignoreXrayRouting || custom->ignoreXrayRouting) {
+                if (req.pinXrayRuleExit.value_or(false) || ctx.ignoreXrayRouting || custom->ignoreXrayRouting) {
                     auto pinned = PinXrayExit(std::move(userXrayConfig), custom->routeExitTag,
-                                              req.pinXrayRuleExit ? XrayExitUse::RuleTarget : XrayExitUse::Profile);
+                                              req.pinXrayRuleExit.has_value() ? XrayExitUse::RuleTarget : XrayExitUse::Profile);
                     if (!pinned.error.isEmpty()) {
                         out.error = custom->DisplayName() + ": " + pinned.error;
                         return out;
                     }
                     userXrayConfig = std::move(pinned.object);
+                } else if (req.pinXrayRuleExit.has_value()) {
+                    IsolateXrayRuleTarget(userXrayConfig);
                 }
                 // A pre-probed 0 means the caller's probe failed; re-probe rather than bake in a dead port.
                 BridgeEndpoint bridge{.port = req.xrayFullConfigPort};

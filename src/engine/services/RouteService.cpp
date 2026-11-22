@@ -170,12 +170,14 @@ namespace Engine::RouteService {
                 if (!always && routeServiceAtDefault(rule, attr)) continue;
                 attributes.insert(attr, routeServiceValue(rule, attr));
             }
-            return {
+            QJsonObject json{
                 {"type", Configs::ruleTypeToToken(rule.type)},
                 {"name", rule.name},
                 {"disabled", rule.disabled},
                 {"attributes", attributes},
             };
+            if (rule.type == Configs::custom && rule.ignoreXrayRouting) json["ignore_xray_routing"] = *rule.ignoreXrayRouting;
+            return json;
         }
 
         std::optional<QString> routeServiceScalarText(const QJsonValue &value) {
@@ -230,9 +232,11 @@ namespace Engine::RouteService {
             std::optional<QString> token;
             std::optional<QString> name;
             std::optional<bool> disabled;
+            std::optional<bool> ignoreXray;
             if (auto error = routeServiceReadString(object, QStringLiteral("type"), &token)) return bad(error->message);
             if (auto error = routeServiceReadString(object, QStringLiteral("name"), &name)) return bad(error->message);
             if (auto error = routeServiceReadBool(object, QStringLiteral("disabled"), &disabled)) return bad(error->message);
+            if (auto error = routeServiceReadBool(object, QStringLiteral("ignore_xray_routing"), &ignoreXray)) return bad(error->message);
             const int type = Configs::tokenToRuleType(token.value_or(QStringLiteral("custom")));
             if (Configs::ruleTypeToToken(type) != token.value_or(QStringLiteral("custom"))) {
                 return bad(QStringLiteral("unknown type \"%1\"").arg(*token));
@@ -266,6 +270,7 @@ namespace Engine::RouteService {
                 }
             }
             if (disabled && type != Configs::endpointPreferredBy) rule->disabled = *disabled;
+            if (type == Configs::custom) rule->ignoreXrayRouting = ignoreXray;
             *out = rule;
             return std::nullopt;
         }
@@ -524,7 +529,7 @@ namespace Engine::RouteService {
             if (!route.isRemote && route.IsEmpty()) problems->append(QStringLiteral("rules: No valid rules are in the profile"));
             for (qsizetype i = 0; i < route.Rules.size(); ++i) {
                 const auto &rule = *route.Rules[i];
-                for (const auto &issue : rule.validate()) {
+                for (const auto &issue : rule.validate(route.ignoreXrayRouting)) {
                     (issue.severity == Validation::Severity::Error ? *problems : *warnings) << routeServiceIssueLine(i + 1, rule, issue);
                 }
             }

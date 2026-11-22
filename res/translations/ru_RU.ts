@@ -6828,8 +6828,8 @@ Close without saving?</source>
         <translation>Игнорировать встроенные правила маршрутизации Xray</translation>
     </message>
     <message>
-        <source>When enabled, traffic from Throne uses the selected proxy exit. A Throne routing rule that selects this profile always uses that exit.</source>
-        <translation>При включении трафик из Throne идёт через выбранный прокси-выход. Если профиль выбран в правиле маршрутизации Throne, для трафика этого правила прокси-выход используется независимо от галочки.</translation>
+        <source>When enabled, traffic from Throne uses the selected proxy exit. This can also be enabled in a routing profile or an individual rule.</source>
+        <translation>При включении трафик Throne идёт через выбранный прокси. Эту настройку также можно включить в профиле маршрутизации или для отдельного правила.</translation>
     </message>
     <message>
         <source>Automatic (single proxy)</source>
@@ -11566,6 +11566,10 @@ Error: %2</source>
 <context>
     <name>QObject</name>
     <message>
+        <source>A rule cannot override Xray routing through a Tor or WARP exit. Use the routing profile setting instead.</source>
+        <translation>Правило не может переопределить маршрутизацию Xray при выходе через Tor или WARP. Включите эту настройку для всего профиля маршрутизации.</translation>
+    </message>
+    <message>
         <source>The selected TLS version is not supported on this system.</source>
         <translation>Выбранная версия TLS не поддерживается в этой системе.</translation>
     </message>
@@ -13692,8 +13696,8 @@ To fix this, share the hotspot from the throne-tun adapter instead of &quot;%1&q
         <translation>Об этой настройке</translation>
     </message>
     <message>
-        <source>Ignore built-in Xray routing rules</source>
-        <translation>Игнорировать встроенные правила маршрутизации Xray</translation>
+        <source>Ignore built-in Xray routing rules for the whole profile</source>
+        <translation>Игнорировать встроенные правила маршрутизации Xray для всего профиля</translation>
     </message>
     <message>
         <source>Xray sends Throne traffic through the selected proxy, even if the JSON says direct.</source>
@@ -15436,8 +15440,12 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Полную конфигурацию Xray можно использовать в правиле только без входного и выходного прокси группы.</translation>
     </message>
     <message>
-        <source>This rule uses the proxy in %1. The profile's own routing rules do not apply to this traffic.</source>
-        <translation>Для этого правила используется прокси профиля «%1». Внутренние правила маршрутизации профиля к этому трафику не применяются.</translation>
+        <source>Traffic uses the selected proxy in %1, ignoring its built-in Xray routing rules.</source>
+        <translation>Трафик пойдёт через выбранный прокси профиля «%1», без учёта встроенных правил Xray.</translation>
+    </message>
+    <message>
+        <source>Traffic uses the routing rules from the Xray config %1.</source>
+        <translation>Трафик пойдёт по встроенным правилам маршрутизации профиля Xray «%1».</translation>
     </message>
     <message>
         <source>Add at least one profile to the chain.</source>
@@ -19140,6 +19148,10 @@ Remove that endpoint from this routing profile as well?</source>
 </context>
 <context>
     <name>RouteRuleEditor</name>
+    <message>
+        <source>Ignore built-in Xray routing rules for this rule</source>
+        <translation>Игнорировать встроенные правила маршрутизации Xray для этого правила</translation>
+    </message>
     <message>
         <source>Rule name</source>
         <translation>Название правила</translation>
