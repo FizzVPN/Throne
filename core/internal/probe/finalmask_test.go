@@ -33,11 +33,24 @@ func (b probeTestBox) Context() context.Context          { return b.ctx }
 func (b probeTestBox) Outbound() adapter.OutboundManager { return b.OutboundManager }
 
 type probeTestManager struct{ adapter.OutboundManager }
-type probeTestOutbound struct{ adapter.Outbound }
+type probeTestOutbound struct {
+	adapter.Outbound
+	kind string
+	deps []string
+}
 
-func (probeTestManager) Outbound(string) (adapter.Outbound, bool) { return probeTestOutbound{}, true }
-func (probeTestOutbound) Type() string                            { return C.TypeSOCKS }
-func (probeTestOutbound) Dependencies() []string                  { return nil }
+func (probeTestManager) Outbound(tag string) (adapter.Outbound, bool) {
+	switch tag {
+	case "tor-chain":
+		return probeTestOutbound{kind: C.TypeTor, deps: []string{"chain"}}, true
+	case "psiphon":
+		return probeTestOutbound{kind: C.TypePsiphon}, true
+	default:
+		return probeTestOutbound{kind: C.TypeSOCKS}, true
+	}
+}
+func (o probeTestOutbound) Type() string           { return o.kind }
+func (o probeTestOutbound) Dependencies() []string { return o.deps }
 
 func TestFinalMaskProbeTimeout(t *testing.T) {
 	var options option.Options
@@ -78,6 +91,7 @@ func TestFinalMaskProbeTimeout(t *testing.T) {
 		{"plain", 3, 3, 3}, {"chain", 3, 10, 10}, {"chain", 15, 15, 15},
 		{"xdns", 3, 40, 10}, {"full", 3, 40, 10}, {"download", 3, 40, 10},
 		{"remote", 5, 5, 5}, {"wrong-layer", 5, 5, 5},
+		{"tor-chain", 3, 100, 10}, {"psiphon", 3, 63, 3},
 	} {
 		first, regular := requestTimeouts(box, tc.tag, false, tc.set*time.Second)
 		if first != tc.first*time.Second || regular != tc.regular*time.Second {

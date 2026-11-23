@@ -351,7 +351,6 @@ void MainWindow::applySettingsUi(quint32 effects) {
         rebuildLogView();
     }
     if (has(Schema::UiLogFont)) applyLogBrowserFont();
-    if (has(Schema::UiMode)) applyUiMode();
     if (has(Schema::UiTray)) tray->setVisible(!settings->disable_tray);
     if (has(Schema::UiProfileList)) {
         if (auto group = Configs::dataManager->groupsRepo->CurrentGroup();
@@ -360,7 +359,7 @@ void MainWindow::applySettingsUi(quint32 effects) {
         // Both settings feed the security a Type sort reads.
         for (const int gid : Configs::dataManager->groupsRepo->GetAllGroupIds()) {
             const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
-            if (group != nullptr && ProfilesTableModel::columnOfSort(group->sort.method) == ProfilesTableModel::ColType) {
+            if (group != nullptr && ProfilesTableModel::columnOfSort(*group) == ProfilesTableModel::ColType) {
                 Configs::ResortLater(gid);
             }
         }

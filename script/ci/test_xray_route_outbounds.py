@@ -30,9 +30,10 @@ def check(exe, root):
         c.execute("CREATE TABLE settings(key TEXT PRIMARY KEY, value TEXT NOT NULL)")
     dump()
     direct = {"protocol": "freedom", "tag": "direct"}
-    original = {"type": "field", "domain": ["full:ipify.org"], "outboundTag": "direct"}
+    listener_rule = {"type": "field", "inboundTag": ["user-in"], "domain": ["full:ipify.org"], "outboundTag": "direct"}
+    original = dict(listener_rule, inboundTag=["user-in", "throne-bridge"])
     full = {"inbounds": [{"listen": "127.0.0.1", "port": 10080, "protocol": "socks", "tag": "user-in"}],
-            "routing": {"rules": [original]}}
+            "routing": {"rules": [listener_rule]}}
     nl = {"type": "custom", "subtype": "xrayfullconfig", "name": "NL1",
           "config": json.dumps(dict(full, outbounds=[direct, proxy("exit", 21001)]))}
     us = dict(nl, name="US1", route_exit_tag="exit",

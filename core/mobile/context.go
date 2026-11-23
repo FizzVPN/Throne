@@ -41,16 +41,25 @@ func newBoxContext(platform PlatformInterface, platformInterface adapter.Platfor
 	ctx = filemanager.WithDefault(ctx, sWorkingPath, sTempPath, os.Getuid(), os.Getgid())
 	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry(), dnsRegistry, include.ServiceRegistry(), include.CertificateProviderRegistry())
 	ctx = service.ContextWith[deprecated.Manager](ctx, deprecated.NewStderrManager(log.StdLogger()))
+	ctx = withPsiphonServerList(ctx)
 	if platformInterface != nil {
 		ctx = service.ContextWith[adapter.PlatformInterface](ctx, platformInterface)
 	}
 	return ctx
 }
 
+// Every box goes through here, like boxmain.Create on the desktop.
 func parseConfig(ctx context.Context, configContent string) (option.Options, error) {
 	options, err := json.UnmarshalExtendedContext[option.Options](ctx, []byte(configContent))
 	if err != nil {
 		return option.Options{}, E.Cause(err, "decode config")
+	}
+	// Otherwise sing-box serves pprof on debug.listen and applies the config's GC and memory limits to this whole process.
+	if options.Experimental != nil {
+		options.Experimental.Debug = nil
+	}
+	if err = pinPsiphon(&options); err != nil {
+		return option.Options{}, err
 	}
 	return options, nil
 }

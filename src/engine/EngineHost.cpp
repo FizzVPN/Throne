@@ -26,6 +26,7 @@
 #include "include/engine/services/Dashboard.h"
 #include "include/engine/services/ProfileService.h"
 #include "include/engine/services/StatsService.h"
+#include "include/engine/services/TorBridges.h"
 #include "include/engine/supervisor/CoreSupervisor.h"
 #include "include/engine/tests/TestObserver.h"
 #include "include/engine/tests/TestRunner.h"
@@ -57,6 +58,10 @@ namespace Engine {
 
         void geoAssetDownloadFinished(const QString &error) override {
             target(__func__)->geoAssetDownloadFinished(error);
+        }
+
+        void confirmTorDownload(const QString &profileName, std::function<void(bool download)> answered) override {
+            target(__func__)->confirmTorDownload(profileName, std::move(answered));
         }
 
         void killSwitchProblem() override {
@@ -159,8 +164,8 @@ namespace Engine {
     public:
         void bind(TestObserver *observer) { m_target.store(observer); }
 
-        void testPanelSeeded(TestKind kind, int totalProfiles) override {
-            if (auto *target = m_target.load()) target->testPanelSeeded(kind, totalProfiles);
+        void testPanelSeeded(TestKind kind, int totalProfiles, const QList<int> &profileIds) override {
+            if (auto *target = m_target.load()) target->testPanelSeeded(kind, totalProfiles, profileIds);
         }
 
         void testProgressed() override {
@@ -217,6 +222,7 @@ namespace Engine {
         Subscription::updater();
         EngineEvents::instance();
         AssetUpdates::SetUnattendedFetch(options.geoAutoDownload);
+        TorBridges::Install();
         auto *created = new EngineHost(options);
         engineHostInstance = created;
         created->construct();
@@ -441,9 +447,9 @@ namespace Engine {
         return m_connection->chooseRoute(routeId, interactive, serial);
     }
 
-    int EngineHost::clearTestResults(const QList<int> &profileIds) {
+    int EngineHost::clearTestResults(const QList<int> &profileIds, std::optional<TestKind> kind) {
         QList<int> gids;
-        const int n = ProfileService::ClearTestResults(profileIds, &gids);
+        const int n = ProfileService::ClearTestResults(profileIds, &gids, kind);
         if (n > 0) emit testResultsCleared(gids);
         return n;
     }

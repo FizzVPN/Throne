@@ -91,39 +91,6 @@
             </item>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="ui_mode_l">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Simple hides the advanced options.</string>
-            </property>
-            <property name="text">
-             <string>Interface</string>
-            </property>
-            <property name="buddy">
-             <cstring>ui_mode</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="ui_mode">
-            <item>
-             <property name="text">
-              <string>Simple</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Advanced</string>
-             </property>
-            </item>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
@@ -223,9 +190,6 @@
           </item>
           <item row="3" column="0" colspan="2">
            <widget class="QCheckBox" name="net_insecure">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Ignore TLS errors in Throne's own requests</string>
             </property>
@@ -236,9 +200,6 @@
        </item>
        <item>
         <widget class="QGroupBox" name="url_scheme_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="title">
           <string>Links and Files</string>
          </property>
@@ -355,9 +316,6 @@
       <layout class="QVBoxLayout" name="verticalLayout_appearance">
        <item>
         <widget class="QGroupBox" name="theme_box">
-         <property name="uiFoldInto" stdset="0">
-          <string notr="true">tab_general</string>
-         </property>
          <property name="title">
           <string>Theme</string>
          </property>
@@ -388,9 +346,6 @@
            <layout class="QHBoxLayout" name="horizontalLayout_custom_icon">
             <item>
              <widget class="QCheckBox" name="enable_custom_icon">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="text">
                <string>Enable custom icons</string>
               </property>
@@ -398,9 +353,6 @@
             </item>
             <item>
              <widget class="QPushButton" name="select_custom_icon">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="text">
                <string>Select</string>
               </property>
@@ -423,9 +375,6 @@
           </item>
           <item row="2" column="0" colspan="2">
            <widget class="QCheckBox" name="follow_status_in_taskbar">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>Show the connection status icon in the dock or taskbar.</string>
             </property>
@@ -439,9 +388,6 @@
        </item>
        <item>
         <widget class="QGroupBox" name="font_box">
-         <property name="uiFoldInto" stdset="0">
-          <string notr="true">tab_general</string>
-         </property>
          <property name="title">
           <string>Font</string>
          </property>
@@ -475,9 +421,6 @@
        </item>
        <item>
         <widget class="QGroupBox" name="profile_list_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="title">
           <string>Profile List</string>
          </property>
@@ -529,9 +472,6 @@
          <layout class="QGridLayout" name="gridLayout_9">
           <item row="0" column="0">
            <widget class="QLabel" name="label">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Listen Address</string>
             </property>
@@ -539,9 +479,6 @@
           </item>
           <item row="0" column="1">
            <widget class="QLineEdit" name="inbound_address">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
            </widget>
           </item>
           <item row="1" column="0">
@@ -568,9 +505,6 @@
             </item>
             <item>
              <widget class="QCheckBox" name="random_listen_port">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selects a random available port on every run&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
@@ -583,9 +517,6 @@
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="proxy_scheme_l">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Proxy Format</string>
             </property>
@@ -593,9 +524,6 @@
           </item>
           <item row="2" column="1">
            <widget class="QComboBox" name="proxy_scheme">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <item>
              <property name="text">
               <string notr="true">{ip}:{port}</string>
@@ -615,9 +543,6 @@
           </item>
           <item row="3" column="0" colspan="2">
            <widget class="QCheckBox" name="disable_mixed_inbound">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Disable mixed inbound</string>
             </property>
@@ -625,9 +550,6 @@
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_11">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Custom Inbound</string>
             </property>
@@ -637,9 +559,6 @@
            <layout class="QHBoxLayout" name="horizontalLayout_custom_inbound">
             <item>
              <widget class="QPushButton" name="custom_inbound_edit">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="text">
                <string>Edit</string>
               </property>
@@ -662,9 +581,6 @@
           </item>
           <item row="5" column="0" colspan="2">
            <widget class="QCheckBox" name="reset_proxy_on_disable_sp">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Restart proxy when the system proxy is turned off</string>
             </property>
@@ -675,18 +591,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="auth_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="title">
           <string>Authentication</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_auth">
           <item row="0" column="0" colspan="2">
            <widget class="QCheckBox" name="inbound_auth">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Enable authorization</string>
             </property>
@@ -694,9 +604,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="inbound_user_l">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Inbound Username</string>
             </property>
@@ -704,16 +611,10 @@
           </item>
           <item row="1" column="1">
            <widget class="QLineEdit" name="inbound_user">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
            </widget>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="inbound_pass_l">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Inbound Password</string>
             </property>
@@ -721,9 +622,6 @@
           </item>
           <item row="2" column="1">
            <widget class="QLineEdit" name="inbound_pass">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
            </widget>
           </item>
          </layout>
@@ -731,9 +629,6 @@
        </item>
        <item>
         <widget class="QGroupBox" name="dns_server_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="title">
           <string>Local DNS Server</string>
          </property>
@@ -786,9 +681,6 @@
       <layout class="QVBoxLayout" name="verticalLayout_testing">
        <item>
         <widget class="QGroupBox" name="latency_box">
-         <property name="uiFoldInto" stdset="0">
-          <string notr="true">tab_connection</string>
-         </property>
          <property name="title">
           <string>Latency</string>
          </property>
@@ -805,9 +697,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_14">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Concurrency</string>
             </property>
@@ -817,16 +706,10 @@
            <layout class="QHBoxLayout" name="horizontalLayout_url_test" stretch="1,0,1">
             <item>
              <widget class="QLineEdit" name="test_concurrent">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
              </widget>
             </item>
             <item>
              <widget class="QLabel" name="label_22">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="toolTip">
                <string>URL test timeout in ms; multiplexed profiles need more time.</string>
               </property>
@@ -837,18 +720,12 @@
             </item>
             <item>
              <widget class="QLineEdit" name="url_timeout">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
              </widget>
             </item>
            </layout>
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="label_direct_test_url">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>Fetched without proxy to check internet access. Empty: OS network state.</string>
             </property>
@@ -859,9 +736,6 @@
           </item>
           <item row="2" column="1">
            <widget class="QLineEdit" name="direct_test_url">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="placeholderText">
              <string>optional — use the OS network state</string>
             </property>
@@ -872,18 +746,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="speedtest_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="title">
           <string>Speed Test</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_speedtest">
           <item row="0" column="0">
            <widget class="QLabel" name="label_12">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Speed test mode</string>
             </property>
@@ -893,9 +761,6 @@
            <layout class="QHBoxLayout" name="horizontalLayout_speedtest" stretch="1,0,1">
             <item>
              <widget class="QComboBox" name="speedtest_mode">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <item>
                <property name="text">
                 <string>Download + upload</string>
@@ -920,9 +785,6 @@
             </item>
             <item>
              <widget class="QLabel" name="label_19">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="toolTip">
                <string>Timeout for each speed test, in milliseconds.</string>
               </property>
@@ -933,18 +795,12 @@
             </item>
             <item>
              <widget class="QLineEdit" name="test_timeout">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
              </widget>
             </item>
            </layout>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_16">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Simple Download URL</string>
             </property>
@@ -952,9 +808,6 @@
           </item>
           <item row="1" column="1">
            <widget class="QLineEdit" name="simple_down_url">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
            </widget>
           </item>
          </layout>
@@ -962,9 +815,6 @@
        </item>
        <item>
         <widget class="QGroupBox" name="exit_country_box">
-         <property name="uiFoldInto" stdset="0">
-          <string notr="true">tab_connection</string>
-         </property>
          <property name="title">
           <string>Exit Country</string>
          </property>
@@ -981,9 +831,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_exit_lookup_provider">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Lookup service</string>
             </property>
@@ -994,9 +841,6 @@
           </item>
           <item row="1" column="1">
            <widget class="QComboBox" name="exit_lookup_provider">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
            </widget>
           </item>
          </layout>
@@ -1004,9 +848,6 @@
        </item>
        <item>
         <widget class="QGroupBox" name="service_check_box">
-         <property name="uiFoldInto" stdset="0">
-          <string notr="true">tab_connection</string>
-         </property>
          <property name="title">
           <string>Service Check</string>
          </property>
@@ -1075,9 +916,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="sub_respect_server_interval">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>Use the update interval a subscription server sends, if any.</string>
             </property>
@@ -1104,9 +942,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="sub_show_change_popup">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>List the added, updated and deleted profiles after a manual update.</string>
             </property>
@@ -1117,9 +952,6 @@
           </item>
           <item row="2" column="0">
            <widget class="QCheckBox" name="allow_stopping_active_profile">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>Let subscription updates stop the running profile to remove or update it.</string>
             </property>
@@ -1133,18 +965,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="sub_request_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="title">
           <string>Requests</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_sub_request">
           <item row="0" column="0">
            <widget class="QLabel" name="label_4">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>User Agent</string>
             </property>
@@ -1152,16 +978,10 @@
           </item>
           <item row="0" column="1">
            <widget class="MyLineEdit" name="user_agent">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
            </widget>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="sub_tls_version_l">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>TLS versions offered when fetching; TLS 1.2 often gets past blocks.</string>
             </property>
@@ -1174,9 +994,6 @@
            <layout class="QHBoxLayout" name="horizontalLayout_sub_versions" stretch="1,0,1">
             <item>
              <widget class="QComboBox" name="sub_tls_version">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <item>
                <property name="text">
                 <string>Auto</string>
@@ -1196,9 +1013,6 @@
             </item>
             <item>
              <widget class="QLabel" name="sub_http_version_l">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="toolTip">
                <string>Auto uses HTTP/2 when the server offers it.</string>
               </property>
@@ -1209,9 +1023,6 @@
             </item>
             <item>
              <widget class="QComboBox" name="sub_http_version">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <item>
                <property name="text">
                 <string>Auto</string>
@@ -1228,9 +1039,6 @@
           </item>
           <item row="2" column="0" colspan="2">
            <widget class="QCheckBox" name="sub_send_hwid">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;HWID=%1&lt;/p&gt;&lt;p&gt;OS=%2&lt;/p&gt;&lt;p&gt;OS Version=%3&lt;/p&gt;&lt;p&gt;Model=%4&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -1241,9 +1049,6 @@
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_custom_hwid_params">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>Overrides, e.g. hwid=value,os=value,model=value. Empty: defaults.</string>
             </property>
@@ -1254,9 +1059,6 @@
           </item>
           <item row="3" column="1">
            <widget class="QLineEdit" name="sub_custom_hwid_params">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="placeholderText">
              <string>hwid=custom_value,os=custom_os,osVersion=custom_version,model=custom_model</string>
             </property>
@@ -1281,9 +1083,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="tab_core">
-      <property name="uiLevel" stdset="0">
-       <string notr="true">advanced</string>
-      </property>
       <attribute name="title">
        <string>Core</string>
       </attribute>
@@ -1326,9 +1125,6 @@
        </item>
        <item>
         <widget class="QGroupBox" name="ntp_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="toolTip">
           <string>Settings for sing-box's built-in NTP client.</string>
          </property>
@@ -1582,9 +1378,6 @@
       </layout>
      </widget>
      <widget class="QWidget" name="tab_logs">
-      <property name="uiLevel" stdset="0">
-       <string notr="true">advanced</string>
-      </property>
       <attribute name="title">
        <string>Logs</string>
       </attribute>
@@ -1614,9 +1407,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_log_font">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Font</string>
             </property>
@@ -1626,9 +1416,6 @@
            <layout class="QHBoxLayout" name="horizontalLayout_log_font" stretch="1,0,0">
             <item>
              <widget class="QFontComboBox" name="log_font_family">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="fontFilters">
                <set>QFontComboBox::FontFilter::MonospacedFonts</set>
               </property>
@@ -1639,9 +1426,6 @@
             </item>
             <item>
              <widget class="QLabel" name="label_log_font_size">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
               <property name="text">
                <string>Font size</string>
               </property>
@@ -1649,9 +1433,6 @@
             </item>
             <item>
              <widget class="QComboBox" name="log_font_size">
-              <property name="uiLevel" stdset="0">
-               <string notr="true">advanced</string>
-              </property>
              </widget>
             </item>
            </layout>
@@ -1798,9 +1579,6 @@
       <layout class="QVBoxLayout" name="verticalLayout_security">
        <item>
         <widget class="QGroupBox" name="protection_box">
-         <property name="uiFoldInto" stdset="0">
-          <string notr="true">tab_connection</string>
-         </property>
          <property name="title">
           <string>Protection</string>
          </property>
@@ -1820,18 +1598,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="cert_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="title">
           <string>Certificates</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_cert">
           <item row="0" column="0">
            <widget class="QCheckBox" name="mozilla_cert">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Use Mozilla certificate store</string>
             </property>
@@ -1839,9 +1611,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="xray_use_system_ca">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>Let Xray also trust the root certificates installed in the system.</string>
             </property>
@@ -1852,9 +1621,6 @@
           </item>
           <item row="2" column="0">
            <widget class="QCheckBox" name="skip_cert">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Skip TLS certificate authentication by default (allowInsecure)</string>
             </property>
@@ -1865,18 +1631,12 @@
        </item>
        <item>
         <widget class="QGroupBox" name="priv_box">
-         <property name="uiLevel" stdset="0">
-          <string notr="true">advanced</string>
-         </property>
          <property name="title">
           <string>Privileges</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_priv">
           <item row="0" column="0">
            <widget class="QCheckBox" name="disable_priv_req">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="text">
              <string>Disable privilege request</string>
             </property>
@@ -1884,9 +1644,6 @@
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="windows_no_admin">
-            <property name="uiLevel" stdset="0">
-             <string notr="true">advanced</string>
-            </property>
             <property name="toolTip">
              <string>Never start as administrator unless you ask for it.</string>
             </property>

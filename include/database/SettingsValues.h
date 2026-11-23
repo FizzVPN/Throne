@@ -116,8 +116,6 @@ namespace Configs {
         bool follow_status_in_taskbar = true;
         bool skip_delete_confirmation = false;
         bool show_config_security = false;
-        // UI only: config generation never reads it.
-        bool simple_mode = false;
         // -1 until a filter column has been used.
         int last_filter_column = -1;
 
@@ -257,10 +255,12 @@ namespace Configs {
         QString ntp_interval = "";
         QString ntp_outbound = "direct"; // "direct" or "proxy"
 
+        // Exit
+        QString exit_through = "server"; // Configs::ExitThrough: "server", "warp", "tor" or "psiphon"; others read as "server"
+        QString tor_exit_country = ""; // Lowercase ISO 3166-1 alpha-2 for the Tor exit's last relay; "" = any
+        QString psiphon_egress_region = ""; // Uppercase ISO 3166-1 alpha-2 for the Psiphon exit's server; "" = best performance
+
         // Warp
-        bool enable_warp = false;
-        // Outranks enable_warp; the two are kept mutually exclusive.
-        bool enable_tor = false;
         QString warp_private_key = "";
         QString warp_public_key = "";
         QStringList warp_ifc_addrs = {};

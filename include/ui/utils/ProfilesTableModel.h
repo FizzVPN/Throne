@@ -3,6 +3,7 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QHash>
+#include <QSet>
 #include <QColor>
 #include <memory>
 
@@ -10,6 +11,7 @@
 
 namespace Configs {
     class Profile;
+    class Group;
 }
 
 class ProfilesTableModel : public QAbstractTableModel {
@@ -18,21 +20,36 @@ public:
     // ServiceItemsRole: the test column's QList<ServiceIcons::Item>.
     enum { ProfileIdRole = Qt::UserRole, PinnedRole, ServiceItemsRole };
 
+    // Persisted as bits in Group::visible_columns; append new columns without renumbering these.
     enum Column {
         ColType = 0,
         ColAddress,
         ColName,
-        ColTestResult,
+        ColLatency,
+        ColExitIP,
+        ColSpeed,
         ColTraffic,
         ColumnCount,
     };
 
-    // One service check result; names and words are lowercase.
+    // One service check result; names, words and region are lowercase.
     struct ServiceFilterKey {
         QStringList names;  // check id and name, category id and name
         QStringList words;
+        QString region;     // country code the service reported, empty when unknown
         int state = 0;      // 1 available or partial, -1 restricted or blocked, 0 inconclusive
     };
+
+    // Two letters could be a country code, so they only pick a service by its exact id or category ("ai").
+    template <typename Names, typename Words>
+    static bool termPicksService(const Names &names, const Words &words, const QString &term) {
+        if (names.contains(term)) return true;
+        if (term.size() < 3) return false;
+        for (const auto &word : words) {
+            if (word.startsWith(term)) return true;
+        }
+        return false;
+    }
 
     struct FilterKey {
         QString type;
@@ -64,9 +81,6 @@ public:
     // Re-resolves the Address column after IP lists or group endpoints change.
     void invalidateAddresses();
 
-    // `to` is the row's index after the move.
-    void moveProfile(int from, int to, int pinnedCount);
-
     int indexOfProfile(int id);
 
     bool isStartedRow(int sourceRow) const;
@@ -83,8 +97,10 @@ public:
     // Null if the profile could not be loaded; valid until the next model change.
     const FilterKey *filterKeyAt(int row) const;
 
+    bool termPicksAnyService(const QString &term) const;
+
     // -1 for a method no column shows.
-    static int columnOfSort(GroupSortMethod::GroupSortMethod method);
+    static int columnOfSort(const Configs::Group &group);
 
     // Raw for a column that does not sort.
     static GroupSortMethod::GroupSortMethod sortOfColumn(int column);
@@ -98,6 +114,7 @@ private:
     void setProfileIds(const QList<int> &ids, int pinnedCount);
     void setPinnedCount(int count);
     void ensureFilterIndex() const;
+    void insertFilterKey(int profileId, FilterKey key) const;
 
     QList<int> m_profileIds;
     int m_pinnedCount = 0;
@@ -109,5 +126,7 @@ private:
     mutable QHash<int, QString> m_addressCache;
 
     mutable QHash<int, FilterKey> m_filterKeys;
+    mutable QSet<QString> m_serviceNames;
+    mutable QSet<QString> m_serviceWords;
     mutable bool m_filterIndexBuilt = false;
 };

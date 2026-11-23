@@ -471,7 +471,7 @@ private:
     // Keeps the current group sorted by `action` from now on.
     void sortCurrentGroup(GroupSortAction action);
 
-    void stopSortingCurrentGroup();
+    void restoreOriginalOrder();
 
     void refresh_proxy_list_impl(const QList<int> &ids = {}, bool mayNeedReset = false);
 
@@ -543,10 +543,6 @@ private:
     void showCommandPalette();
 
     void revealSetting(const SettingsIndex::Item &item);
-
-    void applyUiMode();
-
-    void setSimpleMode(bool simple);
 
     // Takes or frees the one-settings-dialog slot (dialog_is_using) and lets an open command palette catch up.
     void setDialogInUse(bool inUse);
@@ -622,6 +618,8 @@ private:
 
     void geoAssetDownloadFinished(const QString &error) override;
 
+    void confirmTorDownload(const QString &profileName, std::function<void(bool download)> answered) override;
+
     void killSwitchProblem() override;
 
     void killSwitchProblemResolved() override;
@@ -665,7 +663,7 @@ private:
     void exitProgram(ExitReason reason, bool unattended) override;
 
     // TestObserver, in mainwindow_view.cpp; synchronous, so a panel seed never lands after the next session's clear.
-    void testPanelSeeded(Engine::TestKind kind, int totalProfiles) override;
+    void testPanelSeeded(Engine::TestKind kind, int totalProfiles, const QList<int> &profileIds) override;
 
     void testProgressed() override;
 

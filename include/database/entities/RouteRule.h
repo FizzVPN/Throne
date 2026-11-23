@@ -127,6 +127,8 @@ namespace Configs {
         // Unset preserves existing rules: an explicitly named Xray exit was always pinned.
         std::optional<bool> ignoreXrayRouting = false;
         bool pinsXrayExit() const { return ignoreXrayRouting.value_or(outboundID >= 0); }
+        // Came from the profile's remote source, so the next update replaces it. Local state, never shared.
+        bool remote = false;
         QString ip_version;
         QString network;
         QString protocol;

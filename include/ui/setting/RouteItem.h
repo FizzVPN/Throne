@@ -15,7 +15,6 @@ class QCheckBox;
 class QCloseEvent;
 class QKeyEvent;
 class QLabel;
-class QuickListsView;
 class RouteDnsEditor;
 class RouteRulesPage;
 
@@ -60,9 +59,7 @@ private:
 
     Validation::Form* form = nullptr;
 
-    // Advanced mode shows every rule, Simple mode only the quick lists; exactly one of them exists.
     RouteRulesPage* rulesPage = nullptr;
-    QuickListsView* quickListsView = nullptr;
 
     RouteDnsEditor* dnsEditor = nullptr;
 

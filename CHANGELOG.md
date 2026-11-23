@@ -8,7 +8,7 @@
 * Keep Xray's DNS resolver for Mux connections and stop VLESS preconnections when a profile test ends.
 * Give Xray test connections using finalmask at least 10 seconds. XHTTP download legs using xdns also get time to start their DNS tunnel.
 * Use a five-second default for profile tests without changing saved timeouts, and add Yandex DoH to the direct DNS presets.
-* Start in advanced mode on new installs and switch existing installs once. You can still switch back to simple mode.
+* Use one interface for both new and existing installs. Simple mode has been removed.
 
 #### 1.4.2
 

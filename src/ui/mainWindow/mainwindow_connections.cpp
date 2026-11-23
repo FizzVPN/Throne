@@ -105,7 +105,7 @@ namespace
             const auto group = Configs::dataManager->groupsRepo->GetGroup(groupID);
             if (!group) continue;
             const QString shortGroup = ShortDisplayName(group->name, 20);
-            for (const int profileID : group->profiles)
+            for (const int profileID : group->DisplayedProfiles())
                 if (const auto it = names.constFind(profileID); it != names.cend())
                     servers << RoutableServer{profileID, "[" + shortGroup + "] " + it.value(), "[" + group->name + "] " + it.value()};
         }
@@ -586,7 +586,7 @@ void MainWindow::onConnectionContextMenu(const QPoint& pos)
         { Configs::proxy,      tr("Proxy") },
         { Configs::block,      tr("Block") },
         // Not offered from here, but a target already sitting in its list still has to show up as taken.
-        { Configs::warpBypass, tr("Proxy without WARP"), false },
+        { Configs::warpBypass, tr("Proxy without exit"), false },
     };
 
     // Looked up once per menu: the dialog asks for a server's name on every refresh.

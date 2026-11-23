@@ -357,7 +357,7 @@ func awaitTunnels(ctx context.Context, i Box, tag string) error {
 	return nil
 }
 
-// A DNS tunnel opens its session on the first dial whether or not the request is a warm-up.
+// A DNS tunnel opens its session on the first dial whether or not the request is a warm-up; Tor and Psiphon start then too.
 func requestTimeouts(i Box, tag string, cold bool, timeout time.Duration) (first, regular time.Duration) {
 	regular, startup := routeProbeTimeout(i, tag, timeout)
 	first = regular + startup
