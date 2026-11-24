@@ -41,10 +41,10 @@ type probeTestOutbound struct {
 
 func (probeTestManager) Outbound(tag string) (adapter.Outbound, bool) {
 	switch tag {
-	case "tor-chain":
-		return probeTestOutbound{kind: C.TypeTor, deps: []string{"chain"}}, true
-	case "psiphon":
-		return probeTestOutbound{kind: C.TypePsiphon}, true
+	case "dnstt-chain":
+		return probeTestOutbound{kind: C.TypeDNSTT, deps: []string{"chain"}}, true
+	case "masterdns":
+		return probeTestOutbound{kind: C.TypeMasterDNS}, true
 	default:
 		return probeTestOutbound{kind: C.TypeSOCKS}, true
 	}
@@ -91,7 +91,7 @@ func TestFinalMaskProbeTimeout(t *testing.T) {
 		{"plain", 3, 3, 3}, {"chain", 3, 10, 10}, {"chain", 15, 15, 15},
 		{"xdns", 3, 40, 10}, {"full", 3, 40, 10}, {"download", 3, 40, 10},
 		{"remote", 5, 5, 5}, {"wrong-layer", 5, 5, 5},
-		{"tor-chain", 3, 100, 10}, {"psiphon", 3, 63, 3},
+		{"dnstt-chain", 3, 40, 10}, {"masterdns", 3, 93, 3},
 	} {
 		first, regular := requestTimeouts(box, tc.tag, false, tc.set*time.Second)
 		if first != tc.first*time.Second || regular != tc.regular*time.Second {

@@ -250,7 +250,6 @@ func (i *Instance) Start() error {
 	i.resetAccess.Lock()
 	i.resetNetworkKey = defaultNetworkKey(i.handle.Network())
 	i.resetAccess.Unlock()
-	warmProxyChain(i.outbounds)
 	return nil
 }
 

@@ -16,14 +16,11 @@ import (
 	"github.com/xtls/xray-core/infra/conf"
 )
 
-// Matches the GUI's StartupAllowanceMs: a DNS tunnel opens its session over many slow queries, Tor bootstraps
-// its circuits and Psiphon searches its server list before the first stream gets through.
+// Matches the GUI's DnsTunnelStartupAllowanceMs: a DNS tunnel opens its session over many slow queries.
 const (
 	DNSTunnelStartupTimeout = 30 * time.Second
 	MasterDNSStartupTimeout = 90 * time.Second
 	finalMaskMinTimeout     = 10 * time.Second
-	TorStartupTimeout       = 90 * time.Second
-	PsiphonStartupTimeout   = 60 * time.Second
 )
 
 type xrayProbeRoute struct {
@@ -229,10 +226,6 @@ func routeProbeTimeout(i Box, tag string, timeout time.Duration) (regular, start
 			allowance += DNSTunnelStartupTimeout
 		case C.TypeMasterDNS:
 			allowance += MasterDNSStartupTimeout
-		case C.TypeTor:
-			allowance += TorStartupTimeout
-		case C.TypePsiphon:
-			allowance += PsiphonStartupTimeout
 		}
 		route := routes[tag]
 		if route.masked {
