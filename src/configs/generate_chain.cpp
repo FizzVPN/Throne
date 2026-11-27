@@ -375,16 +375,15 @@ namespace Configs {
                 }
                 // A rule sidecar drops the original listeners; map their tags before isolating it.
                 RouteXrayListenerRulesViaBridge(userXrayConfig);
-                if (req.pinXrayRuleExit.value_or(false) || ctx.ignoreXrayRouting || custom->ignoreXrayRouting) {
-                    auto pinned = PinXrayExit(std::move(userXrayConfig), custom->routeExitTag,
-                                              req.pinXrayRuleExit.has_value() ? XrayExitUse::RuleTarget : XrayExitUse::Profile);
+                const auto use = req.fullXrayUse;
+                if (use == FullXrayUse::Rule || use == FullXrayUse::PinnedRule) IsolateXrayRuleTarget(userXrayConfig);
+                if (use == FullXrayUse::PinnedRule || ctx.ignoreXrayRouting || custom->ignoreXrayRouting) {
+                    auto pinned = PinXrayExit(std::move(userXrayConfig), custom->routeExitTag);
                     if (!pinned.error.isEmpty()) {
                         out.error = custom->DisplayName() + ": " + pinned.error;
                         return out;
                     }
                     userXrayConfig = std::move(pinned.object);
-                } else if (req.pinXrayRuleExit.has_value()) {
-                    IsolateXrayRuleTarget(userXrayConfig);
                 }
                 // A pre-probed 0 means the caller's probe failed; re-probe rather than bake in a dead port.
                 BridgeEndpoint bridge{.port = req.xrayFullConfigPort};
@@ -403,8 +402,7 @@ namespace Configs {
                     {"destOverride", QJsonArray{"http", "tls", "quic"}},
                     {"routeOnly", false}
                 };
-                auto inbounds = (!ctx.policy.listeners || req.soleXrayInbound) ? QJsonArray()
-                                                                               : userXrayConfig["inbounds"].toArray();
+                auto inbounds = ctx.policy.listeners && use == FullXrayUse::Profile ? userXrayConfig["inbounds"].toArray() : QJsonArray{};
                 inbounds.prepend(bridgeInbound);
                 userXrayConfig["inbounds"] = inbounds;
                 if (dataManager->settingsRepo->xray_use_system_ca) {

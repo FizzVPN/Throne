@@ -100,9 +100,10 @@ if [[ "$GOOS" == "darwin" ]]; then
   done
 fi
 VERSION_SINGBOX=$(go list -m -f '{{.Version}}' github.com/sagernet/sing-box)
+BUILD_FLAGS=()
 if $IS_LEGACY; then
   legacy_modfile
-  export THRONE_XRAY_MODFILE="$LEGACY_WORK/go.mod"
+  BUILD_FLAGS=(-modfile="$LEGACY_WORK/go.mod")
 fi
-bash patches/with-xray-mux.sh "$GOCMD" build -v -o "$DEST" -trimpath -ldflags "-w -s -X 'github.com/sagernet/sing-box/constant.Version=${VERSION_SINGBOX}' -X 'internal/godebug.defaultGODEBUG=multipathtcp=0' -checklinkname=0" -tags "$TAGS"
+"$GOCMD" build -v "${BUILD_FLAGS[@]}" -o "$DEST" -trimpath -ldflags "-w -s -X 'github.com/sagernet/sing-box/constant.Version=${VERSION_SINGBOX}' -X 'internal/godebug.defaultGODEBUG=multipathtcp=0' -checklinkname=0" -tags "$TAGS"
 popd

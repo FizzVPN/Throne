@@ -244,6 +244,7 @@ namespace Configs {
         };
 
         enum class GenerateServerless { None, Missing, NoServer, Realm };
+        enum class FullXrayUse { Profile, SelectorMember, Rule, PinnedRule };
 
         struct ChainBuildRequest {
             QList<int> hopIDs;
@@ -255,10 +256,7 @@ namespace Configs {
             int singToXrayPort = -1;
             int xrayToSingPort = -1;
             int xrayFullConfigPort = -1;
-            // Sibling configs from one subscription repeat these ports and would fail to bind.
-            bool soleXrayInbound = false;
-            // A rule sidecar is isolated in both modes; nullopt is a normal profile/selector start.
-            std::optional<bool> pinXrayRuleExit;
+            FullXrayUse fullXrayUse = FullXrayUse::Profile;
             bool warpWrap = false;
             bool auxiliary = false;
             QSet<QString> addressableTags;

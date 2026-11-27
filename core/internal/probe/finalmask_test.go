@@ -63,6 +63,9 @@ func TestFinalMaskProbeTimeout(t *testing.T) {
 		}
 		options.Outbounds = append(options.Outbounds, option.Outbound{Type: C.TypeSOCKS, Tag: tag, Options: socks})
 	}
+	alias := new(option.SOCKSOutboundOptions)
+	alias.Server, alias.ServerPort = "::ffff:127.0.0.1", 2002
+	options.Outbounds = append(options.Outbounds, option.Outbound{Type: C.TypeSOCKS, Tag: "xdns-alias", Options: alias})
 	const generated = `{
 		"inbounds":[{"tag":"a","protocol":"socks","listen":"127.0.0.1","port":2000},
 			{"tag":"b","protocol":"socks","listen":"127.0.0.1","port":2001},
@@ -89,7 +92,7 @@ func TestFinalMaskProbeTimeout(t *testing.T) {
 		set, first, regular time.Duration
 	}{
 		{"plain", 3, 3, 3}, {"chain", 3, 10, 10}, {"chain", 15, 15, 15},
-		{"xdns", 3, 40, 10}, {"full", 3, 40, 10}, {"download", 3, 40, 10},
+		{"xdns", 3, 40, 10}, {"xdns-alias", 3, 40, 10}, {"full", 3, 40, 10}, {"download", 3, 40, 10},
 		{"remote", 5, 5, 5}, {"wrong-layer", 5, 5, 5},
 		{"dnstt-chain", 3, 40, 10}, {"masterdns", 3, 93, 3},
 	} {

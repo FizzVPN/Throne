@@ -29,7 +29,7 @@ EditCustom::~EditCustom() {
 
 void EditCustom::refreshRouteExits(const QString &selected) {
     QStringList tags;
-    Configs::PinXrayExit(QString2QJsonObject(ui->config_simple->toPlainText()), selected, Configs::XrayExitUse::Profile, &tags);
+    Configs::PinXrayExit(QString2QJsonObject(ui->config_simple->toPlainText()), selected, &tags);
     const QSignalBlocker block(ui->routeExit);
     ui->routeExit->clear();
     ui->routeExit->addItem(tr("Automatic (single proxy)"), QString());
@@ -122,7 +122,7 @@ void EditCustom::bindValidation(Validation::Form &form) {
         form.addRule({ui->routeExit, ui->ignoreXrayRouting, ui->config_simple}, [this]() -> QString {
             if (!ui->ignoreXrayRouting->isChecked()) return {};
             return Configs::PinXrayExit(QString2QJsonObject(ui->config_simple->toPlainText()),
-                                        ui->routeExit->currentData().toString(), Configs::XrayExitUse::Profile).error;
+                                        ui->routeExit->currentData().toString()).error;
         }, this, Validation::Severity::Error, ui->routeExitLabel->text());
     }
 }

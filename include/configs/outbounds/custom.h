@@ -128,10 +128,9 @@ namespace Configs
         }
     };
 
-    enum class XrayExitUse { Profile, RuleTarget };
     void IsolateXrayRuleTarget(QJsonObject &config);
     // Pins traffic from Throne's bridge without changing what other inbounds do.
-    BuildResult PinXrayExit(QJsonObject config, const QString &selected, XrayExitUse use, QStringList *choices = nullptr);
+    BuildResult PinXrayExit(QJsonObject config, const QString &selected, QStringList *choices = nullptr);
 
     namespace Checks {
         // Valid JSON (line and column on a syntax error) with what the subtype needs: a type, a protocol or an outbounds list.

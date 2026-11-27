@@ -632,7 +632,7 @@ namespace Configs
             for (const auto &key : keysNamed(config, section)) config.remove(key);
     }
 
-    BuildResult PinXrayExit(QJsonObject config, const QString &selected, XrayExitUse use, QStringList *choices) {
+    BuildResult PinXrayExit(QJsonObject config, const QString &selected, QStringList *choices) {
         const auto invalid = [] {
             return BuildResult{{}, QCoreApplication::translate("Validation", "The Xray config has invalid or ambiguous outbound tags or routing fields.")};
         };
@@ -676,7 +676,6 @@ namespace Configs
         }
         config.insert("outbounds", outs);
 
-        if (use == XrayExitUse::RuleTarget) IsolateXrayRuleTarget(config);
         const auto routingKeys = keysNamed(config, "routing");
         if (routingKeys.size() > 1 || (!routingKeys.isEmpty() && !config.value(routingKeys.first()).isObject())) return invalid();
         auto routing = routingKeys.isEmpty() ? QJsonObject{} : config.take(routingKeys.first()).toObject();

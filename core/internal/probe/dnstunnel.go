@@ -1,6 +1,7 @@
 package probe
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"net/netip"
@@ -26,6 +27,11 @@ const (
 type xrayProbeRoute struct {
 	xdnsHops int
 	masked   bool
+}
+
+// Alternative paths don't start in series; budget for the slower one.
+func (r xrayProbeRoute) either(other xrayProbeRoute) xrayProbeRoute {
+	return xrayProbeRoute{masked: r.masked || other.masked, xdnsHops: max(r.xdnsHops, other.xdnsHops)}
 }
 
 type XrayProbeRoutes map[string]xrayProbeRoute
@@ -57,11 +63,7 @@ func maskRoute(mask *conf.FinalMask, udp bool) xrayProbeRoute {
 }
 
 func streamRoute(s *conf.StreamConfig) xrayProbeRoute {
-	network := s.Network
-	if s.Method != nil {
-		network = s.Method
-	}
-	if network != nil {
+	if network := cmp.Or(s.Method, s.Network); network != nil {
 		switch strings.ToLower(string(*network)) {
 		case "mkcp", "kcp", "hysteria":
 			return maskRoute(s.FinalMask, true)
@@ -76,10 +78,7 @@ func streamRoute(s *conf.StreamConfig) xrayProbeRoute {
 			return maskRoute(s.FinalMask, usesH3(s))
 		case "xhttp", "splithttp":
 			r := maskRoute(s.FinalMask, usesH3(s))
-			http := s.XHTTPSettings
-			if http == nil {
-				http = s.SplitHTTPSettings
-			}
+			http := cmp.Or(s.XHTTPSettings, s.SplitHTTPSettings)
 			if http != nil {
 				if http.Extra != nil {
 					var extra conf.SplitHTTPConfig
@@ -89,9 +88,7 @@ func streamRoute(s *conf.StreamConfig) xrayProbeRoute {
 					http = &extra
 				}
 				if d := http.DownloadSettings; d != nil {
-					down := maskRoute(d.FinalMask, usesH3(d))
-					r.masked = r.masked || down.masked
-					r.xdnsHops = max(r.xdnsHops, down.xdnsHops)
+					return r.either(maskRoute(d.FinalMask, usesH3(d)))
 				}
 			}
 			return r
@@ -102,15 +99,27 @@ func streamRoute(s *conf.StreamConfig) xrayProbeRoute {
 
 // A batch can have several independent Xray instances. Match the generated bridge endpoint exactly.
 func CollectXrayProbeRoutes(options *option.Options, config string, fullConfigs []string) XrayProbeRoutes {
-	routes := make(XrayProbeRoutes)
-	routes.collect(options, config)
+	bridges := make(map[netip.AddrPort]xrayProbeRoute)
+	collectMaskedBridges(bridges, config)
 	for _, full := range fullConfigs {
-		routes.collect(options, full)
+		collectMaskedBridges(bridges, full)
+	}
+	if len(bridges) == 0 {
+		return nil
+	}
+	routes := make(XrayProbeRoutes)
+	for _, out := range options.Outbounds {
+		if socks, ok := out.Options.(*option.SOCKSOutboundOptions); ok && out.Type == C.TypeSOCKS {
+			ip, _ := netip.ParseAddr(socks.Server)
+			if route, found := bridges[netip.AddrPortFrom(ip.Unmap(), socks.ServerPort)]; found {
+				routes[out.Tag] = route
+			}
+		}
 	}
 	return routes
 }
 
-func (routes XrayProbeRoutes) collect(options *option.Options, xrayConfig string) {
+func collectMaskedBridges(bridges map[netip.AddrPort]xrayProbeRoute, xrayConfig string) {
 	var config struct {
 		Inbounds []struct {
 			Tag, Listen, Protocol string
@@ -144,16 +153,6 @@ func (routes XrayProbeRoutes) collect(options *option.Options, xrayConfig string
 	if !anyMasked {
 		return
 	}
-	inboundAt := make(map[netip.AddrPort]string)
-	for _, in := range config.Inbounds {
-		ip, err := netip.ParseAddr(in.Listen)
-		if err != nil || !ip.IsLoopback() || in.Protocol != "socks" {
-			continue
-		}
-		if port, err := strconv.ParseUint(strings.Trim(string(in.Port), `"`), 10, 16); err == nil {
-			inboundAt[netip.AddrPortFrom(ip.Unmap(), uint16(port))] = in.Tag
-		}
-	}
 	chain := func(start int) (route xrayProbeRoute) {
 		seen := make(map[int]bool)
 		for i := start; !seen[i]; {
@@ -172,19 +171,13 @@ func (routes XrayProbeRoutes) collect(options *option.Options, xrayConfig string
 		}
 		return
 	}
-	for _, out := range options.Outbounds {
-		socks, ok := out.Options.(*option.SOCKSOutboundOptions)
-		if !ok || out.Type != C.TypeSOCKS {
+	for _, in := range config.Inbounds {
+		ip, _ := netip.ParseAddr(in.Listen)
+		port, err := strconv.ParseUint(strings.Trim(string(in.Port), `"`), 10, 16)
+		if in.Protocol != "socks" || !ip.IsLoopback() || err != nil {
 			continue
 		}
-		ip, err := netip.ParseAddr(socks.Server)
-		if err != nil {
-			continue
-		}
-		tag, ok := inboundAt[netip.AddrPortFrom(ip.Unmap(), socks.ServerPort)]
-		if !ok {
-			continue
-		}
+		tag := in.Tag
 		route := chain(0) // Xray sends unmatched traffic to its first outbound, even when it has no tag.
 		for _, rule := range config.Routing.Rules {
 			if len(rule.InboundTag) != 0 && !slices.Contains(rule.InboundTag, tag) {
@@ -193,9 +186,7 @@ func (routes XrayProbeRoutes) collect(options *option.Options, xrayConfig string
 			if tag == "throne-bridge" && rule.BalancerTag != "" {
 				// The balancer selects at dial time; do not under-budget a slow member.
 				for i := range hops {
-					candidate := chain(i)
-					route.masked = route.masked || candidate.masked
-					route.xdnsHops = max(route.xdnsHops, candidate.xdnsHops)
+					route = route.either(chain(i))
 				}
 				break
 			}
@@ -206,12 +197,11 @@ func (routes XrayProbeRoutes) collect(options *option.Options, xrayConfig string
 					break
 				}
 				// In a user-supplied full config a rule can also depend on the destination.
-				route.masked = route.masked || candidate.masked
-				route.xdnsHops = max(route.xdnsHops, candidate.xdnsHops)
+				route = route.either(candidate)
 			}
 		}
 		if route.masked {
-			routes[out.Tag] = route
+			bridges[netip.AddrPortFrom(ip.Unmap(), uint16(port))] = route
 		}
 	}
 }

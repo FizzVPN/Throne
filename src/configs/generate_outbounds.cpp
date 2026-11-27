@@ -207,7 +207,7 @@ namespace Configs {
                     .singToXrayPort = singToXrayPort,
                     .xrayToSingPort = xrayToSingPort,
                     .xrayFullConfigPort = xrayFullConfigPort,
-                    .soleXrayInbound = bridges.xrayFullConfig,
+                    .fullXrayUse = FullXrayUse::SelectorMember,
                     .tailDetour = req.upstreamTag,
                     .tailResolvesViaDns = req.upstreamResolvesViaDns,
                 });
@@ -487,8 +487,7 @@ namespace Configs {
                     .link = routeGroup.hopIDs.size() > 1,
                     .startSuffix = routeSuffix,
                     .xrayFullConfigPort = separateXray ? fullPorts.takeFirst() : -1,
-                    .soleXrayInbound = separateXray,
-                    .pinXrayRuleExit = separateXray ? std::optional<bool>(routeGroup.pinXrayExit) : std::nullopt,
+                    .fullXrayUse = routeGroup.pinXrayExit ? FullXrayUse::PinnedRule : FullXrayUse::Rule,
                 });
                 absorbChain(ctx, out);
                 if (!ctx.error.isEmpty()) return;

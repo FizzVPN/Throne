@@ -1,6 +1,3 @@
-//go:build throne_patched_xray
-
-// This integration test exercises the Xray patches used by the packaged core.
 package testenv
 
 import (

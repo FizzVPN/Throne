@@ -456,7 +456,7 @@ namespace Configs {
                     severity = Validation::Severity::Warning;
                     return QCoreApplication::translate("Validation", "Traffic uses the routing rules from the Xray config %1.").arg(name);
                 }
-                const auto pinned = PinXrayExit(QString2QJsonObject(custom->config), custom->routeExitTag, XrayExitUse::RuleTarget);
+                const auto pinned = PinXrayExit(QString2QJsonObject(custom->config), custom->routeExitTag);
                 if (!pinned.error.isEmpty()) return pinned.error;
                 severity = Validation::Severity::Warning;
                 return QCoreApplication::translate("Validation", "Traffic uses the selected proxy in %1, ignoring its built-in Xray routing rules.").arg(name);
