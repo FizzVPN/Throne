@@ -78,10 +78,6 @@
         <translation>URL</translation>
     </message>
     <message>
-        <source>Rule-set</source>
-        <translation>rule-set</translation>
-    </message>
-    <message>
         <source>Auto update</source>
         <translation>به‌روزرسانی خودکار</translation>
     </message>
@@ -128,14 +124,6 @@
         <translation>یک URL از نوع http(s) وارد کنید.</translation>
     </message>
     <message>
-        <source>Choose a rule-set.</source>
-        <translation>یک rule-set انتخاب کنید.</translation>
-    </message>
-    <message>
-        <source>Unknown rule-set &quot;%1&quot;. Pick a geoip-* name from the list or enter a rule-set URL.</source>
-        <translation>rule-set ناشناخته «%1». یک نام geoip-* از فهرست انتخاب کنید یا URL یک rule-set وارد کنید.</translation>
-    </message>
-    <message>
         <source>IP list</source>
         <translation>فهرست IP</translation>
     </message>
@@ -150,10 +138,6 @@
     <message>
         <source>Managed by scan %1</source>
         <translation>مدیریت‌شده توسط اسکن %1</translation>
-    </message>
-    <message>
-        <source>geoip-ir, or a rule-set URL</source>
-        <translation>geoip-ir، یا URL یک rule-set</translation>
     </message>
     <message>
         <source>Fetching…</source>
@@ -283,10 +267,6 @@
         <translation>از URL</translation>
     </message>
     <message>
-        <source>From rule-set</source>
-        <translation>از rule-set</translation>
-    </message>
-    <message>
         <source>Add default lists</source>
         <translation>افزودن فهرست‌های پیش‌فرض</translation>
     </message>
@@ -363,8 +343,8 @@
         <translation>وارد کردن فهرست‌های IP</translation>
     </message>
     <message>
-        <source>All files (*);;Text and CSV (*.txt *.csv *.lst *.list);;sing-box rule-sets (*.srs *.json)</source>
-        <translation>همهٔ فایل‌ها (*);;متن و CSV (*.txt *.csv *.lst *.list);;rule-set‌های sing-box (*.srs *.json)</translation>
+        <source>All files (*);;Text and CSV (*.txt *.csv *.lst *.list)</source>
+        <translation>همهٔ فایل‌ها (*);;متن و CSV (*.txt *.csv *.lst *.list)</translation>
     </message>
     <message>
         <source>%1: cannot be opened</source>
@@ -429,38 +409,70 @@
     </message>
 </context>
 <context>
-    <name>DialogScanner</name>
+    <name>DialogWarpFinder</name>
     <message>
-        <source>IP Scanner</source>
-        <translation>اسکنر IP</translation>
+        <source>Find WARP endpoint</source>
+        <translation>یافتن نقطهٔ پایانی WARP</translation>
     </message>
     <message>
-        <source>No scans yet. Create one with &quot;New scan&quot;.</source>
-        <translation>هنوز اسکنی وجود ندارد. با «اسکن جدید» یکی بسازید.</translation>
+        <source>Endpoint</source>
+        <translation>نقطهٔ پایانی</translation>
     </message>
     <message>
-        <source>New scan</source>
-        <translation>اسکن جدید</translation>
+        <source>Working endpoints appear here</source>
+        <translation>نقاط پایانی کارا اینجا نمایش داده می‌شوند</translation>
     </message>
     <message>
-        <source>IP Lists</source>
-        <translation>فهرست‌های IP</translation>
+        <source>Use endpoint</source>
+        <translation>استفاده از نقطهٔ پایانی</translation>
     </message>
     <message>
-        <source>Pause the scan first.</source>
-        <translation>ابتدا اسکن را متوقف کنید.</translation>
+        <source>The search could not be started</source>
+        <translation>جستجو آغاز نشد</translation>
     </message>
     <message>
-        <source>Confirmation</source>
-        <translation>تأیید</translation>
+        <source>Stopping</source>
+        <translation>در حال توقف</translation>
+    </message>
+    <message numerus="yes">
+        <source>Found %n endpoint(s) in %1 s</source>
+        <translation>
+            <numerusform>%n نقطهٔ پایانی در %1 ثانیه پیدا شد</numerusform>
+        </translation>
     </message>
     <message>
-        <source>Delete the scan &quot;%1&quot;?</source>
-        <translation>اسکن «%1» حذف شود؟</translation>
+        <source>No working endpoint found</source>
+        <translation>هیچ نقطهٔ پایانی کارایی پیدا نشد</translation>
     </message>
     <message>
-        <source>Also delete its result list</source>
-        <translation>فهرست نتایج آن هم حذف شود</translation>
+        <source>%1 s of %2 s</source>
+        <translation>%1 از %2 ثانیه</translation>
+    </message>
+    <message numerus="yes">
+        <source>Found %n</source>
+        <translation>
+            <numerusform>%n مورد پیدا شد</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Plain WireGuard is blocked on this network, but it gets through with AmneziaWG junk packets. Using an endpoint turns them on.</source>
+        <translation>WireGuard ساده در این شبکه مسدود است، اما با بسته‌های زائد AmneziaWG عبور می‌کند. استفاده از یک نقطهٔ پایانی آن‌ها را روشن می‌کند.</translation>
+    </message>
+    <message>
+        <source>HTTP/3 is blocked on this network, but HTTP/2 gets through. Using an endpoint turns on the fallback to HTTP/2.</source>
+        <translation>HTTP/3 در این شبکه مسدود است، اما HTTP/2 عبور می‌کند. استفاده از یک نقطهٔ پایانی بازگشت به HTTP/2 را روشن می‌کند.</translation>
+    </message>
+    <message>
+        <source>This profile dials %1 instead of its own address. Using an endpoint switches it back to its own address.</source>
+        <translation>این نمایه به‌جای آدرس خودش به %1 وصل می‌شود. استفاده از یک نقطهٔ پایانی آن را به آدرس خودش برمی‌گرداند.</translation>
+    </message>
+    <message>
+        <source>Stop</source>
+        <translation>توقف</translation>
+    </message>
+    <message>
+        <source>Search again</source>
+        <translation>جستجوی دوباره</translation>
     </message>
 </context>
 <context>
@@ -503,6 +515,28 @@
     </message>
 </context>
 <context>
+    <name>EditMasque</name>
+    <message>
+        <source>Find WARP endpoint</source>
+        <translation>یافتن نقطهٔ پایانی WARP</translation>
+    </message>
+    <message>
+        <source>Search for a WARP endpoint that works on this network.</source>
+        <translation>یک نقطهٔ پایانی WARP پیدا کنید که در این شبکه کار کند.</translation>
+    </message>
+</context>
+<context>
+    <name>EditNaive</name>
+    <message>
+        <source>Advanced</source>
+        <translation>پیشرفته</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>پیش‌فرض</translation>
+    </message>
+</context>
+<context>
     <name>IpListItem</name>
     <message>
         <source>%1 d</source>
@@ -535,10 +569,6 @@
     <message>
         <source>URL %1</source>
         <translation>URL %1</translation>
-    </message>
-    <message>
-        <source>Rule-set %1</source>
-        <translation>rule-set %1</translation>
     </message>
     <message>
         <source>Refreshing…</source>
@@ -814,50 +844,6 @@ How to update?</source>
     <message>
         <source>Failed</source>
         <translation>ناموفق</translation>
-    </message>
-    <message>
-        <source>Choose the profile to find working settings for</source>
-        <translation>نمایه‌ای را که برایش تنظیمات کارا پیدا شود انتخاب کنید</translation>
-    </message>
-    <message>
-        <source>The profile could not be copied</source>
-        <translation>نمایه کپی نشد</translation>
-    </message>
-    <message>
-        <source>The built-in WARP MASQUE identity has not been generated yet (Routing Settings)</source>
-        <translation>هویت داخلی WARP MASQUE هنوز ساخته نشده است (تنظیمات مسیریابی)</translation>
-    </message>
-    <message>
-        <source>The built-in WARP WireGuard identity has not been generated yet (Routing Settings)</source>
-        <translation>هویت داخلی WARP WireGuard هنوز ساخته نشده است (تنظیمات مسیریابی)</translation>
-    </message>
-    <message>
-        <source>This type of profile cannot be pointed at scanned addresses</source>
-        <translation>این نوع نمایه را نمی‌توان به نشانی‌های اسکن‌شده هدایت کرد</translation>
-    </message>
-    <message>
-        <source>The profile for the config test could not be copied</source>
-        <translation>نمایهٔ تست پیکربندی کپی نشد</translation>
-    </message>
-    <message>
-        <source>Choose the WARP profile to take the identity from</source>
-        <translation>نمایهٔ WARP را که هویت از آن گرفته می‌شود انتخاب کنید</translation>
-    </message>
-    <message>
-        <source>This mode needs a MASQUE profile</source>
-        <translation>این حالت به یک نمایهٔ MASQUE نیاز دارد</translation>
-    </message>
-    <message>
-        <source>This mode needs a WireGuard profile</source>
-        <translation>این حالت به یک نمایهٔ WireGuard نیاز دارد</translation>
-    </message>
-    <message>
-        <source>Register a new identity for this mode</source>
-        <translation>برای این حالت هویت تازه‌ای ثبت کنید</translation>
-    </message>
-    <message>
-        <source>The WARP identity could not be read; register a new one</source>
-        <translation>هویت WARP خوانده نشد؛ هویت تازه‌ای ثبت کنید</translation>
     </message>
     <message>
         <source>Datacenter IP</source>
@@ -1179,10 +1165,6 @@ Throne در پس‌زمینه دوباره تلاش می‌کند و راه‌ا
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Disable traffic counters</source>
-        <translation>غیرفعال کردن شمارنده‌های ترافیک</translation>
-    </message>
-    <message>
         <source>NTP Settings</source>
         <translation>تنظیمات NTP</translation>
     </message>
@@ -1499,6 +1481,14 @@ Included: %2</source>
     <message>
         <source>Settings</source>
         <translation>تنظیمات</translation>
+    </message>
+    <message>
+        <source>Hide lines matching</source>
+        <translation>پنهان کردن خطوط مطابق</translation>
+    </message>
+    <message>
+        <source>Log lines matching this regular expression are dropped before they reach the log.</source>
+        <translation>خطوطی که با این عبارت باقاعده مطابقت دارند، پیش از رسیدن به لاگ حذف می‌شوند.</translation>
     </message>
 </context>
 <context>
@@ -1844,51 +1834,11 @@ Included: %2</source>
         <translation>سربرگ‌ها</translation>
     </message>
     <message>
-        <source>Max Concurrency</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Post Bytes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Reusable Secs</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Request Times</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Host</source>
         <translation>میزبان</translation>
     </message>
     <message>
-        <source>X Padding Bytes</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Min Post Interval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Reuse times</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Keep Alive Period</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Download Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max Connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2006,10 +1956,6 @@ Included: %2</source>
     <message>
         <source>Extra Core</source>
         <translation>هسته اضافی</translation>
-    </message>
-    <message>
-        <source>Fallback Delay</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>This profile was deleted while you were editing it.</source>
@@ -2238,6 +2184,34 @@ Included: %2</source>
     <message>
         <source>%1: %2</source>
         <translation>%1: %2</translation>
+    </message>
+    <message>
+        <source>Extra</source>
+        <translation>تنظیمات اضافی (Extra)</translation>
+    </message>
+    <message>
+        <source>Handshake</source>
+        <translation>دست‌دهی</translation>
+    </message>
+    <message>
+        <source>Handshake + Records</source>
+        <translation>دست‌دهی + رکوردها</translation>
+    </message>
+    <message>
+        <source>Handshake splits the ClientHello into TCP segments, Records into TLS records. Keep default: Preset Settings.</source>
+        <translation>«دست‌دهی» پیام ClientHello را به قطعه‌های TCP و «رکوردها» آن را به رکوردهای TLS تقسیم می‌کند. «نگه داری مقدار پیشفرض»: مطابق تنظیمات از پیش‌تعیین‌شده.</translation>
+    </message>
+    <message>
+        <source>No extra settings are set. Available keys:</source>
+        <translation>هیچ تنظیم اضافه‌ای مشخص نشده است. کلیدهای موجود:</translation>
+    </message>
+    <message>
+        <source>Records</source>
+        <translation>رکوردها</translation>
+    </message>
+    <message>
+        <source>XHTTP extra settings as JSON: padding, upload tuning, session keys, xmux and downloadSettings.</source>
+        <translation>تنظیمات اضافی XHTTP به صورت JSON: padding، تنظیم آپلود، کلیدهای نشست، xmux و downloadSettings.</translation>
     </message>
 </context>
 <context>
@@ -2481,10 +2455,6 @@ Included: %2</source>
         <translation>هر به‌روزرسانی «%1» قوانین این نمایه را بازنویسی می‌کند.</translation>
     </message>
     <message>
-        <source>TLS fragmentation for WARP registration</source>
-        <translation>قطعه‌بندی TLS برای ثبت‌نام WARP</translation>
-    </message>
-    <message>
         <source>Advanced</source>
         <translation>پیشرفته</translation>
     </message>
@@ -2503,10 +2473,6 @@ Included: %2</source>
     <message>
         <source>Fragment TLS</source>
         <translation>قطعه‌بندی TLS</translation>
-    </message>
-    <message>
-        <source>Record fragment</source>
-        <translation>قطعه‌بندی رکورد</translation>
     </message>
     <message>
         <source>Fallback delay</source>
@@ -2602,84 +2568,41 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <source>Exit Through</source>
         <translation>خروج از طریق</translation>
     </message>
-</context>
-<context>
-    <name>DialogNewScan</name>
     <message>
-        <source>DNS resolver scan</source>
-        <translation>اسکن ریزالور DNS</translation>
+        <source>%1 in Advanced</source>
+        <translation>%1 در «پیشرفته»</translation>
     </message>
     <message>
-        <source>Find DNS resolvers that relay the tunnel of one of your DNSTT, MasterDNS or XDNS profiles.</source>
-        <translation>ریزالورهای DNS را پیدا می‌کند که تونل یکی از نمایه‌های DNSTT، MasterDNS یا XDNS شما را عبور می‌دهند.</translation>
+        <source>Handshake</source>
+        <translation>دست‌دهی</translation>
     </message>
     <message>
-        <source>Find working settings</source>
-        <translation>یافتن تنظیمات کارا</translation>
+        <source>Handshake + Records</source>
+        <translation>دست‌دهی + رکوردها</translation>
     </message>
     <message>
-        <source>Try variants of one profile&apos;s anti-censorship settings several times each and rank them; nothing changes in the profile until you apply a result.</source>
-        <translation>گونه‌های تنظیمات ضدسانسور یک نمایه را هر کدام چند بار امتحان و رتبه‌بندی می‌کند؛ تا وقتی نتیجه‌ای را اعمال نکنید، چیزی در نمایه تغییر نمی‌کند.</translation>
+        <source>Keys, MASQUE options, registration domains and TLS fragmentation</source>
+        <translation>کلیدها، گزینه‌های MASQUE، دامنه‌های ثبت‌نام و قطعه‌بندی TLS</translation>
     </message>
     <message>
-        <source>Scan %1</source>
-        <translation>اسکن %1</translation>
+        <source>Records</source>
+        <translation>رکوردها</translation>
     </message>
     <message>
-        <source>New scan</source>
-        <translation>اسکن جدید</translation>
+        <source>IP Lists</source>
+        <translation>فهرست‌های IP</translation>
     </message>
     <message>
-        <source>Name</source>
-        <translation>نام</translation>
+        <source>Address and resolver lists that profiles, groups and DNS tunnels use.</source>
+        <translation>فهرست‌های نشانی و ریزالور که نمایه‌ها، گروه‌ها و تونل‌های DNS به کار می‌برند.</translation>
     </message>
     <message>
-        <source>Generic scan</source>
-        <translation>اسکن عمومی</translation>
-    </message>
-    <message>
-        <source>WARP scan</source>
-        <translation>اسکن WARP</translation>
-    </message>
-    <message>
-        <source>Probe addresses with ping, TCP, TLS or HTTP, and optionally test them through one of your profiles.</source>
-        <translation>نشانی‌ها را با پینگ، TCP، TLS یا HTTP کاوش می‌کند و در صورت نیاز از طریق یکی از نمایه‌های شما تست می‌کند.</translation>
-    </message>
-    <message>
-        <source>Find Cloudflare WARP endpoints that complete a WireGuard, AmneziaWG or MASQUE connection.</source>
-        <translation>نقاط پایانی Cloudflare WARP را پیدا می‌کند که اتصال WireGuard، AmneziaWG یا MASQUE را کامل می‌کنند.</translation>
-    </message>
-    <message>
-        <source>Failed to store the scan.</source>
-        <translation>ذخیرهٔ اسکن ناموفق بود.</translation>
-    </message>
-    <message>
-        <source>New Scan</source>
-        <translation>اسکن جدید</translation>
+        <source>Manage IP lists</source>
+        <translation>مدیریت فهرست‌های IP</translation>
     </message>
 </context>
 <context>
     <name>DialogScanInstance</name>
-    <message>
-        <source>Poll: relays one tunnel query</source>
-        <translation>بررسی: یک پرس‌وجوی تونل را عبور می‌دهد</translation>
-    </message>
-    <message>
-        <source>Query names: also relays names as long as the profile sends</source>
-        <translation>نام‌های پرس‌وجو: نام‌هایی به بلندی نام‌های ارسالی نمایه را هم عبور می‌دهد</translation>
-    </message>
-    <message>
-        <source>Handshake: also opens a tunnel session</source>
-        <translation>دست‌دهی: یک نشست تونل هم باز می‌کند</translation>
-    </message>
-    <message>
-        <source>Quick: relays the smallest packets</source>
-        <translation>سریع: کوچک‌ترین بسته‌ها را عبور می‌دهد</translation>
-    </message>
-    <message>
-        <source>Full: also measures the upload and download MTU</source>
-        <translation>کامل: MTU بارگذاری و بارگیری را هم اندازه می‌گیرد</translation>
-    </message>
     <message>
         <source>Each address is tried as a resolver; the default port is 53.</source>
         <translation>هر نشانی به‌عنوان ریزالور آزموده می‌شود؛ پورت پیش‌فرض 53 است.</translation>
@@ -2691,34 +2614,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <message>
         <source>Add this list to the profile&apos;s resolvers.</source>
         <translation>این فهرست را به ریزالورهای نمایه اضافه می‌کند.</translation>
-    </message>
-    <message>
-        <source>WARP scan</source>
-        <translation>اسکن WARP</translation>
-    </message>
-    <message>
-        <source>DNS resolver scan</source>
-        <translation>اسکن ریزالور DNS</translation>
-    </message>
-    <message>
-        <source>Generic scan</source>
-        <translation>اسکن عمومی</translation>
-    </message>
-    <message>
-        <source>ICMP (ping): the timeout must be between %1 and %2 ms.</source>
-        <translation>ICMP (ping): مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>ICMP (ping): echo requests must be between %1 and %2.</source>
-        <translation>ICMP (ping): تعداد درخواست‌های echo باید بین %1 تا %2 باشد.</translation>
-    </message>
-    <message>
-        <source>DNS Tunnel Test: the timeout must be between %1 and %2 ms.</source>
-        <translation>تست تونل DNS: مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>Select a profile…</source>
-        <translation>یک نمایه انتخاب کنید…</translation>
     </message>
     <message>
         <source>The scan&apos;s profile was deleted or is no longer a DNS tunnel profile.</source>
@@ -2741,276 +2636,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>«%1» اکنون ریزالورها را از فهرست IP «%2» می‌گیرد.</translation>
     </message>
     <message>
-        <source>Sends a decoy packet before each UDP flow to get past QUIC blocking.</source>
-        <translation>پیش از هر جریان UDP یک بستهٔ فریب می‌فرستد تا از مسدودسازی QUIC عبور کند.</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; already uses these settings.</source>
-        <translation>«%1» هم‌اکنون از همین تنظیمات استفاده می‌کند.</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; cannot be searched. %2.</source>
-        <translation>«%1» قابل جستجو نیست. %2.</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; could not be copied.</source>
-        <translation>«%1» کپی نشد.</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; is open in an editor; close the profile&apos;s editor first, then apply again.</source>
-        <translation>«%1» در ویرایشگر باز است؛ ابتدا ویرایشگر نمایه را ببندید و دوباره اعمال کنید.</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; now uses: %2.</source>
-        <translation>«%1» اکنون از این‌ها استفاده می‌کند: %2.</translation>
-    </message>
-    <message>
-        <source>%1 (working settings)</source>
-        <translation>%1 (تنظیمات کارا)</translation>
-    </message>
-    <message>
-        <source>%1 ms</source>
-        <translation>%1 میلی‌ثانیه</translation>
-    </message>
-    <message>
-        <source>%1/%2</source>
-        <translation>%1/%2</translation>
-    </message>
-    <message>
-        <source>Add a copy of the profile with the selected variant.</source>
-        <translation>یک کپی از نمایه با گونهٔ انتخاب‌شده اضافه می‌کند.</translation>
-    </message>
-    <message>
-        <source>Apply to profile</source>
-        <translation>اعمال روی نمایه</translation>
-    </message>
-    <message>
-        <source>Best: %1 (passed %2/%3, median %4)</source>
-        <translation>بهترین: %1 (موفق %2/%3، میانه %4)</translation>
-    </message>
-    <message>
-        <source>Choose the profile whose settings to search.</source>
-        <translation>نمایه‌ای را که تنظیماتش جستجو شود انتخاب کنید.</translation>
-    </message>
-    <message>
-        <source>Comma-separated, e.g. 100ms, 500ms, 1s.</source>
-        <translation>جداشده با کاما، مثلاً 100ms, 500ms, 1s.</translation>
-    </message>
-    <message>
-        <source>Comma-separated uTLS fingerprints; &quot;off&quot; tries Go&apos;s own TLS.</source>
-        <translation>اثرانگشت‌های uTLS جداشده با کاما؛ «off» خود TLS زبان Go را امتحان می‌کند.</translation>
-    </message>
-    <message>
-        <source>Confirmed</source>
-        <translation>تأییدشده</translation>
-    </message>
-    <message numerus="yes">
-        <source>Copied %n variant(s)</source>
-        <translation>
-            <numerusform>%n گونه کپی شد</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Copies the table as tab-separated text.</source>
-        <translation>جدول را به‌صورت متن جداشده با Tab کپی می‌کند.</translation>
-    </message>
-    <message>
-        <source>Downloaded to check each MTU. Empty: Cloudflare&apos;s speed test.</source>
-        <translation>برای بررسی هر MTU دانلود می‌شود. خالی: تست سرعت Cloudflare.</translation>
-    </message>
-    <message>
-        <source>Dropped early</source>
-        <translation>زودتر کنار گذاشته شد</translation>
-    </message>
-    <message>
-        <source>Find working settings</source>
-        <translation>یافتن تنظیمات کارا</translation>
-    </message>
-    <message>
-        <source>Finds the largest MTU that still works.</source>
-        <translation>بزرگ‌ترین MTU که هنوز کار می‌کند را پیدا می‌کند.</translation>
-    </message>
-    <message>
-        <source>How many bytes each MTU check downloads.</source>
-        <translation>تعداد بایتی که هر بررسی MTU دانلود می‌کند.</translation>
-    </message>
-    <message>
-        <source>Largest working MTU</source>
-        <translation>بزرگ‌ترین MTU کارا</translation>
-    </message>
-    <message>
-        <source>MTU probe</source>
-        <translation>کاوش MTU</translation>
-    </message>
-    <message>
-        <source>MTU: the download size must be between %1 and %2 bytes.</source>
-        <translation>MTU: حجم دانلود باید بین %1 و %2 بایت باشد.</translation>
-    </message>
-    <message>
-        <source>MTU: the largest MTU must be between %1 and %2; leave it empty for the profile&apos;s own.</source>
-        <translation>MTU: بیشترین MTU باید بین %1 و %2 باشد؛ برای مقدار خود نمایه آن را خالی بگذارید.</translation>
-    </message>
-    <message>
-        <source>MTU: the smallest MTU must be between %1 and %2.</source>
-        <translation>MTU: کمترین MTU باید بین %1 و %2 باشد.</translation>
-    </message>
-    <message>
-        <source>MTU: the step must be between %1 and %2.</source>
-        <translation>MTU: گام باید بین %1 و %2 باشد.</translation>
-    </message>
-    <message>
-        <source>Median latency</source>
-        <translation>میانهٔ تأخیر</translation>
-    </message>
-    <message>
-        <source>Needs SNI turned on with a domain name, and no REALITY.</source>
-        <translation>به SNI روشن با نام دامنه و بدون REALITY نیاز دارد.</translation>
-    </message>
-    <message>
-        <source>Needs QUIC, MASQUE over HTTP/3 or WireGuard.</source>
-        <translation>به QUIC، MASQUE روی HTTP/3 یا WireGuard نیاز دارد.</translation>
-    </message>
-    <message>
-        <source>No variant has passed yet.</source>
-        <translation>هنوز هیچ گونه‌ای موفق نشده است.</translation>
-    </message>
-    <message>
-        <source>No variant passed.</source>
-        <translation>هیچ گونه‌ای موفق نشد.</translation>
-    </message>
-    <message>
-        <source>Not usable</source>
-        <translation>قابل استفاده نیست</translation>
-    </message>
-    <message>
-        <source>Not usable: %1</source>
-        <translation>قابل استفاده نیست: %1</translation>
-    </message>
-    <message>
-        <source>Note</source>
-        <translation>یادداشت</translation>
-    </message>
-    <message>
-        <source>Only WireGuard and AmneziaWG profiles have an MTU to search.</source>
-        <translation>فقط نمایه‌های WireGuard و AmneziaWG دارای MTU قابل جستجو هستند.</translation>
-    </message>
-    <message>
-        <source>Only the built-in fragment implementation uses a fallback delay.</source>
-        <translation>فقط پیاده‌سازی داخلی قطعه‌بندی از تأخیر جایگزین استفاده می‌کند.</translation>
-    </message>
-    <message>
-        <source>Pacing: attempts per minute must be between %1 and %2.</source>
-        <translation>زمان‌بندی: تلاش در دقیقه باید بین %1 و %2 باشد.</translation>
-    </message>
-    <message>
-        <source>Pacing: attempts per variant must be between %1 and %2.</source>
-        <translation>زمان‌بندی: تلاش برای هر گونه باید بین %1 و %2 باشد.</translation>
-    </message>
-    <message>
-        <source>Pacing: the attempt limit must be between %1 and %2.</source>
-        <translation>زمان‌بندی: سقف تلاش‌ها باید بین %1 و %2 باشد.</translation>
-    </message>
-    <message>
-        <source>Pacing: the time limit must be between %1 and %2 minutes.</source>
-        <translation>زمان‌بندی: سقف زمانی باید بین %1 و %2 دقیقه باشد.</translation>
-    </message>
-    <message>
-        <source>Pacing: the timeout must be between %1 and %2 ms.</source>
-        <translation>زمان‌بندی: مهلت باید بین %1 و %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>Passed</source>
-        <translation>موفق</translation>
-    </message>
-    <message>
-        <source>Profile as it is</source>
-        <translation>نمایه همان‌طور که هست</translation>
-    </message>
-    <message>
-        <source>Recommended</source>
-        <translation>پیشنهادی</translation>
-    </message>
-    <message>
-        <source>Save as new profile</source>
-        <translation>ذخیره به‌عنوان نمایهٔ جدید</translation>
-    </message>
-    <message>
-        <source>Saved &quot;%1&quot; with: %2.</source>
-        <translation>«%1» با این‌ها ذخیره شد: %2.</translation>
-    </message>
-    <message>
-        <source>Settings</source>
-        <translation>تنظیمات</translation>
-    </message>
-    <message>
-        <source>Tested through %1</source>
-        <translation>از طریق %1 آزمایش شد</translation>
-    </message>
-    <message>
-        <source>Tests through %1</source>
-        <translation>از طریق %1 آزمایش می‌کند</translation>
-    </message>
-    <message>
-        <source>The largest MTU must be above the smallest; leave it empty for the profile&apos;s own.</source>
-        <translation>بیشترین MTU باید از کمترین بزرگ‌تر باشد؛ برای مقدار خود نمایه آن را خالی بگذارید.</translation>
-    </message>
-    <message>
-        <source>The profile has no server address to test.</source>
-        <translation>نمایه نشانی سروری برای آزمایش ندارد.</translation>
-    </message>
-    <message>
-        <source>The profile of this search no longer exists.</source>
-        <translation>نمایهٔ این جستجو دیگر وجود ندارد.</translation>
-    </message>
-    <message>
-        <source>The profile this search was made for no longer exists.</source>
-        <translation>نمایه‌ای که این جستجو برای آن ساخته شده بود دیگر وجود ندارد.</translation>
-    </message>
-    <message>
-        <source>The settings could not be applied to &quot;%1&quot;: %2.</source>
-        <translation>تنظیمات روی «%1» اعمال نشد: %2.</translation>
-    </message>
-    <message>
-        <source>The settings could not be applied to the copy: %1.</source>
-        <translation>تنظیمات روی کپی اعمال نشد: %1.</translation>
-    </message>
-    <message>
-        <source>These results are for another profile; start the search to test the one chosen now.</source>
-        <translation>این نتایج مربوط به نمایهٔ دیگری است؛ برای آزمایش نمایهٔ انتخاب‌شدهٔ فعلی، جستجو را شروع کنید.</translation>
-    </message>
-    <message>
-        <source>This profile does not use TLS over TCP.</source>
-        <translation>این نمایه از TLS روی TCP استفاده نمی‌کند.</translation>
-    </message>
-    <message>
-        <source>This type of profile has no uTLS fingerprint.</source>
-        <translation>این نوع نمایه اثرانگشت uTLS ندارد.</translation>
-    </message>
-    <message>
-        <source>Save the selected variant into the profile.</source>
-        <translation>گونهٔ انتخاب‌شده را در نمایه ذخیره می‌کند.</translation>
-    </message>
-    <message>
-        <source>Entries without a port use 443 (80 for plain HTTP).</source>
-        <translation>ورودی‌های بدون پورت از 443 استفاده می‌کنند (80 برای HTTP ساده).</translation>
-    </message>
-    <message>
-        <source>Use Cloudflare&apos;s WARP ranges and ports for this mode.</source>
-        <translation>استفاده از بازه‌ها و پورت‌های Cloudflare WARP برای این حالت.</translation>
-    </message>
-    <message>
-        <source>Ports to scan. Targets without one use 443 (80 for plain HTTP).</source>
-        <translation>پورت‌های اسکن. هدف‌های بدون پورت از 443 استفاده می‌کنند (80 برای HTTP ساده).</translation>
-    </message>
-    <message>
-        <source>WARP port presets</source>
-        <translation>پیش‌تنظیم‌های پورت WARP</translation>
-    </message>
-    <message>
-        <source>How these combine with the list&apos;s own ports.</source>
-        <translation>نحوهٔ ترکیب این پورت‌ها با پورت‌های خود فهرست.</translation>
-    </message>
-    <message>
         <source>Stop after this many results. Empty: no limit.</source>
         <translation>پس از این تعداد نتیجه متوقف می‌شود. خالی: بدون محدودیت.</translation>
     </message>
@@ -3023,78 +2648,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>ورودی‌های انتخاب‌شده را کپی می‌کند، یا همه را اگر چیزی انتخاب نشده باشد.</translation>
     </message>
     <message>
-        <source>None (TLS handshake only)</source>
-        <translation>هیچ (فقط دست‌دهی TLS)</translation>
-    </message>
-    <message>
-        <source>Default</source>
-        <translation>پیش‌فرض</translation>
-    </message>
-    <message>
-        <source>HTTP/3, falling back to HTTP/2</source>
-        <translation>HTTP/3، با بازگشت به HTTP/2</translation>
-    </message>
-    <message>
-        <source>HTTP/3 only</source>
-        <translation>فقط HTTP/3</translation>
-    </message>
-    <message>
-        <source>HTTP/2 only</source>
-        <translation>فقط HTTP/2</translation>
-    </message>
-    <message>
-        <source>Dedicated for this scan (recommended)</source>
-        <translation>اختصاصی برای این اسکن (پیشنهادی)</translation>
-    </message>
-    <message>
-        <source>From a profile</source>
-        <translation>از یک نمایه</translation>
-    </message>
-    <message>
-        <source>Built-in WARP settings</source>
-        <translation>تنظیمات داخلی WARP</translation>
-    </message>
-    <message>
-        <source>None</source>
-        <translation>هیچ</translation>
-    </message>
-    <message>
-        <source>Register</source>
-        <translation>ثبت‌نام</translation>
-    </message>
-    <message>
-        <source>Register again</source>
-        <translation>ثبت‌نام دوباره</translation>
-    </message>
-    <message>
-        <source>Registering a WARP device…</source>
-        <translation>در حال ثبت‌نام دستگاه WARP…</translation>
-    </message>
-    <message>
-        <source>No device is registered for this scan yet.</source>
-        <translation>هنوز دستگاهی برای این اسکن ثبت نشده است.</translation>
-    </message>
-    <message>
-        <source>The registered device is for %1; register a new one for this mode.</source>
-        <translation>دستگاه ثبت‌شده برای %1 است؛ برای این حالت دستگاه تازه‌ای ثبت کنید.</translation>
-    </message>
-    <message>
-        <source>A WARP device is registered for this scan.</source>
-        <translation>یک دستگاه WARP برای این اسکن ثبت شده است.</translation>
-    </message>
-    <message>
-        <source>IP Scanner</source>
-        <translation>اسکنر IP</translation>
-    </message>
-    <message>
-        <source>Name</source>
-        <translation>نام</translation>
-    </message>
-    <message>
-        <source>Targets</source>
-        <translation>اهداف</translation>
-    </message>
-    <message>
         <source>Base IP list</source>
         <translation>فهرست IP پایه</translation>
     </message>
@@ -3103,48 +2656,12 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>مدیریت</translation>
     </message>
     <message>
-        <source>Use built-in WARP ranges</source>
-        <translation>استفاده از بازه‌های داخلی WARP</translation>
-    </message>
-    <message>
-        <source>Ports</source>
-        <translation>پورت‌ها</translation>
-    </message>
-    <message>
-        <source>WARP ports</source>
-        <translation>پورت‌های WARP</translation>
-    </message>
-    <message>
-        <source>Shuffle the target order</source>
-        <translation>ترتیب تصادفی اهداف</translation>
-    </message>
-    <message>
-        <source>Off: IPv6 ranges in the list are skipped.</source>
-        <translation>خاموش: بازه‌های IPv6 فهرست نادیده گرفته می‌شوند.</translation>
-    </message>
-    <message>
-        <source>Scan IPv6 addresses</source>
-        <translation>اسکن نشانی‌های IPv6</translation>
-    </message>
-    <message>
         <source>Stop after (results)</source>
         <translation>توقف پس از (نتیجه)</translation>
     </message>
     <message>
         <source>Concurrency</source>
         <translation>هم‌زمانی</translation>
-    </message>
-    <message>
-        <source>Spawn interval (ms)</source>
-        <translation>فاصلهٔ شروع (میلی‌ثانیه)</translation>
-    </message>
-    <message>
-        <source>Delay between starting two probes.</source>
-        <translation>تأخیر بین شروع دو کاوش.</translation>
-    </message>
-    <message>
-        <source>Phases</source>
-        <translation>مراحل</translation>
     </message>
     <message>
         <source>Results</source>
@@ -3183,60 +2700,8 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
         <translation>باید بین %1 تا %2 باشد.</translation>
     </message>
     <message>
-        <source>Must not contain control characters.</source>
-        <translation>نباید نویسهٔ کنترلی داشته باشد.</translation>
-    </message>
-    <message>
-        <source>Use % only in an escape such as %20 (write a literal % as %25), for example /generate_204.</source>
-        <translation>از % فقط در کدگذاری‌هایی مثل %20 استفاده کنید (خود % را به‌صورت %25 بنویسید)، مثلاً /generate_204.</translation>
-    </message>
-    <message>
-        <source>The minimum TLS version is higher than the maximum, so every handshake would fail.</source>
-        <translation>کمترین نسخهٔ TLS از بیشترین بالاتر است، پس همهٔ دست‌دهی‌ها شکست می‌خورند.</translation>
-    </message>
-    <message>
-        <source>HTTP/2 needs &quot;h2&quot; in the ALPN list; add it or leave ALPN empty.</source>
-        <translation>HTTP/2 به «h2» در فهرست ALPN نیاز دارد؛ آن را اضافه کنید یا ALPN را خالی بگذارید.</translation>
-    </message>
-    <message>
-        <source>The method &quot;None&quot; only checks the TLS handshake, so it needs TLS.</source>
-        <translation>روش «هیچ» فقط دست‌دهی TLS را بررسی می‌کند، پس به TLS نیاز دارد.</translation>
-    </message>
-    <message>
-        <source>HTTP/3 needs TLS.</source>
-        <translation>HTTP/3 به TLS نیاز دارد.</translation>
-    </message>
-    <message>
-        <source>Ignore the list&apos;s ports</source>
-        <translation>نادیده گرفتن پورت‌های فهرست</translation>
-    </message>
-    <message>
-        <source>Merge with the list&apos;s ports</source>
-        <translation>ادغام با پورت‌های فهرست</translation>
-    </message>
-    <message>
-        <source>Only the list&apos;s ports</source>
-        <translation>فقط پورت‌های فهرست</translation>
-    </message>
-    <message>
         <source>No limit</source>
         <translation>بدون محدودیت</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; is not a valid port (1-65535).</source>
-        <translation>«%1» پورت معتبری نیست (1-65535).</translation>
-    </message>
-    <message>
-        <source>Jmin must not be larger than Jmax.</source>
-        <translation>Jmin نباید از Jmax بزرگ‌تر باشد.</translation>
-    </message>
-    <message>
-        <source>%1 - IP Scanner</source>
-        <translation>%1 - اسکنر IP</translation>
-    </message>
-    <message>
-        <source>Enter a name for the scan.</source>
-        <translation>نامی برای اسکن وارد کنید.</translation>
     </message>
     <message>
         <source>Stop after must be between %1 and %2 results; leave it empty for no limit.</source>
@@ -3245,54 +2710,6 @@ A domain listed with only one address family is answered NXDOMAIN for the other,
     <message>
         <source>Concurrency must be between %1 and %2.</source>
         <translation>هم‌زمانی باید بین %1 تا %2 باشد.</translation>
-    </message>
-    <message>
-        <source>Spawn interval must be between %1 and %2 ms.</source>
-        <translation>فاصلهٔ شروع باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>TCP Connect: the timeout must be between %1 and %2 ms.</source>
-        <translation>اتصال TCP: مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>TCP Connect: attempts must be between %1 and %2.</source>
-        <translation>اتصال TCP: تعداد تلاش‌ها باید بین %1 تا %2 باشد.</translation>
-    </message>
-    <message>
-        <source>TLS / HTTP: the fragment fallback delay must be between %1 and %2 ms.</source>
-        <translation>TLS / HTTP: تأخیر جایگزین قطعه‌بندی باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>TLS / HTTP: the timeout must be between %1 and %2 ms.</source>
-        <translation>TLS / HTTP: مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>Config Test: the timeout must be between %1 and %2 ms.</source>
-        <translation>تست پیکربندی: مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>WARP Test: the MTU must be between %1 and %2.</source>
-        <translation>تست WARP: MTU باید بین %1 تا %2 باشد.</translation>
-    </message>
-    <message>
-        <source>WARP Test: Jc must be between %1 and %2.</source>
-        <translation>تست WARP: Jc باید بین %1 تا %2 باشد.</translation>
-    </message>
-    <message>
-        <source>WARP Test: Jmin must be between %1 and %2.</source>
-        <translation>تست WARP: Jmin باید بین %1 تا %2 باشد.</translation>
-    </message>
-    <message>
-        <source>WARP Test: Jmax must be between %1 and %2.</source>
-        <translation>تست WARP: Jmax باید بین %1 تا %2 باشد.</translation>
-    </message>
-    <message>
-        <source>WARP Test: the timeout must be between %1 and %2 ms.</source>
-        <translation>تست WARP: مهلت باید بین %1 تا %2 میلی‌ثانیه باشد.</translation>
-    </message>
-    <message>
-        <source>WARP Test: Jmin must not be larger than Jmax.</source>
-        <translation>تست WARP: Jmin نباید از Jmax بزرگ‌تر باشد.</translation>
     </message>
     <message>
         <source>Pause the scan before changing its settings.</source>
@@ -3329,28 +2746,6 @@ Close without saving?</source>
     <message>
         <source>Failed to store the IP list.</source>
         <translation>ذخیرهٔ فهرست IP ناموفق بود.</translation>
-    </message>
-    <message>
-        <source>MASQUE: %1</source>
-        <translation>MASQUE: %1</translation>
-    </message>
-    <message>
-        <source>WireGuard: %1</source>
-        <translation>WireGuard: %1</translation>
-    </message>
-    <message numerus="yes">
-        <source>WireGuard, all %n known ports</source>
-        <translation>
-            <numerusform>WireGuard، همهٔ %n پورت شناخته‌شده</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>WARP registration failed</source>
-        <translation>ثبت‌نام WARP ناموفق بود</translation>
-    </message>
-    <message>
-        <source>Unknown error</source>
-        <translation>خطای ناشناخته</translation>
     </message>
     <message>
         <source>Resume</source>
@@ -3409,6 +2804,18 @@ Close without saving?</source>
     <message>
         <source>Rescan current results</source>
         <translation>اسکن دوبارهٔ نتایج فعلی</translation>
+    </message>
+    <message>
+        <source>Each address is tried as the only resolver of this profile; those that relay its tunnel are kept.</source>
+        <translation>هر نشانی به‌عنوان تنها ریزالور این نمایه آزموده می‌شود؛ نشانی‌هایی که تونل آن را عبور می‌دهند نگه داشته می‌شوند.</translation>
+    </message>
+    <message>
+        <source>Find resolvers</source>
+        <translation>یافتن ریزالور</translation>
+    </message>
+    <message>
+        <source>%1 - Find resolvers</source>
+        <translation>%1 - یافتن ریزالور</translation>
     </message>
 </context>
 <context>
@@ -3539,6 +2946,22 @@ Close without saving?</source>
         <source>Not set</source>
         <translation>تنظیم نشده</translation>
     </message>
+    <message>
+        <source>Fragment Fallback Delay</source>
+        <translation>تأخیر بازگشت قطعه‌بندی</translation>
+    </message>
+    <message>
+        <source>Randomizes the letter case of the SNI. Keep default: Preset Settings.</source>
+        <translation>حروف SNI را به‌طور تصادفی بزرگ و کوچک می‌کند. «نگه داری مقدار پیشفرض»: مطابق تنظیمات از پیش‌تعیین‌شده.</translation>
+    </message>
+    <message>
+        <source>TLS Tricks</source>
+        <translation>ترفندهای TLS</translation>
+    </message>
+    <message>
+        <source>Wait between handshake fragments when the round trip cannot be measured, e.g. on Windows without administrator rights.</source>
+        <translation>فاصلهٔ زمانی بین قطعه‌های دست‌دهی وقتی زمان رفت‌وبرگشت قابل اندازه‌گیری نیست، مثلاً در ویندوز بدون دسترسی مدیر.</translation>
+    </message>
 </context>
 <context>
     <name>EditAnyTLS</name>
@@ -3557,6 +2980,10 @@ Close without saving?</source>
     <message>
         <source>Min Idle Session</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>پیشرفته</translation>
     </message>
 </context>
 <context>
@@ -3937,10 +3364,6 @@ Close without saving?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Recv window conn</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Hop Interval</source>
         <translation type="unfinished">فاصله پرش</translation>
     </message>
@@ -3965,10 +3388,6 @@ Close without saving?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Recv window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Password</source>
         <translation type="unfinished">کلمه عبور</translation>
     </message>
@@ -3979,6 +3398,10 @@ Close without saving?</source>
     <message>
         <source>Obfuscation needs a password; without one, it is off.</source>
         <translation>مبهم‌سازی به کلمه عبور نیاز دارد؛ بدون آن خاموش است.</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>پیشرفته</translation>
     </message>
 </context>
 <context>
@@ -4225,6 +3648,14 @@ Close without saving?</source>
         <source>QUIC</source>
         <translation>QUIC</translation>
     </message>
+    <message>
+        <source>Advanced</source>
+        <translation>پیشرفته</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>پیش‌فرض</translation>
+    </message>
 </context>
 <context>
     <name>EditTuic</name>
@@ -4247,6 +3678,14 @@ Close without saving?</source>
     <message>
         <source>Congestion Control</source>
         <translation type="unfinished">کنترل ازدحام</translation>
+    </message>
+    <message>
+        <source>Advanced</source>
+        <translation>پیشرفته</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>پیش‌فرض</translation>
     </message>
 </context>
 <context>
@@ -4333,6 +3772,18 @@ Close without saving?</source>
         <source>Persistent Keepalive</source>
         <translation>نگه‌داری پایدار</translation>
     </message>
+    <message>
+        <source>Find WARP endpoint</source>
+        <translation>یافتن نقطهٔ پایانی WARP</translation>
+    </message>
+    <message>
+        <source>Search for a WARP endpoint that works on this network.</source>
+        <translation>یک نقطهٔ پایانی WARP پیدا کنید که در این شبکه کار کند.</translation>
+    </message>
+    <message>
+        <source>Only for Cloudflare WARP profiles.</source>
+        <translation>فقط برای نمایه‌های Cloudflare WARP.</translation>
+    </message>
 </context>
 <context>
     <name>EditXrayVless</name>
@@ -4395,30 +3846,6 @@ Close without saving?</source>
 <context>
     <name>IpEntriesModel</name>
     <message>
-        <source>Max QNAME</source>
-        <translation>بیشینهٔ QNAME</translation>
-    </message>
-    <message>
-        <source>Upload MTU</source>
-        <translation>MTU بارگذاری</translation>
-    </message>
-    <message>
-        <source>Download MTU</source>
-        <translation>MTU بارگیری</translation>
-    </message>
-    <message>
-        <source>Longest query name the resolver relays (DNSTT max_qname_len, XDNS lenLimit).</source>
-        <translation>بلندترین نام پرس‌وجویی که ریزالور عبور می‌دهد (max_qname_len برای DNSTT و lenLimit برای XDNS).</translation>
-    </message>
-    <message>
-        <source>The largest payload per query the resolver relays.</source>
-        <translation>بیشترین بار مفید هر پرس‌وجو که ریزالور عبور می‌دهد.</translation>
-    </message>
-    <message>
-        <source>The largest payload per answer the resolver relays.</source>
-        <translation>بیشترین بار مفید هر پاسخ که ریزالور عبور می‌دهد.</translation>
-    </message>
-    <message>
         <source>%1 ms</source>
         <translation>%1 میلی‌ثانیه</translation>
     </message>
@@ -4434,6 +3861,18 @@ Close without saving?</source>
         <source>Latency</source>
         <translation>تأخیر</translation>
     </message>
+    <message>
+        <source>%1%</source>
+        <translation>%1%</translation>
+    </message>
+    <message>
+        <source>Share of probes left unanswered.</source>
+        <translation>سهم کاوش‌هایی که بی‌پاسخ ماندند.</translation>
+    </message>
+    <message>
+        <source>Loss</source>
+        <translation>اتلاف</translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>
@@ -4444,6 +3883,18 @@ Close without saving?</source>
     <message>
         <source>Restore original order</source>
         <translation>بازیابی ترتیب اولیه</translation>
+    </message>
+    <message>
+        <source>Restore default order</source>
+        <translation>بازیابی ترتیب پیش‌فرض</translation>
+    </message>
+    <message>
+        <source>Reorder columns</source>
+        <translation>تغییر ترتیب ستون‌ها</translation>
+    </message>
+    <message>
+        <source>Drag the columns into the order you want.</source>
+        <translation>ستون‌ها را به ترتیب دلخواه بکشید و رها کنید.</translation>
     </message>
     <message>
         <source>Show:</source>
@@ -4954,14 +4405,6 @@ Error: %1</source>
         <translation>کمکی</translation>
     </message>
     <message>
-        <source>Traffic counters are disabled</source>
-        <translation>شمارنده‌های ترافیک غیرفعال هستند</translation>
-    </message>
-    <message>
-        <source>Untick “Disable traffic counters” in Basic Settings → Core → Statistics to record speeds again.</source>
-        <translation>تیک «غیرفعال کردن شمارنده‌های ترافیک» را در تنظیمات پایه ← هسته ← آمار بردارید تا سرعت‌ها دوباره ثبت شوند.</translation>
-    </message>
-    <message>
         <source>Open Traffic Statistics</source>
         <translation>باز کردن آمار ترافیک</translation>
     </message>
@@ -5250,10 +4693,6 @@ Error: %1</source>
         <translation>حل دامنه‌ها</translation>
     </message>
     <message>
-        <source>Find working settings</source>
-        <translation>یافتن تنظیمات کارا</translation>
-    </message>
-    <message>
         <source>Copy test result</source>
         <translation>کپی نتیجه تست</translation>
     </message>
@@ -5425,6 +4864,64 @@ Error: %2</source>
         <source>Toggle system proxy</source>
         <translation>تغییر وضعیت پروکسی سیستم</translation>
     </message>
+    <message>
+        <source>Refresh column widths</source>
+        <translation>بازنشانی عرض ستون‌ها</translation>
+    </message>
+    <message>
+        <source>Graph options</source>
+        <translation>گزینه‌های نمودار</translation>
+    </message>
+    <message>
+        <source>%1 min</source>
+        <translation>%1 دقیقه</translation>
+    </message>
+    <message>
+        <source>Show other outbounds</source>
+        <translation>نمایش خروجی‌های دیگر</translation>
+    </message>
+    <message>
+        <source>Lists route-rule and VPN outbounds; click one to draw its line.</source>
+        <translation>خروجی‌های قوانین مسیریابی و VPN را فهرست می‌کند؛ برای رسم خط هر کدام روی آن کلیک کنید.</translation>
+    </message>
+    <message>
+        <source>Time range</source>
+        <translation>بازه زمانی</translation>
+    </message>
+    <message>
+        <source>Find WARP endpoint</source>
+        <translation>یافتن نقطهٔ پایانی WARP</translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; is open in an editor; close it and try again.</source>
+        <translation>«%1» در ویرایشگر باز است؛ آن را ببندید و دوباره تلاش کنید.</translation>
+    </message>
+    <message>
+        <source>&quot;%1&quot; is no longer a WARP profile.</source>
+        <translation>«%1» دیگر نمایهٔ WARP نیست.</translation>
+    </message>
+    <message>
+        <source>The profile was deleted meanwhile.</source>
+        <translation>نمایه در این فاصله حذف شد.</translation>
+    </message>
+    <message>
+        <source>Network unavailable</source>
+        <translation>شبکه در دسترس نیست</translation>
+    </message>
+    <message>
+        <source>Retest</source>
+        <translation>تست دوباره</translation>
+    </message>
+    <message>
+        <source>Ignore</source>
+        <translation>نادیده گرفتن</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n profile(s) could not be tested because the network was unavailable. Their earlier results were kept.</source>
+        <translation>
+            <numerusform>%n نمایه به دلیل در دسترس نبودن شبکه تست نشد. نتایج قبلی حفظ شد.</numerusform>
+        </translation>
+    </message>
 </context>
 <context>
     <name>ProfilesTableFilterHeader</name>
@@ -5509,12 +5006,20 @@ Error: %2</source>
         <translation>نمایهٔ تونل DNS را که برایش ریزالور پیدا می‌شود انتخاب کنید</translation>
     </message>
     <message>
-        <source>Choose a profile for the config test</source>
-        <translation>یک نمایه برای تست پیکربندی انتخاب کنید</translation>
-    </message>
-    <message>
         <source>Only DNSTT, MasterDNS and XDNS profiles can be used to find resolvers</source>
         <translation>فقط نمایه‌های DNSTT، MasterDNS و XDNS را می‌توان برای یافتن ریزالور به کار برد</translation>
+    </message>
+    <message>
+        <source>The profile could not be copied for the scan</source>
+        <translation>نمایه برای اسکن کپی نشد</translation>
+    </message>
+    <message>
+        <source>A WARP scan needs a WARP profile: WireGuard, AmneziaWG or MASQUE</source>
+        <translation>اسکن WARP به یک نمایهٔ WARP نیاز دارد: WireGuard، AmneziaWG یا MASQUE</translation>
+    </message>
+    <message>
+        <source>The WARP profile could not be built</source>
+        <translation>پیکربندی نمایهٔ WARP ساخته نشد</translation>
     </message>
     <message>
         <source>%1: the resolver &quot;%2&quot; is invalid: %3</source>
@@ -5571,10 +5076,6 @@ Error: %2</source>
     <message>
         <source>Extra Core profiles and custom configs cannot share a chain with an auto selector</source>
         <translation>نمایه‌های هسته اضافی و پیکربندی‌های سفارشی نمی‌توانند با انتخابگر خودکار در یک زنجیره باشند</translation>
-    </message>
-    <message>
-        <source>Chains with an auto selector cannot be scanned</source>
-        <translation>زنجیره‌های دارای انتخابگر خودکار قابل اسکن نیستند</translation>
     </message>
     <message>
         <source>The group&apos;s front or landing proxy no longer exists</source>
@@ -5781,14 +5282,6 @@ Error: %2</source>
         <translation>قوانین</translation>
     </message>
     <message>
-        <source>Empty routing profile</source>
-        <translation>نمایهٔ مسیریابی خالی</translation>
-    </message>
-    <message>
-        <source>No valid rules are in the profile</source>
-        <translation>هیچ قانون معتبری در نمایه وجود ندارد</translation>
-    </message>
-    <message>
         <source>DNS</source>
         <translation>DNS</translation>
     </message>
@@ -5811,10 +5304,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Rule %1</source>
         <translation>قانون %1</translation>
-    </message>
-    <message>
-        <source>DNS queries</source>
-        <translation>پرس‌وجوهای DNS</translation>
     </message>
     <message>
         <source>%1 · rule %2 in the list</source>
@@ -5974,129 +5463,7 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
 </context>
 <context>
-    <name>ScanItem</name>
-    <message>
-        <source>WARP</source>
-        <translation>WARP</translation>
-    </message>
-    <message>
-        <source>DNS resolvers</source>
-        <translation>ریزالورهای DNS</translation>
-    </message>
-    <message>
-        <source>Generic</source>
-        <translation>عمومی</translation>
-    </message>
-    <message>
-        <source>IP Scanner</source>
-        <translation>اسکنر IP</translation>
-    </message>
-    <message>
-        <source>Only a saved DNSTT, MasterDNS or XDNS profile can be used to find resolvers; save the profile first.</source>
-        <translation>فقط با نمایهٔ ذخیره‌شدهٔ DNSTT، MasterDNS یا XDNS می‌توان ریزالور پیدا کرد؛ ابتدا نمایه را ذخیره کنید.</translation>
-    </message>
-    <message>
-        <source>Resolvers for %1</source>
-        <translation>ریزالورهای %1</translation>
-    </message>
-    <message>
-        <source>Failed to store the scan.</source>
-        <translation>ذخیرهٔ اسکن ناموفق بود.</translation>
-    </message>
-    <message>
-        <source>&quot;%1&quot; cannot be searched. %2.</source>
-        <translation>«%1» قابل جستجو نیست. %2.</translation>
-    </message>
-    <message>
-        <source>%1 / %2 attempts (%3%)</source>
-        <translation>%1 / %2 تلاش (%3%)</translation>
-    </message>
-    <message numerus="yes">
-        <source>%n working variant(s)</source>
-        <translation>
-            <numerusform>%n گونهٔ کارا</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Find working settings</source>
-        <translation>یافتن تنظیمات کارا</translation>
-    </message>
-    <message>
-        <source>Only a saved profile can be searched; save the profile first.</source>
-        <translation>فقط نمایهٔ ذخیره‌شده قابل جستجو است؛ ابتدا نمایه را ذخیره کنید.</translation>
-    </message>
-    <message>
-        <source>Working settings for %1</source>
-        <translation>تنظیمات کارا برای %1</translation>
-    </message>
-    <message numerus="yes">
-        <source>Start over and discard the %n tested variant(s)?</source>
-        <translation>
-            <numerusform>از نو شروع شود و %n گونهٔ آزمایش‌شده کنار گذاشته شود؟</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>The profile or the search options changed since this search was paused, so it cannot resume. Start over?</source>
-        <translation>از زمان توقف این جستجو، نمایه یا گزینه‌های جستجو تغییر کرده‌اند، پس نمی‌توان آن را ادامه داد. از نو شروع شود؟</translation>
-    </message>
-    <message>
-        <source>Working settings</source>
-        <translation>تنظیمات کارا</translation>
-    </message>
-    <message numerus="yes">
-        <source>Starting over clears the %n result(s) this scan has found. Continue?</source>
-        <translation>
-            <numerusform>شروع دوباره %n نتیجه‌ای را که این اسکن یافته پاک می‌کند. ادامه می‌دهید؟</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <source>This scan was paused partway. Starting over discards its progress and clears its %n result(s). Continue?</source>
-        <translation>
-            <numerusform>این اسکن در میانهٔ کار متوقف شده است. شروع دوباره پیشرفت آن را دور می‌ریزد و %n نتیجه‌اش را پاک می‌کند. ادامه می‌دهید؟</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>This scan was paused partway. Starting over discards its progress. Continue?</source>
-        <translation>این اسکن در میانهٔ کار متوقف شده است. شروع دوباره پیشرفت آن را دور می‌ریزد. ادامه می‌دهید؟</translation>
-    </message>
-    <message numerus="yes">
-        <source>The targets changed since this scan was paused, so it cannot resume. Start over from the beginning and clear its %n result(s)?</source>
-        <translation>
-            <numerusform>اهداف پس از توقف این اسکن تغییر کرده‌اند، پس نمی‌تواند ادامه یابد. از ابتدا شروع شود و %n نتیجه‌اش پاک شود؟</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>The targets changed since this scan was paused, so it cannot resume. Start over from the beginning?</source>
-        <translation>اهداف پس از توقف این اسکن تغییر کرده‌اند، پس نمی‌تواند ادامه یابد. از ابتدا شروع شود؟</translation>
-    </message>
-    <message>
-        <source>The scan could not be started.</source>
-        <translation>اسکن شروع نشد.</translation>
-    </message>
-    <message>
-        <source>Pausing…</source>
-        <translation>در حال توقف…</translation>
-    </message>
-    <message>
-        <source>Running</source>
-        <translation>در حال اجرا</translation>
-    </message>
-    <message>
-        <source>Idle</source>
-        <translation>بیکار</translation>
-    </message>
-    <message>
-        <source>Paused</source>
-        <translation>متوقف‌شده</translation>
-    </message>
-    <message>
-        <source>Completed</source>
-        <translation>تکمیل‌شده</translation>
-    </message>
-    <message>
-        <source>Failed</source>
-        <translation>ناموفق</translation>
-    </message>
+    <name>ScannerUi</name>
     <message>
         <source>%1 / %2 (%3%)</source>
         <translation>%1 / %2 (%3%)</translation>
@@ -6114,342 +5481,62 @@ Remove that endpoint from this routing profile as well?</source>
         </translation>
     </message>
     <message>
-        <source>Open</source>
-        <translation>باز کردن</translation>
+        <source>Completed</source>
+        <translation>تکمیل‌شده</translation>
     </message>
     <message>
-        <source>Delete</source>
-        <translation>حذف</translation>
+        <source>Failed</source>
+        <translation>ناموفق</translation>
     </message>
     <message>
-        <source>Pause</source>
-        <translation>توقف موقت</translation>
+        <source>Failed to store the scan.</source>
+        <translation>ذخیرهٔ اسکن ناموفق بود.</translation>
     </message>
     <message>
-        <source>Resume</source>
-        <translation>ادامه</translation>
+        <source>Idle</source>
+        <translation>بیکار</translation>
     </message>
     <message>
-        <source>Start</source>
-        <translation>شروع</translation>
+        <source>Only a saved DNSTT, MasterDNS or XDNS profile can be used to find resolvers; save the profile first.</source>
+        <translation>فقط با نمایهٔ ذخیره‌شدهٔ DNSTT، MasterDNS یا XDNS می‌توان ریزالور پیدا کرد؛ ابتدا نمایه را ذخیره کنید.</translation>
     </message>
-</context>
-<context>
-    <name>ScanPhases</name>
     <message>
-        <source>ICMP (ping)</source>
-        <translation>ICMP (پینگ)</translation>
+        <source>Paused</source>
+        <translation>متوقف‌شده</translation>
     </message>
     <message>
-        <source>Timeout (ms)</source>
-        <translation>مهلت (میلی‌ثانیه)</translation>
+        <source>Pausing…</source>
+        <translation>در حال توقف…</translation>
     </message>
     <message>
-        <source>Echo requests</source>
-        <translation>درخواست‌های echo</translation>
+        <source>Resolvers for %1</source>
+        <translation>ریزالورهای %1</translation>
     </message>
     <message>
-        <source>TCP Connect</source>
-        <translation>اتصال TCP</translation>
+        <source>Running</source>
+        <translation>در حال اجرا</translation>
     </message>
-    <message>
-        <source>Attempts</source>
-        <translation>تلاش‌ها</translation>
-    </message>
-    <message>
-        <source>TLS / HTTP</source>
-        <translation>TLS / HTTP</translation>
-    </message>
-    <message>
-        <source>Use TLS</source>
-        <translation>استفاده از TLS</translation>
-    </message>
-    <message>
-        <source>SNI</source>
-        <translation>SNI</translation>
-    </message>
-    <message>
-        <source>The target address</source>
-        <translation>نشانی هدف</translation>
-    </message>
-    <message>
-        <source>Host header</source>
-        <translation>سرآیند Host</translation>
-    </message>
-    <message>
-        <source>The SNI, or the target address</source>
-        <translation>SNI، یا نشانی هدف</translation>
-    </message>
-    <message>
-        <source>Path</source>
-        <translation>مسیر</translation>
-    </message>
-    <message>
-        <source>Method</source>
-        <translation>روش</translation>
-    </message>
-    <message>
-        <source>Only a 200 OK answer passes.</source>
-        <translation>فقط پاسخ 200 OK قبول است.</translation>
-    </message>
-    <message>
-        <source>HTTP version</source>
-        <translation>نسخهٔ HTTP</translation>
-    </message>
-    <message>
-        <source>ALPN</source>
-        <translation>ALPN</translation>
-    </message>
-    <message>
-        <source>From the HTTP version</source>
-        <translation>بر اساس نسخهٔ HTTP</translation>
-    </message>
-    <message>
-        <source>Minimum TLS version</source>
-        <translation>کمترین نسخهٔ TLS</translation>
-    </message>
-    <message>
-        <source>Maximum TLS version</source>
-        <translation>بیشترین نسخهٔ TLS</translation>
-    </message>
-    <message>
-        <source>uTLS fingerprint</source>
-        <translation>اثرانگشت uTLS</translation>
-    </message>
-    <message>
-        <source>Allow insecure certificates</source>
-        <translation>اجازهٔ گواهی‌های ناامن</translation>
-    </message>
-    <message>
-        <source>Disable SNI</source>
-        <translation>غیرفعال کردن SNI</translation>
-    </message>
-    <message>
-        <source>Fragment the TLS handshake</source>
-        <translation>قطعه‌بندی دست‌دهی TLS</translation>
-    </message>
-    <message>
-        <source>Fragment fallback delay (ms)</source>
-        <translation>تأخیر جایگزین قطعه‌بندی (میلی‌ثانیه)</translation>
-    </message>
-    <message>
-        <source>Fragment TLS records</source>
-        <translation>قطعه‌بندی رکوردهای TLS</translation>
-    </message>
-    <message>
-        <source>Mixed-case SNI</source>
-        <translation>SNI با حروف کوچک و بزرگ درهم</translation>
-    </message>
-    <message>
-        <source>Config Test</source>
-        <translation>تست پیکربندی</translation>
-    </message>
-    <message>
-        <source>Candidates that pass the probes are tested through a copy of this profile pointed at each of them.</source>
-        <translation>نامزدهایی که کاوش‌ها را با موفقیت بگذرانند، از طریق کپی‌ای از این نمایه که به هر یک از آن‌ها اشاره می‌کند تست می‌شوند.</translation>
-    </message>
-    <message>
-        <source>Profile</source>
-        <translation>نمایه</translation>
-    </message>
-    <message>
-        <source>Test URL</source>
-        <translation>آدرس تست</translation>
-    </message>
-    <message>
-        <source>Report warm latency (two requests per target)</source>
-        <translation>گزارش تأخیر گرم (دو درخواست برای هر هدف)</translation>
-    </message>
-    <message>
-        <source>WARP Test</source>
-        <translation>تست WARP</translation>
-    </message>
-    <message>
-        <source>Candidates that pass the probes are tested by connecting to WARP through them.</source>
-        <translation>نامزدهایی که کاوش‌ها را با موفقیت بگذرانند، با اتصال به WARP از طریق آن‌ها تست می‌شوند.</translation>
-    </message>
-    <message>
-        <source>Mode</source>
-        <translation>حالت</translation>
-    </message>
-    <message>
-        <source>MASQUE transport</source>
-        <translation>انتقال MASQUE</translation>
-    </message>
-    <message>
-        <source>Identity</source>
-        <translation>هویت</translation>
-    </message>
-    <message>
-        <source>Device</source>
-        <translation>دستگاه</translation>
-    </message>
-    <message>
-        <source>Register</source>
-        <translation>ثبت‌نام</translation>
-    </message>
-    <message>
-        <source>MTU</source>
-        <translation>MTU</translation>
-    </message>
-    <message>
-        <source>QUIC opener</source>
-        <translation>بازکنندهٔ QUIC</translation>
-    </message>
-    <message>
-        <source>Sends a decoy packet before each UDP flow to get past QUIC blocking.</source>
-        <translation>پیش از هر جریان UDP یک بستهٔ فریب می‌فرستد تا از مسدودسازی QUIC عبور کند.</translation>
-    </message>
-    <message>
-        <source>Junk packets (Jc)</source>
-        <translation>بسته‌های زائد (Jc)</translation>
-    </message>
-    <message>
-        <source>Junk minimum size (Jmin)</source>
-        <translation>کمترین اندازهٔ بستهٔ زائد (Jmin)</translation>
-    </message>
-    <message>
-        <source>Junk maximum size (Jmax)</source>
-        <translation>بیشترین اندازهٔ بستهٔ زائد (Jmax)</translation>
-    </message>
-    <message>
-        <source>DNS Tunnel Test</source>
-        <translation>تست تونل DNS</translation>
-    </message>
-    <message>
-        <source>Each address is tried as the only resolver of this profile; those that relay its tunnel are kept.</source>
-        <translation>هر نشانی به‌عنوان تنها ریزالور این نمایه آزموده می‌شود؛ نشانی‌هایی که تونل آن را عبور می‌دهند نگه داشته می‌شوند.</translation>
-    </message>
-    <message>
-        <source>Test</source>
-        <translation>تست</translation>
-    </message>
-    <message>
-        <source>Time limit per resolver. Empty: the test&apos;s default.</source>
-        <translation>سقف زمان برای هر ریزالور. خالی: پیش‌فرض تست.</translation>
-    </message>
-</context>
-<context>
-    <name>ScanTuneSettings</name>
-    <message>
-        <source>Profile</source>
-        <translation>نمایه</translation>
-    </message>
-    <message>
-        <source>Variants of this profile&apos;s anti-censorship settings are tested through the core, one attempt at a time. The profile itself changes only when you apply a result.</source>
-        <translation>گونه‌های تنظیمات ضدسانسور این نمایه از طریق هسته، هر بار یک تلاش، آزمایش می‌شوند. خود نمایه فقط وقتی تغییر می‌کند که نتیجه‌ای را اعمال کنید.</translation>
-    </message>
-    <message>
-        <source>What to Try</source>
-        <translation>چه چیزهایی امتحان شود</translation>
-    </message>
-    <message>
-        <source>Each setting is first tried on its own, a switch flipped or a list value by value; the changes that help are then combined.</source>
-        <translation>هر تنظیم ابتدا به‌تنهایی امتحان می‌شود، یک کلید برعکس یا یک فهرست مقدار به مقدار؛ سپس تغییرهای مؤثر با هم ترکیب می‌شوند.</translation>
-    </message>
-    <message>
-        <source>uTLS fingerprint</source>
-        <translation>اثرانگشت uTLS</translation>
-    </message>
-    <message>
-        <source>Fingerprints to try</source>
-        <translation>اثرانگشت‌ها برای امتحان</translation>
-    </message>
-    <message>
-        <source>TLS fragment</source>
-        <translation>قطعه‌بندی TLS</translation>
-    </message>
-    <message>
-        <source>Fallback delays to try</source>
-        <translation>تأخیرهای جایگزین برای امتحان</translation>
-    </message>
-    <message>
-        <source>TLS record fragment</source>
-        <translation>قطعه‌بندی رکورد TLS</translation>
-    </message>
-    <message>
-        <source>Mixed-case SNI</source>
-        <translation>SNI با حروف کوچک و بزرگ درهم</translation>
-    </message>
-    <message>
-        <source>QUIC opener</source>
-        <translation>بازکنندهٔ QUIC</translation>
-    </message>
-    <message>
-        <source>MTU (WireGuard)</source>
-        <translation>MTU (WireGuard)</translation>
-    </message>
-    <message>
-        <source>Smallest MTU</source>
-        <translation>کمترین MTU</translation>
-    </message>
-    <message>
-        <source>Largest MTU</source>
-        <translation>بیشترین MTU</translation>
-    </message>
-    <message>
-        <source>The profile&apos;s own</source>
-        <translation>مقدار خود نمایه</translation>
-    </message>
-    <message>
-        <source>MTU step</source>
-        <translation>گام MTU</translation>
-    </message>
-    <message>
-        <source>Download URL</source>
-        <translation>نشانی دانلود</translation>
-    </message>
-    <message>
-        <source>Download size (bytes)</source>
-        <translation>حجم دانلود (بایت)</translation>
-    </message>
-    <message>
-        <source>Pacing</source>
-        <translation>زمان‌بندی</translation>
-    </message>
-    <message>
-        <source>Attempts per variant</source>
-        <translation>تلاش برای هر گونه</translation>
-    </message>
-    <message>
-        <source>More attempts tell a working variant from a lucky one.</source>
-        <translation>تلاش‌های بیشتر گونهٔ کارا را از گونهٔ خوش‌شانس جدا می‌کند.</translation>
-    </message>
-    <message>
-        <source>Attempts per minute</source>
-        <translation>تلاش در دقیقه</translation>
-    </message>
-    <message>
-        <source>At most this many attempts start in any minute.</source>
-        <translation>در هر دقیقه حداکثر همین تعداد تلاش آغاز می‌شود.</translation>
-    </message>
-    <message>
-        <source>Attempt limit</source>
-        <translation>سقف تلاش‌ها</translation>
-    </message>
-    <message>
-        <source>The search stops after this many attempts in all.</source>
-        <translation>جستجو پس از این تعداد تلاش در مجموع متوقف می‌شود.</translation>
-    </message>
-    <message>
-        <source>Time limit (minutes)</source>
-        <translation>سقف زمانی (دقیقه)</translation>
+    <message numerus="yes">
+        <source>Starting over keeps the %n current result(s) until the first new one replaces them. Continue?</source>
+        <translation>
+            <numerusform>شروع دوباره %n نتیجهٔ فعلی را نگه می‌دارد تا نخستین نتیجهٔ تازه جای آن‌ها را بگیرد. ادامه می‌دهید؟</numerusform>
+        </translation>
     </message>
     <message>
-        <source>The search stops after this many minutes.</source>
-        <translation>جستجو پس از این تعداد دقیقه متوقف می‌شود.</translation>
+        <source>The scan could not be started.</source>
+        <translation>اسکن شروع نشد.</translation>
     </message>
     <message>
-        <source>Test URL</source>
-        <translation>آدرس تست</translation>
+        <source>The targets changed since this scan was paused, so it cannot resume. Start over from the beginning?</source>
+        <translation>اهداف پس از توقف این اسکن تغییر کرده‌اند، پس نمی‌تواند ادامه یابد. از ابتدا شروع شود؟</translation>
     </message>
     <message>
-        <source>Requested through the profile on every attempt.</source>
-        <translation>در هر تلاش از طریق نمایه درخواست می‌شود.</translation>
+        <source>This scan stopped partway. Starting over discards its progress. Continue?</source>
+        <translation>این اسکن در میانهٔ کار متوقف شده است. شروع دوباره پیشرفت آن را دور می‌ریزد. ادامه می‌دهید؟</translation>
     </message>
     <message>
-        <source>Timeout (ms)</source>
-        <translation>مهلت (میلی‌ثانیه)</translation>
+        <source>Find resolvers</source>
+        <translation>یافتن ریزالور</translation>
     </message>
 </context>
 <context>
@@ -6459,8 +5546,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>فهرست IP دیگر وجود ندارد</translation>
     </message>
     <message>
-        <source>Only lists with a URL or rule-set source can be updated</source>
-        <translation>فقط فهرست‌هایی با منبع URL یا rule-set به‌روزرسانی می‌شوند</translation>
+        <source>Only lists with a URL source can be updated</source>
+        <translation>فقط فهرست‌هایی با منبع URL به‌روزرسانی می‌شوند</translation>
     </message>
     <message>
         <source>Updating IP list %1</source>
@@ -6493,20 +5580,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>فهرست منبعی برای دریافت ندارد</translation>
     </message>
     <message>
-        <source>Unknown rule-set: %1</source>
-        <translation>rule-set ناشناخته: %1</translation>
-    </message>
-    <message>
         <source>The source must be an http(s) URL</source>
         <translation>منبع باید URL از نوع http(s) باشد</translation>
-    </message>
-    <message>
-        <source>The core is not running</source>
-        <translation>هسته در حال اجرا نیست</translation>
-    </message>
-    <message>
-        <source>The core could not read the rule-set</source>
-        <translation>هسته نتوانست rule-set را بخواند</translation>
     </message>
     <message>
         <source>The address returned a web page instead of an IP list</source>
@@ -6536,94 +5611,6 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>از نمایهٔ تونل DNS نمی‌توان برای یافتن ریزالور استفاده کرد</translation>
     </message>
     <message>
-        <source>A working settings search has no results to rescan</source>
-        <translation>جستجوی تنظیمات کارا نتیجه‌ای برای اسکن دوباره ندارد</translation>
-    </message>
-    <message>
-        <source>Choose the profile to find working settings for</source>
-        <translation>نمایه‌ای را که برایش تنظیمات کارا پیدا شود انتخاب کنید</translation>
-    </message>
-    <message>
-        <source>Nothing to try: turn on a setting this profile supports</source>
-        <translation>چیزی برای امتحان نیست: تنظیمی را که این نمایه پشتیبانی می‌کند روشن کنید</translation>
-    </message>
-    <message>
-        <source>The profile has no server address to test</source>
-        <translation>نمایه نشانی سروری برای آزمایش ندارد</translation>
-    </message>
-    <message>
-        <source>Every variant connects to %1</source>
-        <translation>همهٔ گونه‌ها به %1 وصل می‌شوند</translation>
-    </message>
-    <message numerus="yes">
-        <source>Stopped at the time limit of %n minute(s)</source>
-        <translation>
-            <numerusform>در سقف زمانی %n دقیقه متوقف شد</numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <source>Stopped at the limit of %n attempt(s)</source>
-        <translation>
-            <numerusform>در سقف %n تلاش متوقف شد</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>%1: cannot be used: %2</source>
-        <translation>%1: قابل استفاده نیست: %2</translation>
-    </message>
-    <message>
-        <source>%1: passed in %2 ms (%3/%4)</source>
-        <translation>%1: در %2 میلی‌ثانیه موفق شد (%3/%4)</translation>
-    </message>
-    <message>
-        <source>The network is down, so the search paused; resume it when the connection is back</source>
-        <translation>شبکه قطع است، پس جستجو متوقف شد؛ وقتی اتصال برگشت آن را ادامه دهید</translation>
-    </message>
-    <message>
-        <source>%1: failed (%2/%3): %4</source>
-        <translation>%1: ناموفق (%2/%3): %4</translation>
-    </message>
-    <message>
-        <source>The profile could not be copied</source>
-        <translation>نمایه کپی نشد</translation>
-    </message>
-    <message>
-        <source>This profile cannot be pointed at %1</source>
-        <translation>این نمایه را نمی‌توان به %1 هدایت کرد</translation>
-    </message>
-    <message>
-        <source>The core returned no result</source>
-        <translation>هسته نتیجه‌ای برنگرداند</translation>
-    </message>
-    <message>
-        <source>The core did not answer the network check, so the search paused</source>
-        <translation>هسته به بررسی شبکه پاسخ نداد، پس جستجو متوقف شد</translation>
-    </message>
-    <message>
-        <source>Confirming the best variants</source>
-        <translation>در حال تأیید بهترین گونه‌ها</translation>
-    </message>
-    <message>
-        <source>Testing the profile as it is</source>
-        <translation>در حال آزمایش نمایه همان‌طور که هست</translation>
-    </message>
-    <message>
-        <source>Trying one change at a time</source>
-        <translation>در حال امتحان تغییرها یکی‌یکی</translation>
-    </message>
-    <message>
-        <source>Combining what helped</source>
-        <translation>در حال ترکیب تغییرهای مؤثر</translation>
-    </message>
-    <message>
-        <source>Trying fragment delays</source>
-        <translation>در حال امتحان تأخیرهای قطعه‌بندی</translation>
-    </message>
-    <message>
-        <source>Searching for the largest working MTU</source>
-        <translation>در حال یافتن بزرگ‌ترین MTU کارا</translation>
-    </message>
-    <message>
         <source>Preparing</source>
         <translation>در حال آماده‌سازی</translation>
     </message>
@@ -6644,32 +5631,12 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>اسکن %1 متوقف شد: %2</translation>
     </message>
     <message>
-        <source>The core did not answer the config test</source>
-        <translation>هسته به تست پیکربندی پاسخ نداد</translation>
-    </message>
-    <message>
         <source>The scan is already running</source>
         <translation>اسکن از قبل در حال اجراست</translation>
     </message>
     <message>
         <source>The scan no longer exists</source>
         <translation>اسکن دیگر وجود ندارد</translation>
-    </message>
-    <message>
-        <source>Turn on at least one test phase</source>
-        <translation>دست‌کم یک مرحلهٔ تست را روشن کنید</translation>
-    </message>
-    <message>
-        <source>A TLS handshake check needs TLS turned on</source>
-        <translation>بررسی دست‌دهی TLS نیاز دارد TLS روشن باشد</translation>
-    </message>
-    <message>
-        <source>HTTP/3 needs TLS turned on</source>
-        <translation>HTTP/3 نیاز دارد TLS روشن باشد</translation>
-    </message>
-    <message>
-        <source>The profile for the config test cannot be used</source>
-        <translation>نمایهٔ تست پیکربندی قابل استفاده نیست</translation>
     </message>
     <message>
         <source>Choose the IP list to scan</source>
@@ -6688,48 +5655,16 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>ابتدا اسکن را متوقف کنید</translation>
     </message>
     <message>
-        <source>Scan %1 Result</source>
-        <translation>نتیجهٔ اسکن %1</translation>
-    </message>
-    <message>
-        <source>config test</source>
-        <translation>تست پیکربندی</translation>
-    </message>
-    <message>
-        <source>Scanning %1 with %2</source>
-        <translation>اسکن %1 با %2</translation>
+        <source>Testing %1 (%2)</source>
+        <translation>در حال تست %1 (%2)</translation>
     </message>
     <message>
         <source>%1 failed %2: %3</source>
         <translation>%1 در %2 ناموفق بود: %3</translation>
     </message>
     <message>
-        <source>Connected to %1 with TCP (%2 ms)</source>
-        <translation>اتصال TCP به %1 برقرار شد (%2 میلی‌ثانیه)</translation>
-    </message>
-    <message>
-        <source>%1 replied to ping (%2 ms)</source>
-        <translation>%1 به پینگ پاسخ داد (%2 میلی‌ثانیه)</translation>
-    </message>
-    <message>
-        <source>TLS handshake with %1 succeeded (%2 ms)</source>
-        <translation>دست‌دهی TLS با %1 موفق بود (%2 میلی‌ثانیه)</translation>
-    </message>
-    <message>
-        <source>%1 answered over HTTP (%2 ms)</source>
-        <translation>%1 از طریق HTTP پاسخ داد (%2 میلی‌ثانیه)</translation>
-    </message>
-    <message>
-        <source>%1 passed the config test (%2 ms)</source>
-        <translation>%1 تست پیکربندی را گذراند (%2 میلی‌ثانیه)</translation>
-    </message>
-    <message>
         <source>Preparing targets…</source>
         <translation>در حال آماده‌سازی اهداف…</translation>
-    </message>
-    <message>
-        <source>The scan has no profile for the config test</source>
-        <translation>اسکن نمایه‌ای برای تست پیکربندی ندارد</translation>
     </message>
     <message>
         <source>The result list could not be created</source>
@@ -6744,10 +5679,6 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>فهرست IP پایه خالی است</translation>
     </message>
     <message>
-        <source>The base IP list holds only IPv6 ranges; enable IPv6 scanning</source>
-        <translation>فهرست IP پایه فقط بازه‌های IPv6 دارد؛ اسکن IPv6 را روشن کنید</translation>
-    </message>
-    <message>
         <source>%1 snapshot</source>
         <translation>تصویر لحظه‌ای %1</translation>
     </message>
@@ -6758,10 +5689,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>The base IP list holds no valid target</source>
         <translation>فهرست IP پایه هیچ هدف معتبری ندارد</translation>
-    </message>
-    <message>
-        <source>The result list holds only IPv6 entries; enable IPv6 scanning</source>
-        <translation>فهرست نتایج فقط ورودی‌های IPv6 دارد؛ اسکن IPv6 را روشن کنید</translation>
     </message>
     <message>
         <source>%1 rescan snapshot</source>
@@ -6783,16 +5710,6 @@ Remove that endpoint from this routing profile as well?</source>
         <source>The copy of the base IP list is gone; restart the scan</source>
         <translation>کپی فهرست IP پایه از بین رفته است؛ اسکن را از نو شروع کنید</translation>
     </message>
-    <message numerus="yes">
-        <source>Found %n result(s); stopping as configured</source>
-        <translation>
-            <numerusform>%n نتیجه پیدا شد؛ طبق تنظیمات متوقف می‌شود</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>IPv6 is unreachable from this network; scan paused (turn off IPv6 scanning to go on)</source>
-        <translation>IPv6 از این شبکه در دسترس نیست؛ اسکن متوقف شد (برای ادامه، اسکن IPv6 را خاموش کنید)</translation>
-    </message>
     <message>
         <source>Network appears to be down; scan paused</source>
         <translation>به نظر می‌رسد شبکه قطع است؛ اسکن متوقف شد</translation>
@@ -6800,14 +5717,6 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Scan %1: network check failed: %2</source>
         <translation>اسکن %1: بررسی شبکه ناموفق بود: %2</translation>
-    </message>
-    <message>
-        <source>IPv4 is unreachable from this network; IPv4 results were kept</source>
-        <translation>IPv4 از این شبکه در دسترس نیست؛ نتایج IPv4 نگه داشته شدند</translation>
-    </message>
-    <message>
-        <source>IPv6 is unreachable from this network; IPv6 results were kept</source>
-        <translation>IPv6 از این شبکه در دسترس نیست؛ نتایج IPv6 نگه داشته شدند</translation>
     </message>
     <message>
         <source>The core ended the scan session early</source>
@@ -6834,16 +5743,6 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>هسته به درخواست کاوش پاسخ نداد</translation>
     </message>
     <message numerus="yes">
-        <source>Testing %n candidate(s) through the config…</source>
-        <translation>
-            <numerusform>در حال تست %n نامزد از طریق پیکربندی…</numerusform>
-        </translation>
-    </message>
-    <message>
-        <source>Checking the network…</source>
-        <translation>در حال بررسی شبکه…</translation>
-    </message>
-    <message numerus="yes">
         <source>Skipped %n invalid entry(ies)</source>
         <translation>
             <numerusform>%n ورودی نامعتبر نادیده گرفته شد</numerusform>
@@ -6854,8 +5753,218 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>کاوش</translation>
     </message>
     <message>
-        <source>Testing configs</source>
-        <translation>تست پیکربندی‌ها</translation>
+        <source>The scan&apos;s profile cannot be used</source>
+        <translation>نمایهٔ اسکن قابل استفاده نیست</translation>
+    </message>
+    <message>
+        <source>data check</source>
+        <translation>بررسی داده</translation>
+    </message>
+    <message>
+        <source>Network appears to be down</source>
+        <translation>به نظر می‌رسد شبکه قطع است</translation>
+    </message>
+    <message>
+        <source>Checking for DNS interception</source>
+        <translation>در حال بررسی رهگیری DNS</translation>
+    </message>
+    <message>
+        <source>This network answers DNS for any address; probing only the system resolvers</source>
+        <translation>این شبکه به پرس‌وجوهای DNS برای هر نشانی‌ای پاسخ می‌دهد؛ فقط ریزالورهای سیستم کاوش می‌شوند</translation>
+    </message>
+    <message>
+        <source>Scan %1: %2</source>
+        <translation>اسکن %1: %2</translation>
+    </message>
+    <message numerus="yes">
+        <source>Probing %n system or profile resolver(s)</source>
+        <translation>
+            <numerusform>در حال کاوش %n ریزالور سیستم یا نمایه</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>The tunnel answered through none of the system or profile resolvers; check the profile or the server</source>
+        <translation>تونل از طریق هیچ‌یک از ریزالورهای سیستم یا نمایه پاسخ نداد؛ نمایه یا سرور را بررسی کنید</translation>
+    </message>
+    <message numerus="yes">
+        <source>Found %n new result(s); stopping as configured</source>
+        <translation>
+            <numerusform>%n نتیجهٔ تازه پیدا شد؛ طبق تنظیمات متوقف می‌شود</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>no answer (%1)</source>
+        <translation>بی‌پاسخ (%1)</translation>
+    </message>
+    <message>
+        <source>error reply (%1)</source>
+        <translation>پاسخ خطا (%1)</translation>
+    </message>
+    <message>
+        <source>wrong answer (%1)</source>
+        <translation>پاسخ نادرست (%1)</translation>
+    </message>
+    <message>
+        <source>name too long (%1)</source>
+        <translation>نام بیش از حد طولانی (%1)</translation>
+    </message>
+    <message>
+        <source>short names only (%1)</source>
+        <translation>فقط نام‌های کوتاه (%1)</translation>
+    </message>
+    <message>
+        <source>other (%1)</source>
+        <translation>موارد دیگر (%1)</translation>
+    </message>
+    <message>
+        <source>Failures: %1</source>
+        <translation>ناموفق‌ها: %1</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n passed with heavy loss</source>
+        <translation>
+            <numerusform>%n مورد با اتلاف زیاد موفق شد</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Lower Max QNAME Length in the profile to use the resolvers that pass only short names</source>
+        <translation>برای استفاده از ریزالورهایی که فقط نام‌های کوتاه را عبور می‌دهند، «بیشینهٔ طول QNAME» را در نمایه کم کنید</translation>
+    </message>
+    <message numerus="yes">
+        <source>The tunnel answered through none of the %n result(s), so none was removed</source>
+        <translation>
+            <numerusform>تونل از طریق هیچ‌یک از %n نتیجه پاسخ نداد، پس چیزی حذف نشد</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Checking the WARP profile</source>
+        <translation>در حال بررسی نمایهٔ WARP</translation>
+    </message>
+    <message>
+        <source>The scan has no WARP profile</source>
+        <translation>اسکن نمایهٔ WARP ندارد</translation>
+    </message>
+    <message>
+        <source>The WARP profile could not be built</source>
+        <translation>پیکربندی نمایهٔ WARP ساخته نشد</translation>
+    </message>
+    <message>
+        <source>The base IP list holds no valid range</source>
+        <translation>فهرست IP پایه هیچ بازهٔ معتبری ندارد</translation>
+    </message>
+    <message>
+        <source>The base IP list holds only IPv6 ranges, and this network has no IPv6</source>
+        <translation>فهرست IP پایه فقط بازه‌های IPv6 دارد و این شبکه IPv6 ندارد</translation>
+    </message>
+    <message>
+        <source>This network has no IPv6; skipping the IPv6 ranges</source>
+        <translation>این شبکه IPv6 ندارد؛ بازه‌های IPv6 نادیده گرفته می‌شوند</translation>
+    </message>
+    <message>
+        <source>Finding ports</source>
+        <translation>در حال یافتن پورت‌ها</translation>
+    </message>
+    <message numerus="yes">
+        <source>Finding open ports on %n address(es)</source>
+        <translation>
+            <numerusform>در حال یافتن پورت‌های باز روی %n نشانی</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <source>None of the usual ports answered; trying %n more</source>
+        <translation>
+            <numerusform>هیچ‌یک از پورت‌های معمول پاسخ ندادند؛ در حال امتحان %n پورت دیگر</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Trying AmneziaWG junk</source>
+        <translation>در حال امتحان بسته‌های زائد AmneziaWG</translation>
+    </message>
+    <message>
+        <source>Endpoints answer only with AmneziaWG junk; continuing with junk packets</source>
+        <translation>نقاط پایانی فقط با بسته‌های زائد AmneziaWG پاسخ می‌دهند؛ اسکن با بسته‌های زائد ادامه می‌یابد</translation>
+    </message>
+    <message>
+        <source>Ports answering: %1</source>
+        <translation>پورت‌های پاسخ‌دهنده: %1</translation>
+    </message>
+    <message>
+        <source>Searching ranges</source>
+        <translation>در حال جست‌وجو در بازه‌ها</translation>
+    </message>
+    <message numerus="yes">
+        <source>Round %1: probing %n address(es)</source>
+        <translation>
+            <numerusform>دور %1: در حال کاوش %n نشانی</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>This host has no IPv6 route; skipping the IPv6 ranges</source>
+        <translation>این دستگاه مسیر IPv6 ندارد؛ بازه‌های IPv6 نادیده گرفته می‌شوند</translation>
+    </message>
+    <message>
+        <source>IPv6 is unreachable from this network; skipping the IPv6 ranges</source>
+        <translation>IPv6 از این شبکه در دسترس نیست؛ بازه‌های IPv6 نادیده گرفته می‌شوند</translation>
+    </message>
+    <message>
+        <source>Checking data</source>
+        <translation>در حال بررسی داده</translation>
+    </message>
+    <message numerus="yes">
+        <source>Checking data through %n endpoint(s)</source>
+        <translation>
+            <numerusform>در حال بررسی داده از طریق %n نقطهٔ پایانی</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>The core did not answer the data check</source>
+        <translation>هسته به بررسی داده پاسخ نداد</translation>
+    </message>
+    <message>
+        <source>The core ended the data check early</source>
+        <translation>هسته بررسی داده را زودتر پایان داد</translation>
+    </message>
+    <message numerus="yes">
+        <source>Confirmed %n endpoint(s)</source>
+        <translation>
+            <numerusform>%n نقطهٔ پایانی تأیید شد</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Checking the network</source>
+        <translation>در حال بررسی شبکه</translation>
+    </message>
+    <message numerus="yes">
+        <source>Found %n endpoint(s)</source>
+        <translation>
+            <numerusform>%n نقطهٔ پایانی پیدا شد</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>No endpoint answered the WARP handshake; this network may block it</source>
+        <translation>هیچ نقطهٔ پایانی به دست‌دهی WARP پاسخ نداد؛ ممکن است این شبکه آن را مسدود کند</translation>
+    </message>
+    <message>
+        <source>Endpoints answered only with AmneziaWG junk, and no data flowed through them</source>
+        <translation>نقاط پایانی فقط با بسته‌های زائد AmneziaWG پاسخ دادند و هیچ داده‌ای از آن‌ها عبور نکرد</translation>
+    </message>
+    <message>
+        <source>Endpoints answered the handshake, but no data flowed through them</source>
+        <translation>نقاط پایانی به دست‌دهی پاسخ دادند، اما هیچ داده‌ای از آن‌ها عبور نکرد</translation>
+    </message>
+    <message numerus="yes">
+        <source>No %1 result answered, so %n failed %1 result(s) were kept</source>
+        <translation>
+            <numerusform>هیچ نتیجهٔ %1 پاسخ نداد، پس %n نتیجهٔ ناموفق %1 نگه داشته شد</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Trying HTTP/2</source>
+        <translation>در حال امتحان HTTP/2</translation>
+    </message>
+    <message>
+        <source>HTTP/3 gets no answer here; continuing over HTTP/2</source>
+        <translation>HTTP/3 در این شبکه پاسخی نمی‌گیرد؛ اسکن با HTTP/2 ادامه می‌یابد</translation>
     </message>
 </context>
 <context>
@@ -6893,28 +6002,12 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>اوج در %1 ثانیه</translation>
     </message>
     <message>
-        <source>Stopped</source>
-        <translation>متوقف شد</translation>
-    </message>
-    <message>
         <source>Not running</source>
         <translation>در حال اجرا نیست</translation>
     </message>
     <message>
-        <source>Started %1</source>
-        <translation>شروع %1</translation>
-    </message>
-    <message>
-        <source>Switched to %1</source>
-        <translation>تغییر به %1</translation>
-    </message>
-    <message>
         <source>Smooth lines</source>
         <translation>خطوط نرم</translation>
-    </message>
-    <message>
-        <source>Profile events</source>
-        <translation>رویدادهای نمایه</translation>
     </message>
     <message>
         <source>Show all lines</source>
@@ -6945,113 +6038,6 @@ Remove that endpoint from this routing profile as well?</source>
     </message>
 </context>
 <context>
-    <name>Scanner::Tune</name>
-    <message>
-        <source>The profile could not be read</source>
-        <translation>نمایه خوانده نشد</translation>
-    </message>
-    <message>
-        <source>A chain cannot be searched as a whole; run the search on the profiles of its hops</source>
-        <translation>زنجیره را نمی‌توان یک‌جا جستجو کرد؛ جستجو را روی نمایه‌های هاپ‌های آن اجرا کنید</translation>
-    </message>
-    <message>
-        <source>Xray profiles are not supported yet: the search changes sing-box settings</source>
-        <translation>نمایه‌های Xray هنوز پشتیبانی نمی‌شوند: جستجو تنظیمات sing-box را تغییر می‌دهد</translation>
-    </message>
-    <message>
-        <source>This profile has no setting the search can change: that needs TLS over TCP, QUIC or WireGuard</source>
-        <translation>این نمایه تنظیمی ندارد که جستجو بتواند تغییرش دهد: برای این کار TLS روی TCP، QUIC یا WireGuard لازم است</translation>
-    </message>
-    <message>
-        <source>The MTU applies only to WireGuard profiles</source>
-        <translation>MTU فقط برای نمایه‌های WireGuard به کار می‌رود</translation>
-    </message>
-    <message>
-        <source>The profile no longer uses TLS over TCP</source>
-        <translation>نمایه دیگر از TLS روی TCP استفاده نمی‌کند</translation>
-    </message>
-    <message>
-        <source>This type of profile has no uTLS fingerprint</source>
-        <translation>این نوع نمایه اثرانگشت uTLS ندارد</translation>
-    </message>
-    <message>
-        <source>Unknown setting “%1”</source>
-        <translation>تنظیم ناشناخته «%1»</translation>
-    </message>
-    <message>
-        <source>The profile as it is</source>
-        <translation>نمایه همان‌طور که هست</translation>
-    </message>
-    <message>
-        <source>uTLS off</source>
-        <translation>uTLS خاموش</translation>
-    </message>
-    <message>
-        <source>Fingerprint %1</source>
-        <translation>اثرانگشت %1</translation>
-    </message>
-    <message>
-        <source>TLS fragment on</source>
-        <translation>قطعه‌بندی TLS روشن</translation>
-    </message>
-    <message>
-        <source>TLS fragment off</source>
-        <translation>قطعه‌بندی TLS خاموش</translation>
-    </message>
-    <message>
-        <source>Fragment delay %1</source>
-        <translation>تأخیر قطعه‌بندی %1</translation>
-    </message>
-    <message>
-        <source>default</source>
-        <translation>پیش‌فرض</translation>
-    </message>
-    <message>
-        <source>Record fragment on</source>
-        <translation>قطعه‌بندی رکورد روشن</translation>
-    </message>
-    <message>
-        <source>Record fragment off</source>
-        <translation>قطعه‌بندی رکورد خاموش</translation>
-    </message>
-    <message>
-        <source>Mixed-case SNI on</source>
-        <translation>SNI با حروف کوچک و بزرگ درهم روشن</translation>
-    </message>
-    <message>
-        <source>Mixed-case SNI off</source>
-        <translation>SNI با حروف کوچک و بزرگ درهم خاموش</translation>
-    </message>
-    <message>
-        <source>QUIC opener on</source>
-        <translation>بازکنندهٔ QUIC روشن</translation>
-    </message>
-    <message>
-        <source>QUIC opener off</source>
-        <translation>بازکنندهٔ QUIC خاموش</translation>
-    </message>
-    <message>
-        <source>MTU %1</source>
-        <translation>MTU %1</translation>
-    </message>
-    <message>
-        <source>“%1” changes from one start to the next, so it cannot be tried</source>
-        <translation>«%1» در هر بار شروع تغییر می‌کند، پس نمی‌توان آن را امتحان کرد</translation>
-    </message>
-    <message>
-        <source>“%1” is not a uTLS fingerprint</source>
-        <translation>«%1» اثرانگشت uTLS نیست</translation>
-    </message>
-    <message>
-        <source>Fragment delay “%1”: %2</source>
-        <translation>تأخیر قطعه‌بندی «%1»: %2</translation>
-    </message>
-    <message>
-        <source>The largest MTU must be above the smallest</source>
-        <translation>بیشترین MTU باید از کمترین بزرگ‌تر باشد</translation>
-    </message>
-</context>
-<context>
     <name>StartStopButton</name>
     <message>
         <source>Connecting… click to stop</source>
@@ -7060,6 +6046,115 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>Kill switch is blocking traffic</source>
         <translation>Kill switch در حال مسدود کردن ترافیک است</translation>
+    </message>
+</context>
+<context>
+    <name>SubscriptionInfoCard</name>
+    <message>
+        <source>Portal</source>
+        <translation>پورتال</translation>
+    </message>
+    <message>
+        <source>Support</source>
+        <translation>پشتیبانی</translation>
+    </message>
+    <message>
+        <source>Expired</source>
+        <translation>منقضی شده</translation>
+    </message>
+    <message>
+        <source>%1m left</source>
+        <translation>%1 دقیقه مانده</translation>
+    </message>
+    <message>
+        <source>%1h %2m left</source>
+        <translation>%1 ساعت و %2 دقیقه مانده</translation>
+    </message>
+    <message>
+        <source>%1d %2h left</source>
+        <translation>%1 روز و %2 ساعت مانده</translation>
+    </message>
+    <message>
+        <source>Auto-update: every %1</source>
+        <translation>به‌روزرسانی خودکار: هر %1</translation>
+    </message>
+    <message>
+        <source>Expires: %1</source>
+        <translation>انقضا: %1</translation>
+    </message>
+    <message>
+        <source>Interval provided by the server</source>
+        <translation>بازهٔ تعیین‌شده از سوی سرور</translation>
+    </message>
+    <message>
+        <source>Interval set for this group</source>
+        <translation>بازهٔ تنظیم‌شده برای این گروه</translation>
+    </message>
+    <message>
+        <source>Global interval from Settings</source>
+        <translation>بازهٔ سراسری از تنظیمات</translation>
+    </message>
+    <message numerus="yes">
+        <source>Server suggests every %n hour(s)</source>
+        <translation>
+            <numerusform>سرور هر %n ساعت را پیشنهاد می‌کند</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Every %1</source>
+        <translation>هر %1</translation>
+    </message>
+    <message>
+        <source>Website / Portal: %1</source>
+        <translation>وب‌سایت / پورتال: %1</translation>
+    </message>
+    <message>
+        <source>Technical Support: %1</source>
+        <translation>پشتیبانی فنی: %1</translation>
+    </message>
+    <message>
+        <source>Subscription details</source>
+        <translation>جزئیات اشتراک</translation>
+    </message>
+    <message>
+        <source>Subscription details (new announcement)</source>
+        <translation>جزئیات اشتراک (اطلاعیهٔ جدید)</translation>
+    </message>
+    <message>
+        <source>Provider</source>
+        <translation>ارائه‌دهنده</translation>
+    </message>
+    <message>
+        <source>Traffic</source>
+        <translation>ترافیک</translation>
+    </message>
+    <message>
+        <source>%1 of %2 used (%3%)</source>
+        <translation>%1 از %2 مصرف شده (%3%)</translation>
+    </message>
+    <message>
+        <source>%1 used, no limit</source>
+        <translation>%1 مصرف شده، بدون محدودیت</translation>
+    </message>
+    <message>
+        <source>Expires</source>
+        <translation>انقضا</translation>
+    </message>
+    <message>
+        <source>Last updated</source>
+        <translation>آخرین به‌روزرسانی</translation>
+    </message>
+    <message>
+        <source>Auto-update</source>
+        <translation>به‌روزرسانی خودکار</translation>
+    </message>
+    <message>
+        <source>Announcement</source>
+        <translation>اطلاعیه</translation>
+    </message>
+    <message>
+        <source>Website</source>
+        <translation>وب‌سایت</translation>
     </message>
 </context>
 <context>
@@ -7471,6 +6566,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>The padding lengths can add up to more than 65553 bytes.</source>
         <translation>مجموع طول‌های padding می‌تواند از 65553 بایت بیشتر شود.</translation>
+    </message>
+    <message>
+        <source>Must be a string.</source>
+        <translation>باید یک رشته باشد.</translation>
     </message>
 </context>
 <context>
@@ -8737,16 +7836,8 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>جایگزینی پورت</translation>
     </message>
     <message>
-        <source>Fragment the TLS handshake</source>
-        <translation>قطعه‌قطعه کردن دست‌دهی TLS</translation>
-    </message>
-    <message>
         <source>Fallback delay</source>
         <translation>تأخیر بازگشت</translation>
-    </message>
-    <message>
-        <source>Split into TLS records</source>
-        <translation>تقسیم به رکوردهای TLS</translation>
     </message>
     <message>
         <source>Spoof SNI</source>
@@ -8807,6 +7898,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>This rule has no conditions, so it would catch all traffic. Add a condition, or turn the rule off.</source>
         <translation>این قانون هیچ شرطی ندارد، پس همهٔ ترافیک را می‌گیرد. یک شرط اضافه کنید یا قانون را خاموش کنید.</translation>
+    </message>
+    <message>
+        <source>Fragment TLS</source>
+        <translation>قطعه‌بندی TLS</translation>
     </message>
 </context>
 <context>
@@ -8908,6 +8003,30 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>The %1 list also has rows at %2.</source>
         <translation>فهرست «%1» ردیف‌های دیگری هم دارد: %2.</translation>
+    </message>
+    <message>
+        <source>Edit as text</source>
+        <translation>ویرایش به‌صورت متن</translation>
+    </message>
+    <message>
+        <source>Done</source>
+        <translation>انجام شد</translation>
+    </message>
+    <message>
+        <source>One entry per line</source>
+        <translation>هر خط یک مورد</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>کپی</translation>
+    </message>
+    <message>
+        <source>Copy all</source>
+        <translation>کپی همه</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>حذف</translation>
     </message>
 </context>
 <context>
@@ -9123,6 +8242,56 @@ Remove that endpoint from this routing profile as well?</source>
         <source>This rule&apos;s profile no longer exists. Pick another one to see the JSON.</source>
         <translation>نمایهٔ این قانون دیگر وجود ندارد. برای دیدن JSON نمایهٔ دیگری انتخاب کنید.</translation>
     </message>
+    <message>
+        <source>Handshake</source>
+        <translation>دست‌دهی</translation>
+    </message>
+    <message>
+        <source>Handshake + Records</source>
+        <translation>دست‌دهی + رکوردها</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation>خاموش</translation>
+    </message>
+    <message>
+        <source>Records</source>
+        <translation>رکوردها</translation>
+    </message>
+    <message>
+        <source>Done</source>
+        <translation>انجام شد</translation>
+    </message>
+    <message>
+        <source>%1 applies, Esc reverts</source>
+        <translation>%1 اعمال می‌کند، Esc برمی‌گرداند</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n more</source>
+        <translation>
+            <numerusform>%n مورد دیگر</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Show all values</source>
+        <translation>نمایش همه مقادیر</translation>
+    </message>
+    <message>
+        <source>Edit as text</source>
+        <translation>ویرایش به‌صورت متن</translation>
+    </message>
+    <message>
+        <source>Type or paste values</source>
+        <translation>مقادیر را بنویسید یا جای‌گذاری کنید</translation>
+    </message>
+    <message>
+        <source>Copy &quot;%1&quot;</source>
+        <translation>کپی «%1»</translation>
+    </message>
+    <message>
+        <source>Copy all values</source>
+        <translation>کپی همه مقادیر</translation>
+    </message>
 </context>
 <context>
     <name>RouteRulesPage</name>
@@ -9255,16 +8424,25 @@ Remove that endpoint from this routing profile as well?</source>
         <source>Not set</source>
         <translation>تنظیم نشده</translation>
     </message>
-</context>
-<context>
-    <name>EditOpenVPNAdvanced</name>
     <message>
-        <source>Not set</source>
-        <translation>تنظیم نشده</translation>
+        <source>No advanced options are set. Available keys:</source>
+        <translation>هیچ گزینهٔ پیشرفته‌ای تنظیم نشده است. کلیدهای موجود:</translation>
     </message>
     <message>
-        <source>Routing</source>
-        <translation>مسیریابی</translation>
+        <source>OpenVPN Advanced</source>
+        <translation>تنظیمات پیشرفتهٔ OpenVPN</translation>
+    </message>
+    <message>
+        <source>OpenVPN options not on this page, edited as JSON.</source>
+        <translation>گزینه‌های OpenVPN که در این صفحه نیستند، به صورت JSON ویرایش می‌شوند.</translation>
+    </message>
+    <message>
+        <source>Set &quot;%1&quot; on the profile page.</source>
+        <translation>«%1» را در صفحهٔ پروفایل تنظیم کنید.</translation>
+    </message>
+    <message>
+        <source>Static key mode does not use the credentials, certificates or control channel wrap on the profile page; clear them there.</source>
+        <translation>حالت کلید ایستا از اعتبارنامه‌ها، گواهی‌ها یا پوشش کانال کنترل در صفحهٔ پروفایل استفاده نمی‌کند؛ آن‌ها را همان‌جا پاک کنید.</translation>
     </message>
 </context>
 <context>

@@ -115,6 +115,107 @@ namespace Configs {
             }
             return kept;
         }
+
+        QJsonValue ovpnJsonAt(const QJsonObject& object, const QString& path)
+        {
+            const auto dot = path.indexOf('.');
+            if (dot < 0) return object.value(path);
+            const auto child = object.value(path.left(dot));
+            return child.isObject() ? ovpnJsonAt(child.toObject(), path.mid(dot + 1)) : QJsonValue(QJsonValue::Undefined);
+        }
+
+        void ovpnJsonSet(QJsonObject& object, const QString& path, const QJsonValue& value)
+        {
+            const auto dot = path.indexOf('.');
+            if (dot < 0) {
+                object[path] = value;
+                return;
+            }
+            const auto key = path.left(dot);
+            auto child = object.value(key).toObject();
+            ovpnJsonSet(child, path.mid(dot + 1), value);
+            object[key] = child;
+        }
+
+        // The value ParseFromJson reads back as the option's default.
+        QJsonValue ovpnDefaultValue(OpenVPNOptionKind kind)
+        {
+            switch (kind) {
+                case OpenVPNOptionKind::String: return QString();
+                case OpenVPNOptionKind::Bool: return false;
+                case OpenVPNOptionKind::Int:
+                case OpenVPNOptionKind::Int64: return 0;
+                default: return QJsonArray();
+            }
+        }
+    }
+
+    const QList<OpenVPNAdvancedOption>& OpenVPNAdvancedOptions()
+    {
+        using Kind = OpenVPNOptionKind;
+        static const QList<OpenVPNAdvancedOption> options = {
+            {"mode", Kind::String},
+            {"topology", Kind::String},
+            {"auth_retry", Kind::String},
+            {"remote_random", Kind::Bool},
+            {"address", Kind::Lines},
+            {"peer_address", Kind::String},
+            {"peer_address_ipv6", Kind::String},
+            {"servers", Kind::Servers},
+            {"static_key", Kind::Lines},
+            {"static_key_path", Kind::String},
+            {"key_direction", Kind::String},
+            {"cipher", Kind::String},
+            {"tls.server_name", Kind::String},
+            {"tls.server_name_type", Kind::String},
+            {"tls.certificate_path", Kind::String},
+            {"tls.client_certificate_path", Kind::String},
+            {"tls.client_key_path", Kind::String},
+            {"tls.control_wrap.key_path", Kind::String},
+            {"tls.peer_fingerprint", Kind::Lines},
+            {"tls.crl_path", Kind::String},
+            {"tls.remote_certificate_ku", Kind::Lines},
+            {"tls.remote_certificate_eku", Kind::String},
+            {"tls.remote_certificate_tls", Kind::String},
+            {"tls.certificate_profile", Kind::String},
+            {"tls.ns_certificate_type", Kind::String},
+            {"tls.version_min", Kind::String},
+            {"tls.version_max", Kind::String},
+            {"tls.cipher", Kind::String},
+            {"tls.groups", Kind::String},
+            {"data_ciphers", Kind::Lines},
+            {"data_ciphers_fallback", Kind::String},
+            {"auth", Kind::String},
+            {"mss_fix", Kind::Int},
+            {"mss_fix_disabled", Kind::Bool},
+            {"mss_fix_mode", Kind::String},
+            {"fragment", Kind::Int},
+            {"replay_window", Kind::Int},
+            {"replay_window_time", Kind::String},
+            {"compression", Kind::String},
+            {"compression_lzo", Kind::String},
+            {"allow_compression", Kind::String},
+            {"route_no_pull", Kind::Bool},
+            {"routes", Kind::Lines},
+            {"route_gateway", Kind::String},
+            {"route_metric", Kind::Int},
+            {"redirect_gateway", Kind::Bool},
+            {"redirect_gateway_flags", Kind::Lines},
+            {"redirect_private", Kind::Bool},
+            {"block_ipv6", Kind::Bool},
+            {"pull_filters", Kind::PullFilters},
+            {"ping_interval", Kind::String},
+            {"ping_restart", Kind::String},
+            {"ping_restart_disabled", Kind::Bool},
+            {"renegotiate_interval", Kind::String},
+            {"renegotiate_disabled", Kind::Bool},
+            {"renegotiate_bytes", Kind::Int64},
+            {"renegotiate_packets", Kind::Int64},
+            {"tls_timeout", Kind::String},
+            {"handshake_window", Kind::String},
+            {"explicit_exit_notify", Kind::Int},
+        };
+        return options;
     }
 
     namespace Checks {
@@ -835,25 +936,33 @@ namespace Configs {
         }
 
         const auto creds = ResolveVpnCredentials(profile_id, username, password);
-        // A baked code is replayed on every reconnect, so leave the challenge for the poller. The
-        // core packs any challenge answer as SCRV1, so an {otp} inside the credentials cannot go
-        // that way and still has to be built in.
-        const bool otpInCredentials = creds.username.contains(kOtpPlaceholder) ||
-                                      creds.password.contains(kOtpPlaceholder);
-        const bool liveChallenge = otp_profile_id >= 0 && !static_challenge.isEmpty() &&
-                                   !otpInCredentials && !BuildingTestConfig();
+        // Only a test box, which has no poller, gets a code built in; anywhere else it would be
+        // replayed on every reconnect. Live, the core forgets each session's credentials and asks
+        // again (for the whole login when it holds {otp}), and the poller answers with a fresh code.
+        const bool liveOtp = otp_profile_id >= 0 && !BuildingTestConfig();
+        const bool queryCredentials = liveOtp && (creds.username.contains(kOtpPlaceholder) ||
+                                                  creds.password.contains(kOtpPlaceholder));
+        const bool liveChallenge = queryCredentials || (liveOtp && !static_challenge.isEmpty());
 
-        auto otpCode = liveChallenge ? QString() : ResolveOtpCode(otp_profile_id);
-        auto user = SubstituteOtp(creds.username, otpCode);
+        const auto otpCode = liveOtp ? QString() : ResolveOtpCode(otp_profile_id);
+        const auto user = SubstituteOtp(creds.username, otpCode);
         auto pass = SubstituteOtp(creds.password, otpCode);
         // Upstream packs a static-challenge answer as SCRV1:<b64 password>:<b64 answer>.
-        bool packedChallenge = !otpCode.isEmpty() && !static_challenge.isEmpty();
+        const bool packedChallenge = !otpCode.isEmpty() && !static_challenge.isEmpty();
         if (packedChallenge) {
             pass = "SCRV1:" + QString::fromLatin1(pass.toUtf8().toBase64()) + ":" +
                    QString::fromLatin1(otpCode.toUtf8().toBase64());
         }
-        if (!user.isEmpty()) object["username"] = user;
-        if (!pass.isEmpty()) object["password"] = pass;
+        if (queryCredentials) {
+            object["query_credentials"] = true;
+            // The username only prefills the prompt. Beside a static challenge it would make the
+            // core ask for the secret alone and pack it with an empty password.
+            if (!user.isEmpty() && !user.contains(kOtpPlaceholder) && static_challenge.isEmpty()) object["username"] = user;
+        } else {
+            if (!user.isEmpty()) object["username"] = user;
+            if (!pass.isEmpty()) object["password"] = pass;
+        }
+        if (liveChallenge) object["auth_nocache"] = true;
         if (!packedChallenge) {
             if (!static_challenge.isEmpty()) object["static_challenge"] = static_challenge;
             if (static_challenge_echo) object["static_challenge_echo"] = true;
@@ -1069,5 +1178,28 @@ namespace Configs {
         copy->tls = std::make_shared<OpenVPNTLS>(*tls);
         copy->tls->control_wrap = std::make_shared<OpenVPNControlWrap>(*tls->control_wrap);
         return copy;
+    }
+
+    QJsonObject openvpn::ExportAdvancedJson()
+    {
+        auto all = ExportToJson();
+        // The wrap exports nothing without its type, which the profile page sets.
+        if (!tls->control_wrap->key_path.isEmpty()) ovpnJsonSet(all, "tls.control_wrap.key_path", tls->control_wrap->key_path);
+        QJsonObject advanced;
+        for (const auto& option : OpenVPNAdvancedOptions()) {
+            if (const auto value = ovpnJsonAt(all, option.path); !value.isUndefined()) ovpnJsonSet(advanced, option.path, value);
+        }
+        return advanced;
+    }
+
+    void openvpn::ApplyAdvancedJson(const QJsonObject& advanced)
+    {
+        QJsonObject object{{"type", "openvpn"}};
+        for (const auto& option : OpenVPNAdvancedOptions()) {
+            auto value = ovpnJsonAt(advanced, option.path);
+            if (value.isUndefined()) value = ovpnDefaultValue(option.kind);
+            ovpnJsonSet(object, option.path, value);
+        }
+        ParseFromJson(object);
     }
 }

@@ -1,13 +1,21 @@
 #include "include/ui/mainwindow.h"
 
 #include <algorithm>
+#include <cmath>
+#include <limits>
 
 #include <QApplication>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QHeaderView>
+#include <QLabel>
+#include <QListWidget>
+#include <QPushButton>
 #include <QScrollBar>
 #include <QSet>
 #include <QTimer>
 #include <QToolButton>
+#include <QVBoxLayout>
 
 #include "include/api/RPC.h"
 #include "include/database/GroupsRepo.h"
@@ -27,6 +35,20 @@
 #include "include/ui/utils/ProfilesTableModel.h"
 #include "include/ui/widget/LiveChart.h"
 #include "include/ui/widget/StartStopButton.hpp"
+
+namespace {
+    struct RunningContext {
+        QString groupName;
+        QString detail;
+    };
+
+    // The detail is the VPN endpoint's exit state while it reports one, else the exit country.
+    RunningContext runningContextOf(const Configs::Profile *running, const QString &vpnExitState) {
+        if (running == nullptr) return {};
+        const auto group = Configs::dataManager->groupsRepo->GetGroup(running->gid);
+        return {group != nullptr ? group->name : QString(), vpnExitState.isEmpty() ? running->runningCountryInfo : vpnExitState};
+    }
+}
 
 // Mirrors the language switch in main.cpp; QLocale() alone follows the system, not an explicit setting.
 bool MainWindow::usesTightLabels() const {
@@ -188,15 +210,12 @@ void MainWindow::refresh_auto_selector_view()
 }
 
 void MainWindow::updateLogFilterFields() {
+    // Validated and compiled here, so the log thread neither compiles it nor warns on every line about an invalid pattern.
+    QRegularExpression hide(Configs::dataManager->settingsRepo->log_exclude_regex.join("|"));
+    if (hide.isValid()) hide.optimize();
+    else hide = QRegularExpression();
     QMutexLocker locker(&logMutex);
-    includeKeywords.clear();
-    excludeKeywords.clear();
-    for (const auto& inKeyword : Configs::dataManager->settingsRepo->log_include_keyword) includeKeywords.append(inKeyword);
-    for (const auto& exKeyword : Configs::dataManager->settingsRepo->log_exclude_keyword) excludeKeywords.append(exKeyword);
-    includeCombined.setPattern(Configs::dataManager->settingsRepo->log_include_regex.join("|"));
-    excludeCombined.setPattern(Configs::dataManager->settingsRepo->log_exclude_regex.join("|"));
-    includeCombined.optimize();
-    excludeCombined.optimize();
+    logHidePattern = hide;
 }
 
 void MainWindow::applyProfileFilters()
@@ -210,17 +229,14 @@ void MainWindow::refresh_status(const QString &traffic_update) {
     const auto* settings = Configs::dataManager->settingsRepo.get();
 
     auto refresh_speed_label = [=,this] {
-        if (settings->disable_traffic_stats) {
-            ui->label_speed->setText("");
-        }
-        else if (traffic_update_cache == "") {
+        if (traffic_update_cache == "") {
             ui->label_speed->setText(QObject::tr("Proxy: %1\nDirect: %2").arg("", ""));
         } else {
             ui->label_speed->setText(traffic_update_cache);
         }
     };
 
-    if (!traffic_update.isEmpty() && !settings->disable_traffic_stats) {
+    if (!traffic_update.isEmpty()) {
         traffic_update_cache = traffic_update;
         if (traffic_update == "STOP") {
             traffic_update_cache = "";
@@ -233,16 +249,7 @@ void MainWindow::refresh_status(const QString &traffic_update) {
     refresh_speed_label();
 
     const auto running = runningSnapshot();
-    QString group_name;
-    if (running != nullptr) {
-        auto group = Configs::dataManager->groupsRepo->GetGroup(running->gid);
-        if (group != nullptr) group_name = group->name;
-    }
-
-    const QString vpnExitState = vpnAuth()->exitStateText();
-    const QString runningDetail = vpnExitState.isEmpty()
-                                      ? (running ? running->runningCountryInfo : QString())
-                                      : vpnExitState;
+    const auto [group_name, runningDetail] = runningContextOf(running.get(), vpnAuth()->exitStateText());
 
     if (QDateTime::currentSecsSinceEpoch() - last_test_time > 2) {
         QString runningLabelText;
@@ -277,38 +284,44 @@ void MainWindow::refresh_status(const QString &traffic_update) {
         ui->label_running->setToolTip({});
     }
 
-    const auto route = Configs::dataManager->routesRepo->GetRouteProfile(Configs::ActiveRouteId());
-    const QString activeRouteName = (route && route->name != "Default") ? route->name : "";
+    refresh_tray_tooltip();
+    refresh_startstop_button();
+}
+
+// Keep live status in the tray without replacing the branded window title.
+void MainWindow::refresh_tray_tooltip() {
+    if (tray == nullptr) return;
+    const auto* settings = Configs::dataManager->settingsRepo.get();
+
+    const auto running = runningSnapshot();
+    const auto [group_name, runningDetail] = runningContextOf(running.get(), vpnAuth()->exitStateText());
+    const QString routeName = Configs::dataManager->routesRepo->GetRouteProfileName(Configs::ActiveRouteId()).value_or(QString());
+    const QString activeRouteName = routeName != "Default" ? routeName : "";
     const auto killSwitchState = Sys::KillSwitch::instance()->state();
     const bool killSwitchBlocking = killSwitchState == Sys::KillSwitch::State::Failed && Sys::KillSwitch::instance()->failedForIdentity();
 
-    // The window keeps its branded title; connection details also appear in the tray.
-    if (tray != nullptr) {
-        QStringList tt;
-        if (Configs::KnownAdmin().value_or(false)) tt << "[Admin]";
-        if (select_mode) tt << "[" + tr("Select") + "]";
-        if (!title_error.isEmpty()) tt << "[" + title_error + "]";
-        if (settings->spmode_vpn && !settings->spmode_system_proxy) tt << "[Tun]";
-        if (!settings->spmode_vpn && settings->spmode_system_proxy) tt << "[" + tr("System proxy") + "]";
-        if (settings->spmode_vpn && settings->spmode_system_proxy) tt << "[Tun+" + tr("System proxy") + "]";
-        if (settings->kill_switch && killSwitchState == Sys::KillSwitch::State::Armed) tt << "[" + tr("Kill switch") + "]";
-        if (settings->kill_switch && killSwitchState == Sys::KillSwitch::State::Failed) {
-            tt << "[" + (killSwitchBlocking ? tr("Kill switch is blocking traffic") : tr("Kill switch: not active")) + "]";
-        }
-        tt << software_name;
-        if (!activeRouteName.isEmpty()) {
-            tt << "[" + activeRouteName + "]";
-        }
-        if (running != nullptr) {
-            tt << running->outbound->DisplayTypeAndName() + "@" + group_name;
-            if (!runningDetail.isEmpty()) {
-                tt << runningDetail;
-            }
-        }
-        tray->setToolTip(tt.join("\n"));
+    QStringList tt;
+    if (Configs::KnownAdmin().value_or(false)) tt << "[Admin]";
+    if (select_mode) tt << "[" + tr("Select") + "]";
+    if (!title_error.isEmpty()) tt << "[" + title_error + "]";
+    if (settings->spmode_vpn && !settings->spmode_system_proxy) tt << "[Tun]";
+    if (!settings->spmode_vpn && settings->spmode_system_proxy) tt << "[" + tr("System proxy") + "]";
+    if (settings->spmode_vpn && settings->spmode_system_proxy) tt << "[Tun+" + tr("System proxy") + "]";
+    if (settings->kill_switch && killSwitchState == Sys::KillSwitch::State::Armed) tt << "[" + tr("Kill switch") + "]";
+    if (settings->kill_switch && killSwitchState == Sys::KillSwitch::State::Failed) {
+        tt << "[" + (killSwitchBlocking ? tr("Kill switch is blocking traffic") : tr("Kill switch: not active")) + "]";
     }
-
-    refresh_startstop_button();
+    tt << software_name;
+    if (!activeRouteName.isEmpty()) {
+        tt << "[" + activeRouteName + "]";
+    }
+    if (running != nullptr) {
+        tt << running->outbound->DisplayTypeAndName() + "@" + group_name;
+        if (!runningDetail.isEmpty()) {
+            tt << runningDetail;
+        }
+    }
+    tray->setToolTip(tt.join("\n"));
 }
 
 void MainWindow::refresh_startstop_button() {
@@ -392,7 +405,7 @@ void MainWindow::refresh_action_states() {
     ui->menu_resolve_selected->setEnabled(anySelected);
     ui->actionResolve_Selected_Out_IP->setEnabled(anySelected);
     ui->actionService_Check_Selected->setEnabled(anySelected);
-    ui->menu_find_settings->setEnabled(selectedRows == 1);
+    ui->menu_find_warp_endpoint->setEnabled(selectedRows == 1 && warpFinderTarget() != nullptr);
 
     const bool running = runningSnapshot() != nullptr;
     ui->actionSpeedtest_Current->setEnabled(running);
@@ -402,6 +415,8 @@ void MainWindow::refresh_action_states() {
 void MainWindow::set_traffic_lines(const QList<Stats::TrafficLine> &lines) {
     m_trafficLines = lines;
     if (trafficChart == nullptr) return;
+    const bool extras = Configs::dataManager->settingsRepo->traffic_graph_extras;
+    m_trafficFolded = false;
     QList<LiveChartRow> rows;
     int nextSlot = 1;
     for (const auto &line : lines) {
@@ -415,13 +430,16 @@ void MainWindow::set_traffic_lines(const QList<Stats::TrafficLine> &lines) {
                 break;
             case Stats::TrafficLineKind::Route:
             case Stats::TrafficLineKind::Aux:
-                row.label = line.name;
-                row.kind = line.kind == Stats::TrafficLineKind::Route ? tr("route") : tr("aux");
-                row.paletteSlot = std::min(nextSlot++, 4);
-                break;
             case Stats::TrafficLineKind::Other:
+                if (!extras) {
+                    m_trafficFolded = true;
+                    continue;
+                }
                 row.label = line.name;
+                if (line.kind == Stats::TrafficLineKind::Route) row.kind = tr("route");
+                else if (line.kind == Stats::TrafficLineKind::Aux) row.kind = tr("aux");
                 row.paletteSlot = std::min(nextSlot++, 4);
+                row.minor = true;
                 break;
             case Stats::TrafficLineKind::Direct:
                 row.label = tr("Direct");
@@ -437,30 +455,26 @@ void MainWindow::add_traffic_point(qint64 monoMs, bool coreRunning, const QVecto
                                    double proxyDown, double proxyUp, double directDown, double directUp) {
     if (trafficChart == nullptr) return;
     if (coreRunning && values.size() != m_trafficLines.size() * 2) return;
-    trafficChart->addPoint(monoMs, coreRunning, values);
-}
-
-void MainWindow::addRunMarker(qint64 monoMs, Engine::RunMarker kind, const QString &name) {
-    if (trafficChart == nullptr) return;
-    auto marker = LiveChart::Marker::Started;
-    switch (kind) {
-        case Engine::RunMarker::Started: marker = LiveChart::Marker::Started; break;
-        case Engine::RunMarker::Switched: marker = LiveChart::Marker::Switched; break;
-        case Engine::RunMarker::Stopped: marker = LiveChart::Marker::Stopped; break;
+    if (!coreRunning || !m_trafficFolded) {
+        trafficChart->addPoint(monoMs, coreRunning, values);
+        return;
     }
-    trafficChart->addMarker(monoMs, marker, name);
+    QVector<double> folded(4, std::numeric_limits<double>::quiet_NaN());
+    for (qsizetype line = 0; line < m_trafficLines.size(); ++line) {
+        const int at = m_trafficLines[line].kind == Stats::TrafficLineKind::Direct ? 2 : 0;
+        for (int k = 0; k < 2; ++k) {
+            const double v = values[line * 2 + k];
+            if (std::isnan(v)) continue;
+            double &sum = folded[at + k];
+            sum = std::isnan(sum) ? v : sum + v;
+        }
+    }
+    trafficChart->addPoint(monoMs, true, folded);
 }
 
 void MainWindow::refresh_traffic_graph_settings() {
     const auto &settings = Configs::dataManager->settingsRepo;
     if (m_trafficStatsChartAction != nullptr) m_trafficStatsChartAction->setVisible(!settings->disable_traffic_aggregation);
-    if (trafficChart == nullptr) return;
-    if (settings->disable_traffic_stats) {
-        trafficChart->setBlocked(tr("Traffic counters are disabled"),
-                                 tr("Untick “Disable traffic counters” in Basic Settings → Core → Statistics to record speeds again."));
-    } else {
-        trafficChart->setBlocked({});
-    }
 }
 
 void MainWindow::refresh_proxy_list_column_size() {
@@ -522,6 +536,48 @@ void MainWindow::refresh_proxy_list_column_size() {
         vBar->blockSignals(vBarBlocked);
         m_adjustingColumns = false;
     });
+}
+
+void MainWindow::editProfileColumnOrder() {
+    auto *header = static_cast<ProfilesTableFilterHeader*>(ui->profilesTableView->horizontalHeader());
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Reorder columns"));
+    auto *layout = new QVBoxLayout(&dialog);
+    layout->addWidget(new QLabel(tr("Drag the columns into the order you want."), &dialog));
+    auto *list = new QListWidget(&dialog);
+    list->setDragDropMode(QAbstractItemView::InternalMove);
+    list->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+    layout->addWidget(list);
+    const auto fill = [this, list](const QList<int> &order) {
+        list->clear();
+        for (const int column : order) {
+            auto *item = new QListWidgetItem(profilesTableModel->headerData(column, Qt::Horizontal).toString(), list);
+            item->setData(Qt::UserRole, column);
+        }
+    };
+    QList<int> order;
+    for (int visual = 0; visual < header->count(); ++visual) order << header->logicalIndex(visual);
+    fill(order);
+    const auto listedOrder = [list] {
+        QList<int> listed;
+        for (int row = 0; row < list->count(); ++row) listed << list->item(row)->data(Qt::UserRole).toInt();
+        return listed;
+    };
+    QList<int> defaults;
+    for (int column = 0; column < header->count(); ++column) defaults << column;
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+    auto *restoreDefault = buttons->addButton(tr("Restore default order"), QDialogButtonBox::ResetRole);
+    const auto updateRestore = [restoreDefault, listedOrder, defaults] { restoreDefault->setEnabled(listedOrder() != defaults); };
+    connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    connect(restoreDefault, &QPushButton::clicked, &dialog, [fill, defaults] { fill(defaults); });
+    // A drop that QListWidget cannot move falls back to remove + insert.
+    connect(list->model(), &QAbstractItemModel::rowsMoved, &dialog, updateRestore);
+    connect(list->model(), &QAbstractItemModel::rowsInserted, &dialog, updateRestore);
+    updateRestore();
+    layout->addWidget(buttons);
+    if (dialog.exec() != QDialog::Accepted) return;
+    header->setColumnOrder(listedOrder());
 }
 
 void MainWindow::refresh_proxy_list(const QList<int>& ids, bool mayNeedReset, RefreshAnchor anchor) {

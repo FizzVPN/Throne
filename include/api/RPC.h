@@ -69,6 +69,8 @@ namespace API {
 
         [[nodiscard]] libcore::QueryConnectionsResp QueryConnections() const;
 
+        [[nodiscard]] libcore::QueryConnectionCountResp QueryConnectionCount(bool *rpcOK) const;
+
         // Ids already gone are a no-op; closedCount (optional) receives how many were actually live.
         QString CloseConnections(bool *rpcOK, const QStringList &ids, int *closedCount = nullptr) const;
 
@@ -84,7 +86,7 @@ namespace API {
         // IsPrivileged with the core's capability fields (IsPrivilegedResponse 2-5).
         PrivilegeInfo Privileges(bool *rpcOK, int timeoutMs = 0) const;
 
-        libcore::SpeedTestResponse SpeedTest(bool *rpcOK, const libcore::SpeedTestRequest &request, QString *coreError = nullptr);
+        libcore::SpeedTestResponse SpeedTest(bool *rpcOK, const libcore::SpeedTestRequest &request, QString *coreError = nullptr, int timeoutMs = 0);
 
         libcore::QuerySpeedTestResponse QueryCurrentSpeedTests(bool *rpcOK);
 
@@ -136,8 +138,8 @@ namespace API {
         // Up when any target accepts a TCP connection through the default interface.
         [[nodiscard]] bool ScanCheckNetwork(bool *rpcOK, const QStringList &targets, int timeoutMs, QString *error = nullptr) const;
 
-        // Returns the error text; empty on success.
-        QString ParseRuleSet(bool *rpcOK, const QByteArray &content, QStringList *cidrs, int *skippedRules = nullptr) const;
+        // Up when a resolver of the physical network answers, or none is known; systemResolvers receives the ones asked.
+        [[nodiscard]] bool ScanCheckNetworkDns(bool *rpcOK, int timeoutMs, QStringList *systemResolvers, QString *error = nullptr) const;
 
         // Through the core's dns-direct; config is the probe box it starts when the running profile has none.
         libcore::ResolveDomainsResponse ResolveDomains(bool *rpcOK, const QStringList &domains, const QString &config,

@@ -279,14 +279,6 @@ namespace Engine::RouteService {
             return std::nullopt;
         }
 
-        std::shared_ptr<RouteRule> routeServiceDnsHijackRule() {
-            auto rule = std::make_shared<RouteRule>();
-            rule->name = QStringLiteral("dns-hijack");
-            rule->protocol = QStringLiteral("dns");
-            rule->action = QStringLiteral("hijack-dns");
-            return rule;
-        }
-
         // The example the window's raw editor starts a new profile with.
         QString routeServiceRawTemplate() {
             const QJsonObject route{
@@ -529,8 +521,6 @@ namespace Engine::RouteService {
                 }
                 return;
             }
-            // A remote profile may be saved before its first fetch.
-            if (!route.isRemote && route.IsEmpty()) problems->append(QStringLiteral("rules: No valid rules are in the profile"));
             for (qsizetype i = 0; i < route.Rules.size(); ++i) {
                 const auto &rule = *route.Rules[i];
                 for (const auto &issue : rule.validate(route.ignoreXrayRouting)) {
@@ -626,12 +616,7 @@ namespace Engine::RouteService {
 
         auto route = Configs::RoutesRepo::NewRouteProfile();
         route->isRaw = kindName == QLatin1String("raw");
-        if (route->isRaw) {
-            route->rawRoute = routeServiceRawTemplate();
-        } else if (!routeServicePresent(body, QStringLiteral("rules"))) {
-            // What the window's editor starts a new structured profile with.
-            route->Rules << routeServiceDnsHijackRule();
-        }
+        if (route->isRaw) route->rawRoute = routeServiceRawTemplate();
         QStringList problems;
         QStringList notes;
         if (auto error = routeServiceApply(*route, body, &problems, &notes)) return error;
@@ -699,16 +684,23 @@ namespace Engine::RouteService {
         return std::nullopt;
     }
 
-    std::optional<ServiceError> Commit(const QList<std::shared_ptr<Configs::RouteProfile>> &changed, const QList<int> &removedIds) {
+    std::optional<ServiceError> Commit(const QList<std::shared_ptr<Configs::RouteProfile>> &changed, const QList<int> &removedIds,
+                                       const QList<std::shared_ptr<Configs::RouteProfile>> &order) {
         ENGINE_CHECK_MAIN_THREAD();
-        if (changed.isEmpty() && removedIds.isEmpty()) return std::nullopt;
+        const bool edited = !changed.isEmpty() || !removedIds.isEmpty();
+        if (!edited && order.isEmpty()) return std::nullopt;
         // Read before a delete moves current_route_id elsewhere.
         const int activeId = Configs::ActiveRouteId();
         const bool active = removedIds.contains(activeId) ||
                             std::any_of(changed.cbegin(), changed.cend(), [activeId](const std::shared_ptr<RouteProfile> &route) {
                                 return route->id == activeId;
                             });
-        Configs::dataManager->routesRepo->UpdateRouteProfiles(changed, removedIds);
+        if (edited) Configs::dataManager->routesRepo->UpdateRouteProfiles(changed, removedIds);
+        // After the save, which gives the new ones their ids.
+        QList<int> orderIds;
+        for (const auto &route : order) orderIds << route->id;
+        const bool reordered = !orderIds.isEmpty() && Configs::dataManager->routesRepo->SetRouteProfilesOrder(orderIds);
+        if (!edited && !reordered) return std::nullopt;
         if (auto *engine = host(); engine != nullptr && active) engine->noteRestartNeeded(RestartReason::Routing);
         EngineEvents::RoutesChanged();
         return std::nullopt;

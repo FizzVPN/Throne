@@ -9,6 +9,7 @@
 #include <QTextCursor>
 
 #include <algorithm>
+#include <memory>
 
 #include "3rdparty/qv2ray/v2/ui/LogHighlighter.hpp"
 #include "include/ui/setting/ThemeManager.hpp"
@@ -26,6 +27,11 @@ namespace {
     int logLineLimit() {
         const int limit = Configs::dataManager->settingsRepo->max_log_line;
         return limit > 0 ? limit : 500;
+    }
+
+    bool shouldPrintLog(const QString &line, const QRegularExpression &hide) {
+        if (QStringView(line).trimmed().isEmpty()) return false;
+        return hide.pattern().isEmpty() || !hide.match(line).hasMatch();
     }
 
     // Every log line must stay exactly one block: the view maps visible m_logLines to blocks by count.
@@ -73,6 +79,18 @@ namespace {
                 calmLogColor(tokens.danger, tokens.onSurface, 0.55f)};
     }
 
+    // Evenly spaced hues at one lightness, each walked to the same contrast so no connection reads louder.
+    QList<QColor> connectionColors(const QColor &surface) {
+        constexpr int count = 16;
+        const float lightness = surface.lightnessF() < 0.5f ? 0.66f : 0.42f;
+        QList<QColor> colors;
+        colors.reserve(count);
+        for (int i = 0; i < count; ++i) {
+            colors.append(ContrastSeparated(QColor::fromHslF(static_cast<float>(i) / count, 0.5f, lightness), surface, 4.0));
+        }
+        return colors;
+    }
+
     QPixmap levelDotPixmap(const QColor &color, int size, qreal dpr) {
         QPixmap pixmap(QSize(size, size) * dpr);
         pixmap.setDevicePixelRatio(dpr);
@@ -115,18 +133,11 @@ void MainWindow::setLogHighlighter(bool darkMode) {
     const auto &tokens = themeManager()->tokens;
     const auto levels = logLevelColors(tokens);
     Qv2ray::ui::LogColors colors;
-    colors.text = tokens.onSurface;
     colors.muted = levels[0];
     colors.info = levels[1];
     colors.warn = levels[2];
     colors.error = levels[3];
-    colors.ok = tokens.success;
-    colors.host = mixColors(tokens.info, tokens.onSurface, 0.35f);
-    colors.inbound = tokens.chartSeries[2];
-    colors.outbound = tokens.chartSeries[4];
-    colors.dns = tokens.chartSeries[1];
-    colors.router = tokens.chartSeries[3];
-    colors.other = tokens.chartContext;
+    colors.connections = connectionColors(tokens.surface);
     colors.searchBackground = darkMode ? QColor(150, 110, 0) : QColor(255, 225, 90);
     colors.searchForeground = darkMode ? QColor(Qt::white) : QColor(Qt::black);
 
@@ -241,18 +252,14 @@ void MainWindow::log_process_loop() {
         }
         QQueue<QString> pending;
         pending.swap(logQueue);
-        const LogFilter filter{
-            Configs::dataManager->settingsRepo->log_enable_include,
-            Configs::dataManager->settingsRepo->log_enable_exclude,
-            includeKeywords, excludeKeywords, includeCombined, excludeCombined,
-        };
+        const QRegularExpression hide = logHidePattern;
         logMutex.unlock();
 
         QString batchToPrint;
         for (const auto& entry : pending) {
             for (auto logLine : entry.split('\n')) {
                 if (logLine.endsWith('\r')) logLine.chop(1);
-                if (!should_print_log(logLine, filter)) continue;
+                if (!shouldPrintLog(logLine, hide)) continue;
                 // QTextCursor::insertText starts a new block at these; keep each log line a single block.
                 for (QChar &c : logLine) {
                     if (c == '\r' || c == QChar::ParagraphSeparator || c == QChar(0xfdd0) || c == QChar(0xfdd1)) c = ' ';
@@ -412,44 +419,11 @@ void MainWindow::updateLogStatus() {
     logJumpLatestButton->setText(m_logHeld.empty() ? tr("Jump to latest") : tr("Jump to latest (%1 new)").arg(m_logHeld.size()));
 }
 
-bool MainWindow::should_print_log(const QString &log, const LogFilter &filter) {
-    if (QStringView(log).trimmed().isEmpty()) return false;
-    bool result = true;
-    if (filter.enableInclude) {
-        result = false;
-        for (const auto& includeKeyword : filter.includeKeywords) {
-            if (log.contains(includeKeyword)) {
-                result = true;
-                break;
-            }
-        }
-        if (!result && !filter.includeCombined.pattern().isEmpty() && filter.includeCombined.match(log).hasMatch()) {
-            result = true;
-        }
-    }
-    if (result && filter.enableExclude) {
-        for (const auto& excludeKeyword : filter.excludeKeywords) {
-            if (log.contains(excludeKeyword)) {
-                result = false;
-                break;
-            }
-        }
-        if (result && !filter.excludeCombined.pattern().isEmpty() && filter.excludeCombined.match(log).hasMatch()) {
-            result = false;
-        }
-    }
-    return result;
-}
-
 void MainWindow::on_masterLogBrowser_customContextMenuRequested(const QPoint &pos) {
-    QMenu *menu = ui->masterLogBrowser->createStandardContextMenu();
+    const std::unique_ptr<QMenu> menu(ui->masterLogBrowser->createStandardContextMenu());
+    menu->addSeparator();
 
-    auto sep = new QAction(this);
-    sep->setSeparator(true);
-    menu->addAction(sep);
-
-    auto action_clear = new QAction(this);
-    action_clear->setText(tr("Clear"));
+    auto *action_clear = menu->addAction(tr("Clear"));
     connect(action_clear, &QAction::triggered, this, [=,this] {
         {
             // Otherwise a flush already in flight repaints what was just cleared.
@@ -463,7 +437,6 @@ void MainWindow::on_masterLogBrowser_customContextMenuRequested(const QPoint &po
         m_logFollow = true;
         updateLogStatus();
     });
-    menu->addAction(action_clear);
 
     menu->exec(ui->masterLogBrowser->viewport()->mapToGlobal(pos));
 }

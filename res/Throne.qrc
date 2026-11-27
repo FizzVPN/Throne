@@ -33,6 +33,9 @@
         <file>icon/lucide/route.png</file>
         <file>icon/lucide/route@2x.png</file>
         <file>icon/lucide/route@3x.png</file>
+        <file>icon/lucide/settings.png</file>
+        <file>icon/lucide/settings@2x.png</file>
+        <file>icon/lucide/settings@3x.png</file>
         <file>icon/lucide/sliders-horizontal.png</file>
         <file>icon/lucide/sliders-horizontal@2x.png</file>
         <file>icon/lucide/sliders-horizontal@3x.png</file>
@@ -53,9 +56,6 @@
         <file>dashboard-bootstrap.html</file>
     </qresource>
     <qresource prefix="/scanner">
-        <file alias="cloudflare-cdn.txt">scanner/cloudflare-cdn.txt</file>
-        <file alias="fastly-cdn.txt">scanner/fastly-cdn.txt</file>
-        <file alias="gcore-cdn.txt">scanner/gcore-cdn.txt</file>
         <file alias="iran-resolvers.txt">scanner/iran-resolvers.txt</file>
         <file alias="russia-resolvers.txt">scanner/russia-resolvers.txt</file>
     </qresource>

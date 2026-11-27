@@ -75,11 +75,16 @@ private:
         bool open = false;
         QString attr;
         bool replacing = false;
+        // A text box holding every value of the condition, one per line; committing replaces them all.
+        bool asText = false;
         QString original;
         // Carried into the re-created field: what the user typed, or the lines that failed.
         QString text;
         QString error;
+        // The values the text box marks as failed.
+        QStringList failed;
         QPointer<QLineEdit> edit;
+        QPointer<QPlainTextEdit> box;
     };
 
     // A setting row of the action's settings or the Connection options, with the issues of its attributes.
@@ -92,6 +97,8 @@ private:
     struct Stash {
         std::shared_ptr<Configs::RouteRule> rule;
         QHash<QString, QStringList> values;
+        // The fallback delay a Fragment TLS choice without the handshake cleared.
+        QString fragmentDelay;
     };
 
     void buildThenSection(QVBoxLayout* layout);
@@ -102,21 +109,32 @@ private:
 
     void loadRule();
     void loadThenSection();
+    void loadFragment();
     [[nodiscard]] QStringList shownAttrs() const;
     void rebuildBoxes();
     // labels: those of the leaf's siblings, which share one width.
     void buildLeaf(RouteEditor::TreeNode* node, const QString& attr, const QStringList& labels);
     void fillLine(const QString& attr);
     QLineEdit* makeInlineEdit(const QString& attr, QWidget* host);
+    QPlainTextEdit* makeTextBox(const QString& attr, QWidget* host);
+    [[nodiscard]] QWidget* inlineWidget() const;
+    [[nodiscard]] QString inlineText() const;
+    void focusInlineWidget();
     // Stops watching the inline field before it goes; keepText carries its text into the next one.
     void detachInline(bool keepText);
     void scheduleRefill(const QString& attr);
+    // Waits while a mouse button is held, so the pressed button outlives the rebuild until its click lands.
+    void runScheduled();
     void applyScheduled();
     void focusLine(const QString& attr, int index);
 
+    // Commits or drops the open field before another opens; false when its values failed and it stays open.
+    bool closeInline();
     void startInline(const QString& attr, const QString& value, bool replacing);
+    void startText(const QString& attr);
     void commitInline(bool keepOpen, bool focusAfter, const QString& extra = {});
     void cancelInline(bool focusAfter);
+    void openLeafMenu(const QString& attr, const QPoint& globalPos, const QString& value);
     void removeValue(const QString& attr, const QString& value);
     void openSelectMenu(const QString& attr, QWidget* anchor);
     void setSelectValue(const QString& attr, const QString& value);
@@ -127,6 +145,7 @@ private:
     void applyStash();
     void setScopedText(const QString& attr, const QString& text);
     void setScopedFlag(const QString& attr, bool on);
+    void setFragment(bool handshake, bool records);
     void setOptionsOpen(bool open);
     void setJsonOpen(bool open);
     void refreshIssues();
@@ -158,9 +177,8 @@ private:
     QToolButton* optionsToggle = nullptr;
     QLineEdit* overrideAddressEdit = nullptr;
     QLineEdit* overridePortEdit = nullptr;
-    QCheckBox* fragmentCheck = nullptr;
+    NoWheelComboBox* fragmentCombo = nullptr;
     QLineEdit* fragmentDelayEdit = nullptr;
-    QCheckBox* recordFragmentCheck = nullptr;
     QLineEdit* spoofEdit = nullptr;
     NoWheelComboBox* spoofMethodCombo = nullptr;
 
@@ -174,9 +192,12 @@ private:
     QStringList builtAttrs;
     QHash<QString, Line> lines;
     Inline inlineState;
+    // Long conditions shown whole instead of folded.
+    QSet<QString> expanded;
 
     QSet<QString> refillAttrs;
     bool applyQueued = false;
+    int releaseWaits = 0;
     bool focusInline = false;
     QString focusAttr;
     int focusIndex = -1;

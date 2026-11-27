@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAbstractItemModel>
+#include <QByteArray>
 #include <QList>
 #include <QString>
 #include <QStringList>
@@ -25,6 +26,7 @@ struct ConnectionLeafItem : public TreeItem {
     Stats::ConnectionMetadata meta; // the first socket; the rest share every field that makes up `key`
     QString key;
     QString destText;
+    QByteArray destKey; // orders addresses by value, not as text
     QString protocolText;
     QString outboundText;
     int count = 0;
@@ -38,6 +40,7 @@ struct ConnectionLeafItem : public TreeItem {
 struct ProcessGroupItem : public TreeItem {
     bool isProcess() const override { return true; }
     QString processName; // empty when the core could not attribute the sockets to a process
+    QString processPath; // the first one any socket reports
     std::vector<std::unique_ptr<ConnectionLeafItem>> children;
     long long totalUpload = 0;
     long long totalDownload = 0;

@@ -84,6 +84,7 @@ namespace Configs {
                 source_gid INTEGER NOT NULL DEFAULT -1,
                 ignore_xray_routing INTEGER NOT NULL DEFAULT 0,
                 remote_rules TEXT,
+                display_order INTEGER NOT NULL DEFAULT 0,
                 created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
                 updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
             )
@@ -116,6 +117,9 @@ namespace Configs {
             db.exec("ALTER TABLE route_profiles ADD COLUMN ignore_xray_routing INTEGER NOT NULL DEFAULT 0");
         if (!routeProfilesColumnExists("remote_rules"))
             db.exec("ALTER TABLE route_profiles ADD COLUMN remote_rules TEXT");
+        // Rows from before it all hold 0, so they keep their id order.
+        if (!routeProfilesColumnExists("display_order"))
+            db.exec("ALTER TABLE route_profiles ADD COLUMN display_order INTEGER NOT NULL DEFAULT 0");
 
         db.exec(R"(
             CREATE TABLE IF NOT EXISTS route_rules (
@@ -261,8 +265,9 @@ namespace Configs {
         db.execThrow(R"(
             INSERT INTO route_profiles (id, name, default_outbound_id, is_raw, raw_route, prevent_modifications,
                 is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids,
-                inner_hop_endpoint_ids, dns_json, custom_dns, source_gid, ignore_xray_routing, remote_rules)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                inner_hop_endpoint_ids, dns_json, custom_dns, source_gid, ignore_xray_routing, remote_rules, display_order)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+                (SELECT COALESCE(MAX(display_order), -1) + 1 FROM route_profiles))
             ON CONFLICT(id) DO UPDATE SET
                 name = excluded.name, default_outbound_id = excluded.default_outbound_id,
                 is_raw = excluded.is_raw, raw_route = excluded.raw_route,
@@ -448,6 +453,16 @@ namespace Configs {
         return RouteDns::FromJson(doc.object());
     }
 
+    std::optional<QString> RoutesRepo::GetRouteProfileName(int id) const {
+        QMutexLocker locker(&mutex);
+        if (auto it = identityMap.find(id); it != identityMap.end()) {
+            if (auto shared = it->second.lock()) return shared->name;
+        }
+        auto query = db.query("SELECT name FROM route_profiles WHERE id = ?", id);
+        if (!query || !query->executeStep()) return std::nullopt;
+        return QString::fromStdString(query->getColumn(0).getText());
+    }
+
     bool RoutesRepo::HasRouteProfile(int id) const {
         if (id < 0) return false;
         QMutexLocker locker(&mutex);
@@ -546,13 +561,34 @@ namespace Configs {
 
     QList<int> RoutesRepo::GetAllRouteProfileIds() const {
         QList<int> ids;
-        auto query = db.query("SELECT id FROM route_profiles ORDER BY id");
+        auto query = db.query("SELECT id FROM route_profiles ORDER BY display_order, id");
         if (query) {
             while (query->executeStep()) {
                 ids.append(query->getColumn(0).getInt());
             }
         }
         return ids;
+    }
+
+    bool RoutesRepo::SetRouteProfilesOrder(const QList<int>& ids) {
+        QMutexLocker locker(&mutex);
+        const QList<int> current = GetAllRouteProfileIds();
+        QList<int> order;
+        for (const int id : ids) {
+            if (current.contains(id) && !order.contains(id)) order << id;
+        }
+        for (const int id : current) {
+            if (!order.contains(id)) order << id;
+        }
+        if (order == current) return false;
+        const bool saved = db.transaction("RoutesRepo::SetRouteProfilesOrder", [&] {
+            for (int position = 0; position < order.size(); ++position) {
+                db.execThrow("UPDATE route_profiles SET display_order = ? WHERE id = ?", position, order[position]);
+            }
+            return true;
+        });
+        if (saved) ++revision;
+        return saved;
     }
 
     QList<std::shared_ptr<RouteProfile>> RoutesRepo::GetAllRouteProfiles() const {
@@ -562,7 +598,7 @@ namespace Configs {
         QSet<int> cachedProfiles;
         std::map<int, std::optional<QSet<int>>> remoteIndexes;
 
-        auto profileQuery = db.query("SELECT id, name, default_outbound_id, is_raw, raw_route, prevent_modifications, is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids, inner_hop_endpoint_ids, dns_json, custom_dns, source_gid, ignore_xray_routing, remote_rules FROM route_profiles ORDER BY id");
+        auto profileQuery = db.query("SELECT id, name, default_outbound_id, is_raw, raw_route, prevent_modifications, is_remote, remote_url, auto_update, remote_last_update, endpoint_profile_ids, inner_hop_endpoint_ids, dns_json, custom_dns, source_gid, ignore_xray_routing, remote_rules FROM route_profiles ORDER BY display_order, id");
         if (!profileQuery) return routeProfiles;
 
         QMutexLocker locker(&mutex);

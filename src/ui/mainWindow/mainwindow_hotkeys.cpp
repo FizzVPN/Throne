@@ -153,11 +153,9 @@ void MainWindow::setActionsData()
     ui->actionClear_Test_Result->setData(QString("m29"));
     ui->menu_remove_insecure->setData(QString("m30"));
     ui->actionUpdate_All_Subscriptions->setData(QString("m31"));
-    ui->menu_scanner->setData(QString("m32"));
     commandPaletteAction->setData(QString("m33"));
     ui->actionService_Check_Selected->setData(QString("m34"));
     ui->actionService_Check_Group->setData(QString("m35"));
-    ui->menu_find_settings->setData(QString("m36"));
     ui->actionRule_Tester->setData(QString("m37"));
     ui->actionRestart_Proxy->setData(QString("m38"));
     ui->menu_stop->setData(QString("m39"));
@@ -182,6 +180,7 @@ void MainWindow::setActionsData()
     ui->menu_exit_server->setData(QString("m58"));
     ui->menu_exit_warp->setData(QString("m59"));
     ui->menu_edit_route->setData(QString("m61"));
+    ui->menu_find_warp_endpoint->setData(QString("m64"));
 }
 
 QList<QAction*> MainWindow::getActionsForShortcut()

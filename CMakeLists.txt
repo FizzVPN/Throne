@@ -293,8 +293,11 @@ set(PROJECT_SOURCES
         include/ui/utils/ProfilesTableFilterHeader.h
         include/ui/utils/ConnectionsFilterHeader.h
         include/ui/utils/HeaderSortArrow.h
+        include/ui/utils/ItemViewFit.h
         include/ui/utils/ConnectionsTreeModel.h
         src/ui/utils/ConnectionsTreeModel.cpp
+        include/ui/utils/ProcessIcon.h
+        src/ui/utils/ProcessIcon.cpp
         include/ui/utils/ConnectionsTreeFilterProxyModel.h
         src/ui/utils/ConnectionsTreeFilterProxyModel.cpp
         include/ui/utils/ScreenQrScanner.h
@@ -303,6 +306,7 @@ set(PROJECT_SOURCES
         include/ui/utils/MyPlainTextEdit.h
         include/ui/utils/GuiUtils.hpp
         src/ui/utils/GuiUtils.cpp
+        include/ui/utils/Disclosure.hpp
         include/ui/utils/ValidationForm.h
         src/ui/utils/ValidationForm.cpp
         include/ui/utils/CommandPalette.h
@@ -408,10 +412,6 @@ set(PROJECT_SOURCES
         src/ui/profile/edit_openvpn.cpp
         include/ui/profile/edit_openvpn.ui
 
-        include/ui/profile/edit_openvpn_advanced.h
-        src/ui/profile/edit_openvpn_advanced.cpp
-        include/ui/profile/edit_openvpn_advanced.ui
-
         include/ui/profile/edit_openconnect.h
         src/ui/profile/edit_openconnect.cpp
         include/ui/profile/edit_openconnect.ui
@@ -465,19 +465,11 @@ set(PROJECT_SOURCES
         include/ui/utils/ReorderListWidget.h
         src/ui/utils/ReorderListWidget.cpp
 
-        src/ui/scanner/dialog_scanner.cpp
-        include/ui/scanner/dialog_scanner.h
-        include/ui/scanner/dialog_scanner.ui
-        src/ui/scanner/ScanItem.cpp
-        include/ui/scanner/ScanItem.h
-        src/ui/scanner/dialog_new_scan.cpp
-        include/ui/scanner/dialog_new_scan.h
+        src/ui/scanner/ScannerUi.cpp
+        include/ui/scanner/ScannerUi.h
         src/ui/scanner/dialog_scan_instance.cpp
-        src/ui/scanner/dialog_scan_instance_tune.cpp
         include/ui/scanner/dialog_scan_instance.h
         include/ui/scanner/dialog_scan_instance.ui
-        include/ui/scanner/scan_phases.ui
-        include/ui/scanner/scan_tune_settings.ui
         src/ui/scanner/IpEntriesModel.cpp
         include/ui/scanner/IpEntriesModel.h
         src/ui/scanner/dialog_ip_lists.cpp
@@ -488,6 +480,8 @@ set(PROJECT_SOURCES
         src/ui/scanner/dialog_edit_ip_list.cpp
         include/ui/scanner/dialog_edit_ip_list.h
         include/ui/scanner/dialog_edit_ip_list.ui
+        src/ui/scanner/dialog_warp_finder.cpp
+        include/ui/scanner/dialog_warp_finder.h
 
         include/scanner/IpListParse.h
         src/scanner/IpListParse.cpp
@@ -502,12 +496,8 @@ set(PROJECT_SOURCES
         src/scanner/ScanManager.cpp
         include/scanner/ScanWorker.h
         src/scanner/ScanWorker.cpp
-        include/scanner/TunePlanner.h
-        src/scanner/TunePlanner.cpp
-        include/scanner/TuneProfiles.h
-        src/scanner/TuneProfiles.cpp
-        include/scanner/TuneWorker.h
-        src/scanner/TuneWorker.cpp
+        include/scanner/WarpWorker.h
+        src/scanner/WarpWorker.cpp
 
         src/ui/stats/dialog_traffic_stats.cpp
         include/ui/stats/dialog_traffic_stats.h

@@ -517,13 +517,15 @@ namespace Subscription {
             return outcome;
         }
 
-        QList<int> removeUnavailableAndSort(const std::shared_ptr<Configs::Group> &group, const Configs::SubscriptionOptions &options, QString &report) {
+        QList<int> removeUnavailableAndSort(const std::shared_ptr<Configs::Group> &group, const Configs::SubscriptionOptions &options,
+                                            qint64 testedSince, QString &report) {
             QList<int> deleted;
             if (options.remove_unavailable) {
                 QList<int> doomed;
                 QStringList names;
                 forEachProfile(withoutSelectors(group->Profiles()), [&](const std::shared_ptr<Configs::Profile> &ent) {
-                    if (!ent->IsUnavailable()) return;
+                    // Only this test's failures: an inconclusive or aborted test leaves the earlier result in place.
+                    if (!ent->IsUnavailable() || ent->latency_at < testedSince) return;
                     doomed << ent->id;
                     names << ent->outbound->DisplayTypeAndName();
                 });
@@ -789,12 +791,16 @@ namespace Subscription {
         }, finish});
     }
 
-    void GroupUpdater::ImportBatch(const QStringList &payloads, const Finish &finish) {
-        if (payloads.isEmpty()) return;
+    void GroupUpdater::ImportFiles(const QList<ImportFile> &files, const Finish &finish) {
+        if (files.isEmpty()) return;
         QList<QByteArray> documents;
-        for (const auto &payload : payloads) documents << payload.trimmed().toUtf8();
+        QStringList names;
+        for (const auto &file : files) {
+            documents << file.text.trimmed().toUtf8();
+            names << file.name.trimmed();
+        }
         enqueue({-1, false, [=, this]() mutable {
-            importDocuments(-1, std::move(documents));
+            importDocuments(-1, std::move(documents), {}, false, names);
             emit asyncUpdateCallback(-1);
         }, finish});
     }
@@ -1035,14 +1041,17 @@ namespace Subscription {
         return true;
     }
 
-    UpdateOutcome GroupUpdater::importDocuments(int gid, QList<QByteArray> documents, const QString &emptyReason, bool quiet) {
+    UpdateOutcome GroupUpdater::importDocuments(int gid, QList<QByteArray> documents, const QString &emptyReason, bool quiet,
+                                                const QStringList &fileNames) {
         auto &settings = Configs::dataManager->settingsRepo;
         settings->imported_count = 0;
         ImportSink sink(gid, nullptr);
         ImportReport report;
 
         MW_show_log(">>>>>>>> " + QObject::tr("Processing subscription data..."));
-        for (auto &document : documents) ParseDocument(std::move(document), sinkFor(sink, report));
+        for (qsizetype i = 0; i < documents.size(); ++i) {
+            ParseDocument(std::move(documents[i]), sinkFor(sink, report), fileNames.value(i));
+        }
         sink.finish();
         MW_show_log(">>>>>>>> " + QObject::tr("Process complete, applying..."));
 
@@ -1460,8 +1469,9 @@ namespace Subscription {
             tester = urlTester;
         }
         if (tester == nullptr) return;
+        const qint64 testedSince = QDateTime::currentSecsSinceEpoch();
         // Back through the queue, so the follow-up never races another job over the group.
-        tester(profileIDs, interactive, [=, this] { enqueue({-1, false, [=, this] { afterUrlTest(gid); }, nullptr}); });
+        tester(profileIDs, interactive, [=, this] { enqueue({-1, false, [=, this] { afterUrlTest(gid, testedSince); }, nullptr}); });
     }
 
     void GroupUpdater::afterCountryTest(int gid, bool interactive) {
@@ -1483,14 +1493,14 @@ namespace Subscription {
         if (options.url_test) startUrlTest(gid, withoutSelectors(group->Profiles()), interactive);
     }
 
-    void GroupUpdater::afterUrlTest(int gid) {
+    void GroupUpdater::afterUrlTest(int gid, qint64 testedSince) {
         const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
         if (group == nullptr || group->archive) return;
         const auto options = group->sub_options;
         if (!options.url_test || (!options.remove_unavailable && !options.sort_by_latency)) return;
 
         QString report;
-        const auto deleted = removeUnavailableAndSort(group, options, report);
+        const auto deleted = removeUnavailableAndSort(group, options, testedSince, report);
         if (!report.isEmpty()) MW_show_log("<<<<<<<< " + QObject::tr("After the URL test of %1:").arg(group->name) + report);
 
         Engine::EngineEvents::SubscriptionGroupChanged(gid, deleted);

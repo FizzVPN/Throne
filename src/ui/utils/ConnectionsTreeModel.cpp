@@ -1,7 +1,9 @@
 #include "include/ui/utils/ConnectionsTreeModel.h"
 #include "include/global/Utils.hpp"
+#include "include/ui/utils/ProcessIcon.h"
 
 #include <QHash>
+#include <QHostAddress>
 
 #include <algorithm>
 
@@ -40,6 +42,26 @@ namespace {
     QString routeTarget(const Stats::ConnectionMetadata &meta) {
         static const QStringList plainTags{QStringLiteral("proxy"), QStringLiteral("direct"), QStringLiteral("warp-bypass")};
         return plainTags.contains(meta.outbound) || meta.outboundName.isEmpty() ? meta.outbound : meta.outboundName;
+    }
+
+    // IPv4, then IPv6, then names; addresses compare by their bytes, so 2.x sorts before 10.x, then by port and sniffed domain.
+    QByteArray destSortKey(const QString &dest, const QString &domain) {
+        const QString host = Stats::EndpointHost(dest);
+        const quint16 port = host == dest ? 0 : dest.mid(dest.lastIndexOf(QLatin1Char(':')) + 1).toUShort();
+        QByteArray key;
+        QHostAddress address;
+        if (address.setAddress(host) && address.protocol() == QAbstractSocket::IPv4Protocol) {
+            const quint32 v4 = address.toIPv4Address();
+            key.append('\x00');
+            for (int shift = 24; shift >= 0; shift -= 8) key.append(static_cast<char>((v4 >> shift) & 0xff));
+        } else if (!address.isNull()) {
+            const Q_IPV6ADDR v6 = address.toIPv6Address();
+            key.append('\x01').append(reinterpret_cast<const char *>(v6.c), 16);
+        } else {
+            key.append('\x02').append(host.toLower().toUtf8()).append('\x00');
+        }
+        key.append(static_cast<char>(port >> 8)).append(static_cast<char>(port & 0xff));
+        return key.append(domain.toLower().toUtf8());
     }
 
     // The rule's entries that matched, else the whole rule, else sing-box's fallback.
@@ -136,6 +158,9 @@ QVariant ConnectionsTreeModel::data(const QModelIndex &index, int role) const {
             default:
                 return {};
             }
+        case Qt::DecorationRole:
+            if (index.column() != ColTarget) return {};
+            return ProcessIcon::ForPath(group->processPath);
         case Qt::ToolTipRole:
             if (index.column() == ColOutbound && group->sameOutbound) return group->commonOutbound;
             if (index.column() != ColTarget) return {};
@@ -244,6 +269,7 @@ void ConnectionsTreeModel::setConnections(const QList<Stats::ConnectionMetadata>
             group->commonOutboundText = outboundText(c.outboundName);
             group->commonSource = c.sourceDisplay;
         }
+        if (group->processPath.isEmpty()) group->processPath = c.processPath;
         group->sameOutbound = group->sameOutbound && group->commonOutbound == c.outboundName;
         group->sameSource = group->sameSource && group->commonSource == c.sourceDisplay;
         group->totalConnections++;
@@ -262,6 +288,7 @@ void ConnectionsTreeModel::setConnections(const QList<Stats::ConnectionMetadata>
             leaf->meta = c;
             leaf->key = key;
             leaf->destText = dest;
+            leaf->destKey = destSortKey(c.dest, c.domain);
             leaf->protocolText = protocol;
             leaf->outboundText = outboundText(c.outboundName);
         }
@@ -302,7 +329,7 @@ void ConnectionsTreeModel::setConnections(const QList<Stats::ConnectionMetadata>
         break;
     case Stats::ByProcess:
         sortTree(groups, descending, [](const ProcessGroupItem &g) -> const QString & { return g.processName; },
-                 [](const ConnectionLeafItem &l) -> const QString & { return l.destText; });
+                 [](const ConnectionLeafItem &l) -> const QByteArray & { return l.destKey; });
         break;
     default:
         break;

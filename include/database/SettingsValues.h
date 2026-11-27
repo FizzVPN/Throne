@@ -37,7 +37,6 @@ namespace Configs {
         int url_test_timeout_ms = kDefaultUrlTestTimeoutMs;
         bool disable_tray = false;
         int test_concurrent = 10;
-        bool disable_traffic_stats = false;
         int current_group = 0;
         QString mux_protocol = "smux";
         bool mux_padding = false;
@@ -77,11 +76,7 @@ namespace Configs {
         int font_size = 0;
         QString mw_size = "";
         QString routing_settings_size = "";
-        bool log_enable_include = false;
-        bool log_enable_exclude = false;
-        QStringList log_include_keyword = {};
-        QStringList log_include_regex = {};
-        QStringList log_exclude_keyword = {};
+        // Log lines matching any of these patterns are hidden.
         QStringList log_exclude_regex = {};
         bool start_minimal = false;
         int max_log_line = 500;
@@ -95,20 +90,25 @@ namespace Configs {
         int stats_tab = 0; // either connection or log
         // LiveChartState of the traffic graph; keys are Stats::TrafficLine keys.
         QStringList traffic_graph_hidden = {};
+        // Route, aux and "other" lines start hidden; these are the ones turned on.
+        QStringList traffic_graph_shown = {};
         // Bit 0 hides download, bit 1 upload.
         int traffic_graph_hidden_dirs = 0;
-        int traffic_graph_range = 1;
+        int traffic_graph_seconds = 120;
         bool traffic_graph_smooth = true;
-        bool traffic_graph_markers = true;
+        // Off: route, aux and "other" traffic is folded into the Proxy line.
+        bool traffic_graph_extras = false;
         // Stats::ConnectionSort; 0 == Stats::Default, the core's own ordering.
         int connection_sort = 0;
         bool connection_sort_asc = false;
+        // "column=width" for the connection columns the user resized; the rest size themselves.
+        QStringList connection_column_widths = {};
         // Days of hour-resolution history to retain (the 48h minute-resolution window is fixed); clamped to >= 1 in use.
         int traffic_stats_retention_days = 90;
         bool disable_traffic_aggregation = false;
         int speed_test_mode = TestConfig::FULL;
         int speed_test_timeout_ms = 5000;
-        QString simple_dl_url = "http://cachefly.cachefly.net/1mb.test";
+        QString simple_dl_url = "http://cachefly.cachefly.net/5mb.test";
         bool allow_beta_update = false;
         int app_update_check_days = 1;
         qint64 app_update_last_check = 0;
@@ -118,6 +118,8 @@ namespace Configs {
         bool show_config_security = false;
         // -1 until a filter column has been used.
         int last_filter_column = -1;
+        // ProfilesTableModel::Column values in display order; empty keeps the model order.
+        QStringList profile_column_order = {};
 
         // Mirrors of the registrations we last wrote to the OS; startup re-registers only when they differ.
         QString url_scheme_mirror = "";
@@ -171,6 +173,8 @@ namespace Configs {
         // Generated on first use; an empty name means the host name.
         QString device_id = "";
         QString device_name = "";
+        // "gid=md5" of each subscription announcement already opened in the details dialog; device-local UI state.
+        QStringList sub_announce_seen = {};
 
         // Remember
         bool remember_system_proxy = false;
@@ -315,6 +319,9 @@ namespace Configs {
         // Last 5 hand-typed URLs per field, offered alongside the built-in providers.
         QStringList xray_geoip_url_history = {};
         QStringList xray_geosite_url_history = {};
+
+        // Parts ticked for the last backup made; empty means all.
+        QStringList backup_parts = {};
 
         // Extra Core Paths
         QStringList extraCorePaths = {};

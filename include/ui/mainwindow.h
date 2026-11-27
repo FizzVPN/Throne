@@ -52,6 +52,7 @@
 namespace Configs {
     enum simpleAction : int;
     struct SimpleTarget;
+    struct IpListEntry;
 }
 
 namespace Engine {
@@ -67,7 +68,6 @@ class TrayProfileSelector;
 class TrayOtpCodes;
 class GlobalHotkeys;
 class DialogVpnAuth;
-class DialogScanner;
 class DialogIpLists;
 class DialogRuleTester;
 class CommandPalette;
@@ -161,8 +161,6 @@ public:
 
     void showIpListsDialog(int selectListId = -1);
 
-    void showScannerDialog();
-
     void refreshScannerDataView(bool force = false);
 
 signals:
@@ -188,10 +186,6 @@ private slots:
     void on_menu_preset_settings_triggered();
 
     void on_menu_otp_manager_triggered();
-
-    void on_menu_scanner_triggered();
-
-    void on_menu_find_settings_triggered();
 
     void on_menu_integration_settings_triggered();
 
@@ -246,6 +240,8 @@ private slots:
     void on_menu_server_aboutToHide();
 
     void on_menu_edit_triggered();
+
+    void on_menu_find_warp_endpoint_triggered();
 
     void on_menu_add_subscription_triggered();
 
@@ -308,6 +304,8 @@ private:
     int toolTipID;
     class LiveChart *trafficChart = nullptr;
     QList<Stats::TrafficLine> m_trafficLines;
+    // Route, aux and "other" lines summed into Proxy because the graph shows only Proxy and Direct.
+    bool m_trafficFolded = false;
     QTimer *m_trafficGraphSaveDebounce = nullptr;
     QAction *m_trafficStatsChartAction = nullptr;
     using LiveRates = Engine::LiveRates;
@@ -328,10 +326,7 @@ private:
     bool m_profilesTableHadFocus = false;
     int m_profilesScrollValue = 0;
 
-    QStringList includeKeywords;
-    QStringList excludeKeywords;
-    QRegularExpression includeCombined;
-    QRegularExpression excludeCombined;
+    QRegularExpression logHidePattern;
     QMutex logMutex;
     QQueue<QString> logQueue;
     QWaitCondition logWaiter;
@@ -360,15 +355,6 @@ private:
     QTimer *m_logSearchDebounce = nullptr;
     QToolButton *logFilterButton = nullptr;
     QToolButton *logJumpLatestButton = nullptr;
-
-    struct LogFilter {
-        bool enableInclude = false;
-        bool enableExclude = false;
-        QStringList includeKeywords;
-        QStringList excludeKeywords;
-        QRegularExpression includeCombined;
-        QRegularExpression excludeCombined;
-    };
 
     void append_log(const QString &log);
 
@@ -400,8 +386,6 @@ private:
 
     void updateLogStatus();
 
-    bool should_print_log(const QString &log, const LogFilter &filter);
-
     void updateLogFilterFields();
 
     void setLogHighlighter(bool darkMode);
@@ -410,12 +394,16 @@ private:
 
     QList<int> get_now_selected_list();
     void refresh_startstop_button();
+    void refresh_tray_tooltip();
     void refresh_pin_action();
     void refresh_action_states();
 
-    // View slots of ConnectionManager and VpnAuthController, in mainwindow_view.cpp.
-    void addRunMarker(qint64 monoMs, Engine::RunMarker kind, const QString &name);
+    // The one selected profile when it is a WARP profile, else nullptr.
+    std::shared_ptr<Configs::Profile> warpFinderTarget();
 
+    void applyFoundWarpEndpoint(int profileId, const Configs::IpListEntry &entry, bool junk, bool http2);
+
+    // View slots of ConnectionManager and VpnAuthController, in mainwindow_view.cpp.
     void showRestartReasons();
 
     void showVpnEndpointStatus(const QString &summary, const QString &detail, bool problem);
@@ -465,6 +453,8 @@ private:
     void import_text(const QString &text);
 
     void refresh_proxy_list_column_size();
+
+    void editProfileColumnOrder();
 
     void refresh_sort_indicator();
 
@@ -558,7 +548,6 @@ private:
     QHash<QString, QPointer<QMessageBox>> m_policyBoxes;
 
     QPointer<DialogVpnAuth> m_vpnAuthDialog;
-    QPointer<DialogScanner> m_scannerDialog;
     QPointer<DialogIpLists> m_ipListsDialog;
     QPointer<DialogRuleTester> m_ruleTesterDialog;
     QHash<int, QString> m_scannerNames;
@@ -571,6 +560,8 @@ private:
     void setupConnectionList();
 
     void setupTrafficGraph();
+
+    void show_traffic_graph_options();
 
     void setupRoutingMenu();
 
@@ -657,6 +648,8 @@ private:
     bool confirmRestartProgram() override;
 
     void testSessionBusy(const QString &text) override;
+
+    void testsInconclusive(const QList<int> &profileIds) override;
 
     void exitProgram(ExitReason reason, bool unattended) override;
 
