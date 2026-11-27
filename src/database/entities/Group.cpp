@@ -90,7 +90,6 @@ namespace Configs
         if (remove_invalid) json["remove_invalid"] = true;
         if (url_test) json["url_test"] = true;
         if (remove_unavailable) json["remove_unavailable"] = true;
-        if (sort_by_latency) json["sort_by_latency"] = true;
         if (!name_filter.isEmpty()) json["name_filter"] = name_filter;
         if (!name_exclude.isEmpty()) json["name_exclude"] = name_exclude;
         if (!type_exclude.isEmpty()) json["type_exclude"] = QJsonArray::fromStringList(type_exclude);
@@ -129,7 +128,6 @@ namespace Configs
         options.remove_invalid = json["remove_invalid"].toBool();
         options.url_test = json["url_test"].toBool();
         options.remove_unavailable = json["remove_unavailable"].toBool();
-        options.sort_by_latency = json["sort_by_latency"].toBool();
         options.name_filter = json["name_filter"].toString();
         options.name_exclude = json["name_exclude"].toString();
         for (const auto &type : json["type_exclude"].toArray()) {
@@ -383,6 +381,13 @@ namespace Configs
         sort = {};
         profiles = restored;
         custom_order = std::move(restored);
+    }
+
+    void Group::UseSubscriptionOrder(const QList<int>& ids) {
+        QMutexLocker locker(&mutex);
+        profiles = orderedMembers(ids, profiles);
+        sort = {};
+        custom_order.clear();
     }
 
     bool Group::SortProfiles(GroupSortAction action) {

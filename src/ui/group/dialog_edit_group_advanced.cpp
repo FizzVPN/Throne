@@ -130,7 +130,6 @@ DialogEditGroupAdvanced::DialogEditGroupAdvanced(const Configs::SubscriptionOpti
     ui->remove_invalid->setChecked(options.remove_invalid);
     ui->url_test->setChecked(options.url_test);
     ui->remove_unavailable->setChecked(options.remove_unavailable);
-    ui->sort_by_latency->setChecked(options.sort_by_latency);
     ui->name_filter->setText(options.name_filter);
     ui->name_exclude->setText(options.name_exclude);
     ui->country_filter->setText(options.country_filter);
@@ -261,7 +260,6 @@ void DialogEditGroupAdvanced::syncHwidFields() {
 void DialogEditGroupAdvanced::syncUrlTestFollowUps() {
     const bool tested = ui->url_test->isChecked();
     ui->remove_unavailable->setEnabled(tested);
-    ui->sort_by_latency->setEnabled(tested);
 }
 
 void DialogEditGroupAdvanced::syncTypeExclude() {
@@ -329,7 +327,6 @@ void DialogEditGroupAdvanced::accept() {
     options.remove_invalid = ui->remove_invalid->isChecked();
     options.url_test = ui->url_test->isChecked();
     options.remove_unavailable = ui->remove_unavailable->isChecked();
-    options.sort_by_latency = ui->sort_by_latency->isChecked();
     options.name_filter = ui->name_filter->text().trimmed();
     options.name_exclude = ui->name_exclude->text().trimmed();
     QStringList types;

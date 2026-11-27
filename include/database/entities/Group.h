@@ -101,7 +101,6 @@ namespace Configs
         bool url_test = false;
         // Follow-ups of url_test: ignored while it is off.
         bool remove_unavailable = false;
-        bool sort_by_latency = false;
         // Case-insensitive regexes on the profile name, applied as a fetch is parsed; the exclusion wins.
         QString name_filter;
         QString name_exclude;
@@ -189,6 +188,9 @@ namespace Configs
 
         // Stops sorting and goes back to the arrangement saved when the sort started; import order without one.
         void RestoreOriginalOrder();
+
+        // Keep manual pins; order the other rows by the feed, followed by any local-only members.
+        void UseSubscriptionOrder(const QList<int>& ids);
 
         // The sorts below load profiles, so call them off the UI thread. Each is true when the order moved.
 

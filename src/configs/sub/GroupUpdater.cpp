@@ -517,34 +517,22 @@ namespace Subscription {
             return outcome;
         }
 
-        QList<int> removeUnavailableAndSort(const std::shared_ptr<Configs::Group> &group, const Configs::SubscriptionOptions &options,
-                                            qint64 testedSince, QString &report) {
-            QList<int> deleted;
-            if (options.remove_unavailable) {
-                QList<int> doomed;
-                QStringList names;
-                forEachProfile(withoutSelectors(group->Profiles()), [&](const std::shared_ptr<Configs::Profile> &ent) {
-                    // Only this test's failures: an inconclusive or aborted test leaves the earlier result in place.
-                    if (!ent->IsUnavailable() || ent->latency_at < testedSince) return;
-                    doomed << ent->id;
-                    names << ent->outbound->DisplayTypeAndName();
-                });
-                if (!doomed.isEmpty()) {
-                    const auto outcome = deleteProfiles(doomed);
-                    if (!outcome.ok) {
-                        reportDeleteFailure();
-                    }
-                    deleted = outcome.deleted;
-                    report += "\n" + QObject::tr("Removed %1 unavailable profiles:").arg(names.size()) + "\n" + notice(names, "[-]", "removed");
-                    if (!outcome.kept.isEmpty()) report += "\n" + QObject::tr("The running profile was kept.");
-                    report += hopNotice(outcome.clearedHops);
-                }
-            }
-            if (options.sort_by_latency) {
-                group->SortProfiles({GroupSortMethod::ByLatency, false});
-                Configs::dataManager->groupsRepo->Save(group);
-            }
-            return deleted;
+        QList<int> removeTestFailures(const std::shared_ptr<Configs::Group> &group, qint64 testedSince, QString &report) {
+            QList<int> doomed;
+            QStringList names;
+            forEachProfile(withoutSelectors(group->Profiles()), [&](const std::shared_ptr<Configs::Profile> &ent) {
+                // Only this test's failures: an inconclusive or aborted test leaves the earlier result in place.
+                if (!ent->IsUnavailable() || ent->latency_at < testedSince) return;
+                doomed << ent->id;
+                names << ent->outbound->DisplayTypeAndName();
+            });
+            if (doomed.isEmpty()) return {};
+            const auto outcome = deleteProfiles(doomed);
+            if (!outcome.ok) reportDeleteFailure();
+            report += "\n" + QObject::tr("Removed %1 unavailable profiles:").arg(names.size()) + "\n" + notice(names, "[-]", "removed");
+            if (!outcome.kept.isEmpty()) report += "\n" + QObject::tr("The running profile was kept.");
+            report += hopNotice(outcome.clearedHops);
+            return outcome.deleted;
         }
 
         struct CountryOutcome {
@@ -1216,6 +1204,9 @@ namespace Subscription {
         if (settings->sub_clear) {
             MW_show_log(QObject::tr("Clearing profiles..."));
             auto doomed = members();
+            // Reconcile pinned servers by identity so a clear-and-reimport does not lose their pins.
+            const QSet<int> pins(group->pinned.cbegin(), group->pinned.cend());
+            doomed.removeIf([&pins](int id) { return pins.contains(id); });
             if (options.keep_working) {
                 QSet<int> working;
                 forEachProfile(doomed, [&](const std::shared_ptr<Configs::Profile> &ent) {
@@ -1279,7 +1270,9 @@ namespace Subscription {
         report.setImported(sink.stored());
 
         QString change_text;
+        QList<int> subscriptionOrder;
         if (cleared) {
+            subscriptionOrder = sink.storedIds();
             result.added = sink.stored();
             if (sink.entries.size() >= 1000) {
                 change_text += "[+] " + Int2String(sink.entries.size()) + " profiles\n";
@@ -1288,6 +1281,7 @@ namespace Subscription {
             }
         } else {
             const auto plan = Reconcile(old, sink.entries, index);
+            subscriptionOrder = plan.order;
             result.added = static_cast<int>(plan.added.size());
             result.updated = static_cast<int>(plan.updates.size());
             for (const auto &[oldId, newId, byName] : plan.updates) {
@@ -1318,10 +1312,14 @@ namespace Subscription {
             QList<int> keptWorking;
             for (int id : plan.stale) (working.contains(id) ? keptWorking : stale) << id;
 
-            const auto previousOrder = group->profiles;
-            group->profiles = plan.order;
-            for (const auto &[position, id] : sticky) {
-                group->profiles.insert(std::min<qsizetype>(position, group->profiles.size()), id);
+            QList<int> previousOrder;
+            {
+                QMutexLocker locker(&group->mutex);
+                previousOrder = group->profiles;
+                group->profiles = plan.order;
+                for (const auto &[position, id] : sticky) {
+                    group->profiles.insert(std::min<qsizetype>(position, group->profiles.size()), id);
+                }
             }
             groupsRepo->Save(group);
 
@@ -1423,8 +1421,8 @@ namespace Subscription {
             result.error = QStringLiteral("Some profiles could not be deleted from the database.");
         }
 
-        // The subscription's own order replaced the group's above.
-        group->Resort();
+        if (result.ok()) group->UseSubscriptionOrder(subscriptionOrder);
+        else group->Resort();
         // Stamped only once the update went through, so an interrupted one is retried instead of counting as fresh.
         group->sub_last_update = QDateTime::currentSecsSinceEpoch();
         groupsRepo->Save(group);
@@ -1497,10 +1495,10 @@ namespace Subscription {
         const auto group = Configs::dataManager->groupsRepo->GetGroup(gid);
         if (group == nullptr || group->archive) return;
         const auto options = group->sub_options;
-        if (!options.url_test || (!options.remove_unavailable && !options.sort_by_latency)) return;
+        if (!options.url_test || !options.remove_unavailable) return;
 
         QString report;
-        const auto deleted = removeUnavailableAndSort(group, options, testedSince, report);
+        const auto deleted = removeTestFailures(group, testedSince, report);
         if (!report.isEmpty()) MW_show_log("<<<<<<<< " + QObject::tr("After the URL test of %1:").arg(group->name) + report);
 
         Engine::EngineEvents::SubscriptionGroupChanged(gid, deleted);

@@ -447,13 +447,6 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QCheckBox" name="sort_by_latency">
-              <property name="text">
-               <string>Sort by latency</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
          </layout>
@@ -516,7 +509,6 @@
   <tabstop>remove_invalid</tabstop>
   <tabstop>url_test</tabstop>
   <tabstop>remove_unavailable</tabstop>
-  <tabstop>sort_by_latency</tabstop>
  </tabstops>
  <resources/>
  <connections>

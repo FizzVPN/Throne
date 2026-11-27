@@ -1780,10 +1780,6 @@ Included: %2</source>
         <translation>移除不可用配置档</translation>
     </message>
     <message>
-        <source>Sort by latency</source>
-        <translation>按延迟排序</translation>
-    </message>
-    <message>
         <source>Must be shorter than 1000 characters, on a single line.</source>
         <translation>必须少于 1000 个字符，且在一行上。</translation>
     </message>

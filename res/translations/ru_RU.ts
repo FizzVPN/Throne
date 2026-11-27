@@ -1816,10 +1816,6 @@ Throne will restart to complete the restore.</source>
         <translation>Удалять недоступные профили</translation>
     </message>
     <message>
-        <source>Sort by latency</source>
-        <translation>Сортировать по задержке</translation>
-    </message>
-    <message>
         <source> min</source>
         <translation> мин.</translation>
     </message>
