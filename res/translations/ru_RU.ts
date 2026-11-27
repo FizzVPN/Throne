@@ -1613,12 +1613,12 @@ Throne will restart to complete the restore.</source>
         <translation>Копировать ссылки профилей (deep links)</translation>
     </message>
     <message>
-        <source>Default (%1)</source>
-        <translation>По умолчанию (%1)</translation>
+        <source>Global (%1)</source>
+        <translation>Глобальный (%1)</translation>
     </message>
     <message>
-        <source>Default</source>
-        <translation>По умолчанию</translation>
+        <source>Global</source>
+        <translation>Глобальный</translation>
     </message>
     <message>
         <source>%1 (from this subscription)</source>
@@ -1633,8 +1633,8 @@ Throne will restart to complete the restore.</source>
         <translation>Использовать профиль маршрутизации из подписки</translation>
     </message>
     <message>
-        <source>Routing profile this group&apos;s profiles use. Default: the Routing menu&apos;s choice.</source>
-        <translation>Профиль маршрутизации для профилей этой группы. По умолчанию: выбор в меню «Маршруты».</translation>
+        <source>Routing profile this group&apos;s profiles use. Global: the Routing menu&apos;s choice.</source>
+        <translation>Профиль маршрутизации для профилей этой группы. Глобальный: выбор в меню «Маршруты».</translation>
     </message>
     <message>
         <source>Each update saves the subscription&apos;s Happ routing profile for this group.</source>
@@ -9955,23 +9955,15 @@ Error: %2</source>
         <translation>Профиль тем временем был удалён.</translation>
     </message>
     <message>
-        <source>Network unavailable</source>
-        <translation>Сеть недоступна</translation>
-    </message>
-    <message>
-        <source>Retest</source>
-        <translation>Повторить тест</translation>
-    </message>
-    <message>
-        <source>Ignore</source>
-        <translation>Игнорировать</translation>
+        <source>Unknown</source>
+        <translation>Неизвестно</translation>
     </message>
     <message numerus="yes">
-        <source>%n profile(s) could not be tested because the network was unavailable. Their earlier results were kept.</source>
+        <source>%n profile(s) could not be tested because the network was unavailable.</source>
         <translation>
-            <numerusform>%n профиль не удалось протестировать: сеть была недоступна. Прежние результаты сохранены.</numerusform>
-            <numerusform>%n профиля не удалось протестировать: сеть была недоступна. Прежние результаты сохранены.</numerusform>
-            <numerusform>%n профилей не удалось протестировать: сеть была недоступна. Прежние результаты сохранены.</numerusform>
+            <numerusform>%n профиль не удалось протестировать: сеть была недоступна.</numerusform>
+            <numerusform>%n профиля не удалось протестировать: сеть была недоступна.</numerusform>
+            <numerusform>%n профилей не удалось протестировать: сеть была недоступна.</numerusform>
         </translation>
     </message>
 </context>
@@ -10058,6 +10050,10 @@ Error: %2</source>
     <message>
         <source>Traffic</source>
         <translation>Трафик</translation>
+    </message>
+    <message>
+        <source>The network was down during the test, so it says nothing about this profile.</source>
+        <translation>Во время теста сеть была недоступна, поэтому о профиле ничего не известно.</translation>
     </message>
 </context>
 <context>
@@ -12390,6 +12386,10 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>Недоступен</translation>
     </message>
     <message>
+        <source>Unknown</source>
+        <translation>Неизвестно</translation>
+    </message>
+    <message>
         <source>N/A</source>
         <translation>Недоступно</translation>
     </message>
@@ -13237,6 +13237,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>The kill switch needs the core to run as administrator.</source>
         <translation>Для kill switch ядро должно работать от имени администратора.</translation>
+    </message>
+    <message>
+        <source>Throne was updated: grant the core administrator rights again to turn the kill switch back on.</source>
+        <translation>Throne обновлён: выдайте ядру права администратора ещё раз, чтобы снова включить kill switch.</translation>
     </message>
     <message>
         <source>The kill switch needs the core to have root privileges.</source>

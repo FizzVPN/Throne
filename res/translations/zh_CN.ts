@@ -1545,8 +1545,8 @@ Included: %2</source>
         <translation>路由配置档</translation>
     </message>
     <message>
-        <source>Routing profile this group&apos;s profiles use. Default: the Routing menu&apos;s choice.</source>
-        <translation>这个分组的配置档使用的路由配置档。“默认”：「路由」菜单中的选择。</translation>
+        <source>Routing profile this group&apos;s profiles use. Global: the Routing menu&apos;s choice.</source>
+        <translation>这个分组的配置档使用的路由配置档。“全局”：「路由」菜单中的选择。</translation>
     </message>
     <message>
         <source>Auto clear unavailable profiles</source>
@@ -1585,12 +1585,12 @@ Included: %2</source>
         <translation>复制配置档分享链接(深度链接)</translation>
     </message>
     <message>
-        <source>Default (%1)</source>
-        <translation>默认 (%1)</translation>
+        <source>Global (%1)</source>
+        <translation>全局 (%1)</translation>
     </message>
     <message>
-        <source>Default</source>
-        <translation>默认</translation>
+        <source>Global</source>
+        <translation>全局</translation>
     </message>
     <message>
         <source>%1 (from this subscription)</source>
@@ -9869,21 +9869,13 @@ Error: %2</source>
         <translation>该配置档已在此期间被删除。</translation>
     </message>
     <message>
-        <source>Network unavailable</source>
-        <translation>网络不可用</translation>
-    </message>
-    <message>
-        <source>Retest</source>
-        <translation>重新测试</translation>
-    </message>
-    <message>
-        <source>Ignore</source>
-        <translation>忽略</translation>
+        <source>Unknown</source>
+        <translation>未知</translation>
     </message>
     <message numerus="yes">
-        <source>%n profile(s) could not be tested because the network was unavailable. Their earlier results were kept.</source>
+        <source>%n profile(s) could not be tested because the network was unavailable.</source>
         <translation>
-            <numerusform>%n 个配置档因网络不可用而未能测试，已保留之前的结果。</numerusform>
+            <numerusform>%n 个配置档因网络不可用而未能测试。</numerusform>
         </translation>
     </message>
 </context>
@@ -10029,6 +10021,10 @@ Error: %2</source>
     <message>
         <source>Traffic</source>
         <translation>流量</translation>
+    </message>
+    <message>
+        <source>The network was down during the test, so it says nothing about this profile.</source>
+        <translation>测试期间网络不可用，因此无法判断此配置档的状态。</translation>
     </message>
 </context>
 <context>
@@ -12408,6 +12404,10 @@ Remove that endpoint from this routing profile as well?</source>
         <translation>不可用</translation>
     </message>
     <message>
+        <source>Unknown</source>
+        <translation>未知</translation>
+    </message>
+    <message>
         <source>N/A</source>
         <translation>不可用</translation>
     </message>
@@ -13137,6 +13137,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>The kill switch needs the core to run as administrator.</source>
         <translation>急停开关需要核心以管理员身份运行。</translation>
+    </message>
+    <message>
+        <source>Throne was updated: grant the core administrator rights again to turn the kill switch back on.</source>
+        <translation>Throne 已更新：请重新授予核心管理员权限，以重新启用急停开关。</translation>
     </message>
     <message>
         <source>The kill switch needs the core to have root privileges.</source>

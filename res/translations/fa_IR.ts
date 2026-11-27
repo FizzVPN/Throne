@@ -1546,12 +1546,12 @@ Included: %2</source>
         <translation>پروکسی مقصد</translation>
     </message>
     <message>
-        <source>Default (%1)</source>
-        <translation>پیش فرض (%1)</translation>
+        <source>Global (%1)</source>
+        <translation>سراسری (%1)</translation>
     </message>
     <message>
-        <source>Default</source>
-        <translation>پیش فرض</translation>
+        <source>Global</source>
+        <translation>سراسری</translation>
     </message>
     <message>
         <source>%1 (from this subscription)</source>
@@ -1566,8 +1566,8 @@ Included: %2</source>
         <translation>استفاده از نمایه مسیریابی اشتراک</translation>
     </message>
     <message>
-        <source>Routing profile this group&apos;s profiles use. Default: the Routing menu&apos;s choice.</source>
-        <translation>نمایه مسیریابی که نمایه‌های این گروه از آن استفاده می‌کنند. «پیش فرض»: گزینهٔ انتخاب‌شده در منوی مسیریابی.</translation>
+        <source>Routing profile this group&apos;s profiles use. Global: the Routing menu&apos;s choice.</source>
+        <translation>نمایه مسیریابی که نمایه‌های این گروه از آن استفاده می‌کنند. «سراسری»: گزینهٔ انتخاب‌شده در منوی مسیریابی.</translation>
     </message>
     <message>
         <source>Each update saves the subscription&apos;s Happ routing profile for this group.</source>
@@ -4905,21 +4905,13 @@ Error: %2</source>
         <translation>نمایه در این فاصله حذف شد.</translation>
     </message>
     <message>
-        <source>Network unavailable</source>
-        <translation>شبکه در دسترس نیست</translation>
-    </message>
-    <message>
-        <source>Retest</source>
-        <translation>تست دوباره</translation>
-    </message>
-    <message>
-        <source>Ignore</source>
-        <translation>نادیده گرفتن</translation>
+        <source>Unknown</source>
+        <translation>نامشخص</translation>
     </message>
     <message numerus="yes">
-        <source>%n profile(s) could not be tested because the network was unavailable. Their earlier results were kept.</source>
+        <source>%n profile(s) could not be tested because the network was unavailable.</source>
         <translation>
-            <numerusform>%n نمایه به دلیل در دسترس نبودن شبکه تست نشد. نتایج قبلی حفظ شد.</numerusform>
+            <numerusform>%n نمایه به دلیل در دسترس نبودن شبکه تست نشد.</numerusform>
         </translation>
     </message>
 </context>
@@ -4963,6 +4955,10 @@ Error: %2</source>
     <message>
         <source>Traffic</source>
         <translation type="unfinished">ترافیک</translation>
+    </message>
+    <message>
+        <source>The network was down during the test, so it says nothing about this profile.</source>
+        <translation>هنگام تست شبکه قطع بود، پس نتیجه چیزی درباره این نمایه نمی‌گوید.</translation>
     </message>
 </context>
 <context>
@@ -6596,6 +6592,10 @@ Remove that endpoint from this routing profile as well?</source>
         <source>The kill switch needs the core to run as administrator.</source>
         <translation>کیل سوییچ نیاز دارد هسته با دسترسی مدیر اجرا شود.</translation>
     </message>
+    <message>
+        <source>Throne was updated: grant the core administrator rights again to turn the kill switch back on.</source>
+        <translation>Throne به‌روزرسانی شد: برای روشن شدن دوباره‌ی کیل سوییچ، دسترسی مدیر را دوباره به هسته بدهید.</translation>
+    </message>
 </context>
 <context>
     <name>Sys::CoreElevation</name>
@@ -6685,6 +6685,10 @@ Remove that endpoint from this routing profile as well?</source>
     <message>
         <source>capabilities</source>
         <translation>قابلیت‌ها</translation>
+    </message>
+    <message>
+        <source>Unknown</source>
+        <translation>نامشخص</translation>
     </message>
 </context>
 <context>

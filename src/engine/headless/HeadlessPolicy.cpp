@@ -102,7 +102,7 @@ namespace Engine {
         });
     }
 
-    bool HeadlessPolicy::requestCorePrivileges() {
+    bool HeadlessPolicy::requestCorePrivileges(bool) {
 #if defined(Q_OS_WIN)
         MW_show_log(QStringLiteral("The core lacks the privileges Tun needs: run Throne as a service or from an elevated prompt."));
 #elif defined(Q_OS_MACOS)
@@ -155,15 +155,6 @@ namespace Engine {
 
     void HeadlessPolicy::testSessionBusy(const QString &text) {
         MW_show_log(text);
-    }
-
-    void HeadlessPolicy::testsInconclusive(const QList<int> &profileIds) {
-        constexpr int kListed = 20;
-        QStringList ids;
-        for (const int id : profileIds.mid(0, kListed)) ids << QString::number(id);
-        QString line = QStringLiteral("Untested because the network was unavailable, earlier results kept: profiles %1").arg(ids.join(QStringLiteral(", ")));
-        if (profileIds.size() > kListed) line += QStringLiteral(" and %1 more").arg(profileIds.size() - kListed);
-        MW_show_log(line + QLatin1Char('.'));
     }
 
     void HeadlessPolicy::exitProgram(ExitReason reason, bool) {

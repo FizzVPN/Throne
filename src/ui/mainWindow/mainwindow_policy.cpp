@@ -6,11 +6,8 @@
 #include <memory>
 #include <utility>
 
-#include "include/database/ProfilesRepo.h"
 #include "include/engine/app/ExitController.h"
 #include "include/engine/connection/ConnectionManager.h"
-#include "include/engine/services/ProfileService.h"
-#include "include/engine/tests/TestRunner.h"
 #include "include/global/Logger.hpp"
 #include "include/sys/CoreElevation.hpp"
 #include "include/sys/KillSwitch.hpp"
@@ -167,7 +164,7 @@ void MainWindow::killSwitchProblem() {
             return;
         }
         // Otherwise the core restarts once it is privileged, and onCoreStarted retries.
-        if (connection()->ensureTunPrivileges(true)) Sys::KillSwitch::instance()->apply();
+        if (connection()->ensureTunPrivileges(true, true)) Sys::KillSwitch::instance()->apply();
     });
     box->open();
 }
@@ -246,7 +243,7 @@ Engine::SlowOperation MainWindow::slowOperation(Engine::SlowOperationKind, int d
     return Engine::SlowOperation([restartPrompt] { if (restartPrompt) restartPrompt->dismiss(); });
 }
 
-bool MainWindow::requestCorePrivileges() {
+bool MainWindow::requestCorePrivileges(bool confirmed) {
 #ifdef NKR_ELEVATION_HINT
     MessageBoxWarning(software_name, tr("This installation cannot grant the core privileges by itself.") + "\n\n" + NKR_ELEVATION_HINT);
     return false;
@@ -256,8 +253,8 @@ bool MainWindow::requestCorePrivileges() {
         MessageBoxWarning(software_name, "Please install \"pkexec\" first.");
         return false;
     }
-    auto n = QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please give the core root privileges"), QMessageBox::Yes | QMessageBox::No);
-    if (n == QMessageBox::Yes) {
+    if (confirmed || QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please give the core root privileges"),
+                                          QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
         runOnNewThread([=,this]
         {
             auto chownArgs = QString("root:root " + Configs::FindCoreRealPath());
@@ -287,16 +284,18 @@ bool MainWindow::requestCorePrivileges() {
         return false;
     }
     if (Sys::CoreElevation::CanGrant()) {
-        QMessageBox box(QMessageBox::Warning, software_name,
-                        tr("Tun mode and the kill switch need the core to run with administrator rights.\n\n"
-                           "Grant them once with a Windows confirmation; Throne itself keeps running as a standard user."),
-                        QMessageBox::NoButton, GetMessageBoxParent());
-        auto *grant = box.addButton(tr("Grant privileges"), QMessageBox::AcceptRole);
-        auto *cancel = box.addButton(QMessageBox::Cancel);
-        box.setDefaultButton(grant);
-        box.setEscapeButton(cancel);
-        box.exec();
-        if (box.clickedButton() != grant) return false;
+        if (!confirmed) {
+            QMessageBox box(QMessageBox::Warning, software_name,
+                            tr("Tun mode and the kill switch need the core to run with administrator rights.\n\n"
+                               "Grant them once with a Windows confirmation; Throne itself keeps running as a standard user."),
+                            QMessageBox::NoButton, GetMessageBoxParent());
+            auto *grant = box.addButton(tr("Grant privileges"), QMessageBox::AcceptRole);
+            auto *cancel = box.addButton(QMessageBox::Cancel);
+            box.setDefaultButton(grant);
+            box.setEscapeButton(cancel);
+            box.exec();
+            if (box.clickedButton() != grant) return false;
+        }
         Sys::CoreElevation::GrantAsync(this, [this](int code) {
             const auto result = Sys::CoreElevation::ResultText(code);
             if (code == Sys::CoreElevation::HelperOk) {
@@ -328,8 +327,8 @@ bool MainWindow::requestCorePrivileges() {
         StopVPNProcess();
         return true;
     }
-    auto n = QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please give the core root privileges"), QMessageBox::Yes | QMessageBox::No);
-    if (n == QMessageBox::Yes)
+    if (confirmed || QMessageBox::warning(GetMessageBoxParent(), software_name, tr("Please give the core root privileges"),
+                                          QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes)
     {
         auto Command = QString("sudo chown root:wheel '%1' && sudo chmod u+s '%1'").arg(Configs::FindCoreRealPath());
         auto ret = Mac_Run_Command(Command);
@@ -414,59 +413,6 @@ bool MainWindow::confirmRestartProgram() {
 
 void MainWindow::testSessionBusy(const QString &text) {
     MessageBoxWarning(software_name, text);
-}
-
-void MainWindow::testsInconclusive(const QList<int> &profileIds) {
-    static constexpr auto kIdsProperty = "profileIds";
-    auto *box = policyOpenBox(m_policyBoxes, __func__);
-    QList<int> ids = box != nullptr ? box->property(kIdsProperty).value<QList<int>>() : QList<int>{};
-    for (const int id : profileIds) {
-        if (!ids.contains(id)) ids << id;
-    }
-    const auto text = tr("%n profile(s) could not be tested because the network was unavailable. Their earlier results were kept.",
-                         nullptr, static_cast<int>(ids.size()));
-    if (box != nullptr) {
-        box->setProperty(kIdsProperty, QVariant::fromValue(ids));
-        box->setText(text);
-        return;
-    }
-
-    box = new QMessageBox(QMessageBox::Warning, tr("Network unavailable"), text, QMessageBox::NoButton, this);
-    box->setProperty(kIdsProperty, QVariant::fromValue(ids));
-    auto *retest = box->addButton(tr("Retest"), QMessageBox::AcceptRole);
-    auto *remove = box->addButton(tr("Delete"), QMessageBox::DestructiveRole);
-    auto *ignore = box->addButton(tr("Ignore"), QMessageBox::RejectRole);
-    box->setDefaultButton(ignore);
-    box->setEscapeButton(ignore);
-    connect(box, &QMessageBox::finished, this, [this, box, retest, remove] {
-        const auto *clicked = box->clickedButton();
-        if (clicked != retest && clicked != remove) return;
-        QList<int> existing;
-        for (const auto &ent : Configs::dataManager->profilesRepo->GetProfileBatch(box->property(kIdsProperty).value<QList<int>>())) {
-            existing << ent->id;
-        }
-        if (existing.isEmpty()) return;
-        if (clicked == retest) {
-            tests()->runUrlTests(existing);
-            return;
-        }
-        // Delete in the box was the confirmation; ask again only to name the groups that lose a hop.
-        if (const auto hops = HopReferenceWarning(existing);
-            !hops.isEmpty() && !Configs::dataManager->settingsRepo->skip_delete_confirmation &&
-            QMessageBox::question(this, tr("Confirmation"), tr("Remove %1 item(s) ?").arg(existing.size()) + hops) != QMessageBox::Yes) {
-            return;
-        }
-        if (const auto refusal = Engine::ProfileService::Delete(existing, nullptr, {.stopRunning = true})) {
-            if (refusal->code == QLatin1String("editing")) {
-                MessageBoxWarning(software_name, tr("One of the profiles to delete is open in an editor. Close it first."));
-            } else {
-                MW_show_log(refusal->message);
-            }
-        }
-    });
-    box->setAttribute(Qt::WA_DeleteOnClose);
-    m_policyBoxes.insert(QString::fromLatin1(__func__), box);
-    box->open();
 }
 
 void MainWindow::exitProgram(ExitReason reason, bool unattended) {

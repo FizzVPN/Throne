@@ -627,7 +627,7 @@ private:
 
     Engine::SlowOperation slowOperation(Engine::SlowOperationKind kind, int delayMs) override;
 
-    bool requestCorePrivileges() override;
+    bool requestCorePrivileges(bool confirmed) override;
 
     void systemProxyNeedsMixedInbound() override;
 
@@ -648,8 +648,6 @@ private:
     bool confirmRestartProgram() override;
 
     void testSessionBusy(const QString &text) override;
-
-    void testsInconclusive(const QList<int> &profileIds) override;
 
     void exitProgram(ExitReason reason, bool unattended) override;
 

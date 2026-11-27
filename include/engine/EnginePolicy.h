@@ -72,7 +72,8 @@ namespace Engine {
         virtual SlowOperation slowOperation(SlowOperationKind kind, int delayMs) = 0;
 
         // Interactive callers only, once the core turned out to lack the privileges Tun needs; whether it has them now.
-        virtual bool requestCorePrivileges() = 0;
+        // confirmed: the user already chose to grant them, so only the system's own prompt remains.
+        virtual bool requestCorePrivileges(bool confirmed) = 0;
 
         virtual void systemProxyNeedsMixedInbound() = 0;
 
@@ -100,9 +101,6 @@ namespace Engine {
 
         // Interactive test requests only.
         virtual void testSessionBusy(const QString &text) = 0;
-
-        // A URL test run left these profiles untested because the local network was down; their earlier results stay.
-        virtual void testsInconclusive(const QList<int> &profileIds) = 0;
 
         // Ends the program the way the front end does (relaunch, updater, elevation); the engine passes only None and Restart.
         // unattended: no dialog during the teardown.

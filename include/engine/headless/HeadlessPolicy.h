@@ -30,7 +30,7 @@ namespace Engine {
 
         SlowOperation slowOperation(SlowOperationKind kind, int delayMs) override;
 
-        bool requestCorePrivileges() override;
+        bool requestCorePrivileges(bool confirmed) override;
 
         void systemProxyNeedsMixedInbound() override;
 
@@ -51,8 +51,6 @@ namespace Engine {
         bool confirmRestartProgram() override;
 
         void testSessionBusy(const QString &text) override;
-
-        void testsInconclusive(const QList<int> &profileIds) override;
 
         void exitProgram(ExitReason reason, bool unattended) override;
     };
