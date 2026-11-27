@@ -207,7 +207,7 @@ namespace Configs {
                     .singToXrayPort = singToXrayPort,
                     .xrayToSingPort = xrayToSingPort,
                     .xrayFullConfigPort = xrayFullConfigPort,
-                    .fullXrayUse = FullXrayUse::SelectorMember,
+                    .soleXrayInbound = bridges.xrayFullConfig,
                     .tailDetour = req.upstreamTag,
                     .tailResolvesViaDns = req.upstreamResolvesViaDns,
                 });
@@ -476,22 +476,22 @@ namespace Configs {
             if (warpWrap) ctx.result->outboundNames.insert(tags::proxy, ExitName(activeExit()));
 
             int routeSuffix = 0;
-            const auto &routeGroups = ctx.prerequisites.routing.routeOutboundGroups;
-            auto fullPorts = MkManyPorts(static_cast<int>(std::count_if(routeGroups.cbegin(), routeGroups.cend(),
-                [](const auto &g) { return isXrayFullConfig(g.profile); })));
-            for (const auto& routeGroup : routeGroups) {
-                const bool separateXray = isXrayFullConfig(routeGroup.profile);
+            const auto &groups = ctx.prerequisites.routing.routeOutboundGroups;
+            auto ports = MkManyPorts(static_cast<int>(std::count_if(groups.cbegin(), groups.cend(), [](const auto& g) { return isXrayFullConfig(g.profile); })));
+            for (const auto& routeGroup : groups) {
+                const bool ownInstance = isXrayFullConfig(routeGroup.profile);
                 auto out = buildOutboundChain(ctx, {
                     .hopIDs = routeGroup.hopIDs,
                     .prefix = tags::routeChainPrefix,
                     .link = routeGroup.hopIDs.size() > 1,
                     .startSuffix = routeSuffix,
-                    .xrayFullConfigPort = separateXray ? fullPorts.takeFirst() : -1,
-                    .fullXrayUse = routeGroup.pinXrayExit ? FullXrayUse::PinnedRule : FullXrayUse::Rule,
+                    .xrayFullConfigPort = ownInstance ? ports.takeFirst() : -1,
+                    .xrayRuleTarget = ownInstance,
+                    .pinXrayExit = routeGroup.pinXrayExit,
                 });
                 absorbChain(ctx, out);
                 if (!ctx.error.isEmpty()) return;
-                if (separateXray) ctx.result->xrayFullConfigs << QJsonObject2QString(out.xrayFullConfig, false);
+                if (ownInstance) ctx.result->xrayFullConfigs << QJsonObject2QString(out.xrayFullConfig, false);
                 const auto &tag = out.ingressTag;
                 if (routeGroup.chainWrapper != nullptr && out.traffic) {
                     out.traffic->profiles.append(routeGroup.chainWrapper);

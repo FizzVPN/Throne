@@ -745,7 +745,7 @@ void RouteRuleEditor::loadThenSection() {
     const bool applicable = (action == "route" || action == "bypass") && (current->outboundID == Configs::proxyID || full);
     const bool inherited = profile->ignoreXrayRouting || (full && full->ignoreXrayRouting);
     ignoreXrayCheck->setEnabled(applicable && !inherited);
-    ignoreXrayCheck->setChecked(applicable && (inherited || current->pinsXrayExit()));
+    ignoreXrayCheck->setChecked(applicable && (inherited || current->ignoreXrayRouting));
     QString method = current->rejectMethod.trimmed().toLower();
     if (method == QLatin1String("default")) method.clear();
     ruleEditorSelectData(rejectCombo, method);

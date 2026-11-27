@@ -147,7 +147,7 @@ static QJsonObject routeItemRuleJson(Configs::RouteRule& rule) {
     obj["name"] = rule.name;
     obj["type"] = Configs::ruleTypeToToken(rule.type);
     obj["disabled"] = rule.disabled;
-    if (rule.ignoreXrayRouting) obj["ignore_xray_routing"] = *rule.ignoreXrayRouting;
+    if (rule.ignoreXrayRouting) obj["ignore_xray_routing"] = true;
     return obj;
 }
 

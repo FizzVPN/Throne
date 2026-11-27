@@ -626,12 +626,6 @@ namespace Configs
         return stripXrayKeyLog(stream, at, issues);
     }
 
-    void IsolateXrayRuleTarget(QJsonObject &config) {
-        // A separate rule target must not reopen listeners or apply process-wide options twice.
-        for (const auto *section : {"inbounds", "api", "metrics", "reverse", "env", "geodata"})
-            for (const auto &key : keysNamed(config, section)) config.remove(key);
-    }
-
     BuildResult PinXrayExit(QJsonObject config, const QString &selected, QStringList *choices) {
         const auto invalid = [] {
             return BuildResult{{}, QCoreApplication::translate("Validation", "The Xray config has invalid or ambiguous outbound tags or routing fields.")};

@@ -25,13 +25,12 @@ const (
 )
 
 type xrayProbeRoute struct {
-	xdnsHops int
-	masked   bool
+	floor, startup time.Duration
 }
 
 // Alternative paths don't start in series; budget for the slower one.
 func (r xrayProbeRoute) either(other xrayProbeRoute) xrayProbeRoute {
-	return xrayProbeRoute{masked: r.masked || other.masked, xdnsHops: max(r.xdnsHops, other.xdnsHops)}
+	return xrayProbeRoute{max(r.floor, other.floor), max(r.startup, other.startup)}
 }
 
 type XrayProbeRoutes map[string]xrayProbeRoute
@@ -51,15 +50,16 @@ func maskRoute(mask *conf.FinalMask, udp bool) xrayProbeRoute {
 	if mask == nil {
 		return xrayProbeRoute{}
 	}
-	if !udp {
-		return xrayProbeRoute{masked: len(mask.Tcp) > 0}
+	if !udp && len(mask.Tcp) != 0 {
+		return xrayProbeRoute{floor: finalMaskMinTimeout}
 	}
-	for _, m := range mask.Udp {
-		if strings.EqualFold(m.Type, "xdns") {
-			return xrayProbeRoute{masked: true, xdnsHops: 1}
-		}
+	if !udp || len(mask.Udp) == 0 {
+		return xrayProbeRoute{}
 	}
-	return xrayProbeRoute{masked: len(mask.Udp) > 0}
+	if slices.ContainsFunc(mask.Udp, func(m conf.Mask) bool { return strings.EqualFold(m.Type, "xdns") }) {
+		return xrayProbeRoute{finalMaskMinTimeout, DNSTunnelStartupTimeout}
+	}
+	return xrayProbeRoute{floor: finalMaskMinTimeout}
 }
 
 func streamRoute(s *conf.StreamConfig) xrayProbeRoute {
@@ -74,22 +74,21 @@ func streamRoute(s *conf.StreamConfig) xrayProbeRoute {
 				udp = !slices.Contains(alpn, "h2") || slices.Contains(alpn, "h3")
 			}
 			return maskRoute(s.FinalMask, udp)
-		case "xdrive":
-			return maskRoute(s.FinalMask, usesH3(s))
-		case "xhttp", "splithttp":
+		case "xdrive", "xhttp", "splithttp":
 			r := maskRoute(s.FinalMask, usesH3(s))
 			http := cmp.Or(s.XHTTPSettings, s.SplitHTTPSettings)
-			if http != nil {
-				if http.Extra != nil {
-					var extra conf.SplitHTTPConfig
-					if json.Unmarshal(http.Extra, &extra) != nil {
-						return r
-					}
-					http = &extra
+			if http == nil || strings.EqualFold(string(*network), "xdrive") {
+				return r
+			}
+			if http.Extra != nil {
+				var extra conf.SplitHTTPConfig
+				if json.Unmarshal(http.Extra, &extra) != nil {
+					return r
 				}
-				if d := http.DownloadSettings; d != nil {
-					return r.either(maskRoute(d.FinalMask, usesH3(d)))
-				}
+				http = &extra
+			}
+			if d := http.DownloadSettings; d != nil {
+				return r.either(maskRoute(d.FinalMask, usesH3(d)))
 			}
 			return r
 		}
@@ -131,9 +130,8 @@ func collectMaskedBridges(bridges map[netip.AddrPort]xrayProbeRoute, xrayConfig 
 		}
 		Routing struct {
 			Rules []struct {
-				InboundTag  conf.StringList
-				OutboundTag string
-				BalancerTag string
+				InboundTag conf.StringList
+				conf.RouterRule
 			}
 		}
 	}
@@ -148,29 +146,26 @@ func collectMaskedBridges(bridges map[netip.AddrPort]xrayProbeRoute, xrayConfig 
 			byTag[out.Tag] = i
 		}
 		hops[i] = streamRoute(&out.StreamSettings)
-		anyMasked = anyMasked || hops[i].masked
+		anyMasked = anyMasked || hops[i].floor != 0
 	}
 	if !anyMasked {
 		return
 	}
 	chain := func(start int) (route xrayProbeRoute) {
 		seen := make(map[int]bool)
-		for i := start; !seen[i]; {
+		for i, found := start, true; found && !seen[i]; {
 			seen[i] = true
-			route.masked = route.masked || hops[i].masked
-			route.xdnsHops += hops[i].xdnsHops
+			route.floor = max(route.floor, hops[i].floor)
+			route.startup += hops[i].startup
 			socket := config.Outbounds[i].StreamSettings.SocketSettings
-			if socket == nil || socket.DialerProxy == "" {
+			if socket == nil {
 				break
 			}
-			next, ok := byTag[socket.DialerProxy]
-			if !ok {
-				break
-			}
-			i = next
+			i, found = byTag[socket.DialerProxy]
 		}
 		return
 	}
+	fallback := chain(0) // Xray sends unmatched traffic to its first outbound, even without a tag.
 	for _, in := range config.Inbounds {
 		ip, _ := netip.ParseAddr(in.Listen)
 		port, err := strconv.ParseUint(strings.Trim(string(in.Port), `"`), 10, 16)
@@ -178,7 +173,7 @@ func collectMaskedBridges(bridges map[netip.AddrPort]xrayProbeRoute, xrayConfig 
 			continue
 		}
 		tag := in.Tag
-		route := chain(0) // Xray sends unmatched traffic to its first outbound, even when it has no tag.
+		route := fallback
 		for _, rule := range config.Routing.Rules {
 			if len(rule.InboundTag) != 0 && !slices.Contains(rule.InboundTag, tag) {
 				continue
@@ -200,7 +195,7 @@ func collectMaskedBridges(bridges map[netip.AddrPort]xrayProbeRoute, xrayConfig 
 				route = route.either(candidate)
 			}
 		}
-		if route.masked {
+		if route.floor != 0 {
 			bridges[netip.AddrPortFrom(ip.Unmap(), uint16(port))] = route
 		}
 	}
@@ -218,10 +213,8 @@ func routeProbeTimeout(i Box, tag string, timeout time.Duration) (regular, start
 			allowance += MasterDNSStartupTimeout
 		}
 		route := routes[tag]
-		if route.masked {
-			timeout = max(timeout, finalMaskMinTimeout)
-		}
-		allowance += time.Duration(route.xdnsHops) * DNSTunnelStartupTimeout
+		timeout = max(timeout, route.floor)
+		allowance += route.startup
 	})
 	return timeout, allowance
 }

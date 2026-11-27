@@ -94,7 +94,7 @@ namespace Configs {
         struct RoutingDeps {
             QStringList neededRuleSets;
             std::map<int, QString> outboundMap;
-            QHash<int, QString> ruleExitTags; // structured rule index -> policy-specific outbound
+            std::map<int, QString> pinnedOutbounds;
             struct RouteOutboundGroup {
                 QList<int> hopIDs;
                 std::shared_ptr<Profile> chainWrapper;
@@ -244,7 +244,6 @@ namespace Configs {
         };
 
         enum class GenerateServerless { None, Missing, NoServer, Realm };
-        enum class FullXrayUse { Profile, SelectorMember, Rule, PinnedRule };
 
         struct ChainBuildRequest {
             QList<int> hopIDs;
@@ -256,7 +255,10 @@ namespace Configs {
             int singToXrayPort = -1;
             int xrayToSingPort = -1;
             int xrayFullConfigPort = -1;
-            FullXrayUse fullXrayUse = FullXrayUse::Profile;
+            // Sibling configs from one subscription repeat these ports and would fail to bind.
+            bool soleXrayInbound = false;
+            bool xrayRuleTarget = false;
+            bool pinXrayExit = false;
             bool warpWrap = false;
             bool auxiliary = false;
             QSet<QString> addressableTags;

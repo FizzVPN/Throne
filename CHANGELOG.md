@@ -1,5 +1,7 @@
 #### 1.4.5
 
+* New routing rules that select a custom Xray config keep its built-in routing unless an override is enabled. Saved routing choices are preserved.
+* List Yandex DNS over HTTPS before the plain UDP address in the Direct DNS menu. Existing DNS settings are unchanged.
 * Add Find WARP endpoint **1**
 * Rework the route editor
 * Rework scanning around WARP and DNS tunnel profiles **2**

@@ -90,7 +90,7 @@ func (s *Stack) Start(options StackOptions) error {
 			s.gate = gate
 			s.mu.Unlock()
 		} else {
-			instance, err := startInstance(context.Background(), options.Config, prepare)
+			instance, err := StartInstance(options.Config, prepare)
 			if err != nil {
 				s.Close()
 				return err

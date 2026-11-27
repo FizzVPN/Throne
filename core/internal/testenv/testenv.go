@@ -60,13 +60,17 @@ func Prepare[B probe.Box](parent context.Context, request Request, egress func()
 		cancel()
 		return nil, err
 	}
+	var closeBox func()
 	var cancelDNS context.CancelFunc
-	closeXray := func() {
+	closeEnv := func() {
 		cancel()
 		if cancelDNS != nil {
 			cancelDNS()
 		}
 		xray.CloseInstances(instances)
+		if closeBox != nil {
+			closeBox()
+		}
 	}
 
 	box, closeBox, err := build(func(box context.Context) {
@@ -76,13 +80,11 @@ func Prepare[B probe.Box](parent context.Context, request Request, egress func()
 		context.AfterFunc(ctx, cancelDNS)
 		boxCtx.Publish(dnsCtx)
 	})
-	if err != nil {
-		closeXray()
-		return nil, err
+	if err == nil {
+		err = ctx.Err()
 	}
-	if err := ctx.Err(); err != nil {
-		closeXray()
-		closeBox()
+	if err != nil {
+		closeEnv()
 		return nil, err
 	}
 
@@ -90,8 +92,5 @@ func Prepare[B probe.Box](parent context.Context, request Request, egress func()
 	if request.UseDefaultOutbound {
 		outTags = []string{box.Outbound().Default().Tag()}
 	}
-	return &Env[B]{Box: box, Tags: outTags, close: func() {
-		closeXray()
-		closeBox()
-	}}, nil
+	return &Env[B]{Box: box, Tags: outTags, close: closeEnv}, nil
 }

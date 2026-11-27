@@ -164,7 +164,7 @@ namespace Configs {
         obj["name"] = name;
         obj["type"] = ruleTypeToToken(type);
         if (disabled) obj["disabled"] = true;
-        if (type == custom && ignoreXrayRouting) obj["ignore_xray_routing"] = *ignoreXrayRouting;
+        if (type == custom && ignoreXrayRouting) obj["ignore_xray_routing"] = true;
         return obj;
     }
 
@@ -656,7 +656,7 @@ namespace Configs {
 
         if (act == "route" || act == "bypass") {
             auto severity = Severity::Error;
-            if (const auto message = routeRuleOutboundProblem(outboundID, profilePinsXray || pinsXrayExit(), severity); !message.isEmpty()) add(severity, "outbound", message);
+            if (const auto message = routeRuleOutboundProblem(outboundID, profilePinsXray || ignoreXrayRouting, severity); !message.isEmpty()) add(severity, "outbound", message);
         }
         // The core's RouteOptionsActionOptions.UnmarshalJSON checks; route and bypass rules accept both fragment kinds.
         if (act == "route-options") {

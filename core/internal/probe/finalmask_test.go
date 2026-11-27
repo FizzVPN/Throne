@@ -5,67 +5,24 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sagernet/sing-box/adapter"
-	C "github.com/sagernet/sing-box/constant"
+	"ThroneCore/internal/boxmain"
 	"github.com/sagernet/sing-box/option"
-	"github.com/sagernet/sing/service"
 )
 
-type probeTestBox struct {
-	ctx context.Context
-	adapter.OutboundManager
-}
-
-func TestFullConfigBalancerProbeTimeout(t *testing.T) {
-	const config = `{"inbounds":[{"tag":"throne-bridge","protocol":"socks","listen":"127.0.0.1","port":9000}],
+func TestFinalMaskProbeTimeout(t *testing.T) {
+	const balancer = `{"inbounds":[{"tag":"throne-bridge","protocol":"socks","listen":"127.0.0.1","port":9000}],
 		"outbounds":[{"tag":"direct"},{"tag":"slow","streamSettings":{"network":"kcp","finalmask":{"udp":[{"type":"xdns"}]}}}],
 		"routing":{"rules":[{"inboundTag":["throne-bridge"],"balancerTag":"bal"}],"balancers":[{"tag":"bal","selector":["slow"]}]}}`
-	s := new(option.SOCKSOutboundOptions)
-	s.Server, s.ServerPort = "127.0.0.1", 9000
-	o := option.Options{Outbounds: []option.Outbound{{Tag: "full", Type: C.TypeSOCKS, Options: s}}}
-	got := CollectXrayProbeRoutes(&o, "", []string{config})["full"]
-	if !got.masked || got.xdnsHops != 1 {
-		t.Fatalf("full-config balancer: got %+v", got)
-	}
-}
-
-func (b probeTestBox) Context() context.Context          { return b.ctx }
-func (b probeTestBox) Outbound() adapter.OutboundManager { return b.OutboundManager }
-
-type probeTestManager struct{ adapter.OutboundManager }
-type probeTestOutbound struct {
-	adapter.Outbound
-	kind string
-	deps []string
-}
-
-func (probeTestManager) Outbound(tag string) (adapter.Outbound, bool) {
-	switch tag {
-	case "dnstt-chain":
-		return probeTestOutbound{kind: C.TypeDNSTT, deps: []string{"chain"}}, true
-	case "masterdns":
-		return probeTestOutbound{kind: C.TypeMasterDNS}, true
-	default:
-		return probeTestOutbound{kind: C.TypeSOCKS}, true
-	}
-}
-func (o probeTestOutbound) Type() string           { return o.kind }
-func (o probeTestOutbound) Dependencies() []string { return o.deps }
-
-func TestFinalMaskProbeTimeout(t *testing.T) {
-	var options option.Options
-	for i, tag := range []string{"plain", "chain", "xdns", "full", "download", "remote", "wrong-layer"} {
-		socks := new(option.SOCKSOutboundOptions)
-		socks.Server = "127.0.0.1"
-		socks.ServerPort = uint16(2000 + i)
-		if tag == "remote" {
-			socks.Server, socks.ServerPort = "192.0.2.77", 2002
-		}
-		options.Outbounds = append(options.Outbounds, option.Outbound{Type: C.TypeSOCKS, Tag: tag, Options: socks})
-	}
-	alias := new(option.SOCKSOutboundOptions)
-	alias.Server, alias.ServerPort = "::ffff:127.0.0.1", 2002
-	options.Outbounds = append(options.Outbounds, option.Outbound{Type: C.TypeSOCKS, Tag: "xdns-alias", Options: alias})
+	const sing = `{"outbounds":[
+		{"tag":"plain","type":"socks","server":"127.0.0.1","server_port":2000},
+		{"tag":"chain","type":"socks","server":"127.0.0.1","server_port":2001},
+		{"tag":"xdns","type":"socks","server":"127.0.0.1","server_port":2002},
+		{"tag":"full","type":"socks","server":"127.0.0.1","server_port":2003},
+		{"tag":"download","type":"socks","server":"127.0.0.1","server_port":2004},
+		{"tag":"wrong-layer","type":"socks","server":"127.0.0.1","server_port":2006},
+		{"tag":"balancer","type":"socks","server":"127.0.0.1","server_port":9000},
+		{"tag":"remote","type":"socks","server":"192.0.2.77","server_port":2002},
+		{"tag":"xdns-alias","type":"socks","server":"::ffff:127.0.0.1","server_port":2002}]}`
 	const generated = `{
 		"inbounds":[{"tag":"a","protocol":"socks","listen":"127.0.0.1","port":2000},
 			{"tag":"b","protocol":"socks","listen":"127.0.0.1","port":2001},
@@ -85,16 +42,21 @@ func TestFinalMaskProbeTimeout(t *testing.T) {
 	}`
 	const full = `{"inbounds":[{"tag":"throne-bridge","protocol":"socks","listen":"127.0.0.1","port":2003}],
 		"outbounds":[{"streamSettings":{"network":"kcp","finalmask":{"udp":[{"type":"xdns"}]}}}]}`
-	box := probeTestBox{service.ContextWithDefaultRegistry(context.Background()), probeTestManager{}}
-	CollectXrayProbeRoutes(&options, generated, []string{full}).Register(box.Context())
+	var routes XrayProbeRoutes
+	box, cancel, err := boxmain.Create([]byte(sing), func(ctx context.Context) { routes.Register(ctx) }, func(opts *option.Options) {
+		routes = CollectXrayProbeRoutes(opts, generated, []string{full, balancer})
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer box.CloseWithTimeout(cancel, time.Second, t.Log, true)
 	for _, tc := range []struct {
 		tag                 string
 		set, first, regular time.Duration
 	}{
 		{"plain", 3, 3, 3}, {"chain", 3, 10, 10}, {"chain", 15, 15, 15},
 		{"xdns", 3, 40, 10}, {"xdns-alias", 3, 40, 10}, {"full", 3, 40, 10}, {"download", 3, 40, 10},
-		{"remote", 5, 5, 5}, {"wrong-layer", 5, 5, 5},
-		{"dnstt-chain", 3, 40, 10}, {"masterdns", 3, 93, 3},
+		{"balancer", 3, 40, 10}, {"remote", 5, 5, 5}, {"wrong-layer", 5, 5, 5},
 	} {
 		first, regular := requestTimeouts(box, tc.tag, false, tc.set*time.Second)
 		if first != tc.first*time.Second || regular != tc.regular*time.Second {

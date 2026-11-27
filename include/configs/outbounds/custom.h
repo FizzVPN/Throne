@@ -128,7 +128,6 @@ namespace Configs
         }
     };
 
-    void IsolateXrayRuleTarget(QJsonObject &config);
     // Pins traffic from Throne's bridge without changing what other inbounds do.
     BuildResult PinXrayExit(QJsonObject config, const QString &selected, QStringList *choices = nullptr);
 

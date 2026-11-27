@@ -103,7 +103,7 @@ namespace Configs {
 
         // sourceIndexes gets each returned rule's index in Rules, -1 for the injected adblock rule.
         QJsonArray get_route_rules(bool forView = false, std::map<int, QString> outboundMap = {}, QList<int>* sourceIndexes = nullptr,
-                                   const QHash<int, QString>& ruleExitTags = {});
+                                   const std::map<int, QString>& pinnedOutbounds = {});
 
         // Endpoints travel as whole configs with credentials cleared; one that cannot is skipped into *warnings.
         QJsonObject ToShareObject(QString* warnings = nullptr);
@@ -133,7 +133,7 @@ namespace Configs {
         // One endpointPreferredBy rule per endpointRuleTargets() entry; prunes orphans, appends missing. Raw: no-op.
         void SyncEndpointRules();
 
-        std::shared_ptr<QList<int>> get_used_outbounds();
+        QList<std::pair<int, bool>> get_used_outbounds();
 
         std::shared_ptr<QStringList> get_used_rule_sets();
 

@@ -373,18 +373,6 @@ namespace Configs {
                     out.error = "Custom Xray full config is not valid JSON";
                     return out;
                 }
-                // A rule sidecar drops the original listeners; map their tags before isolating it.
-                RouteXrayListenerRulesViaBridge(userXrayConfig);
-                const auto use = req.fullXrayUse;
-                if (use == FullXrayUse::Rule || use == FullXrayUse::PinnedRule) IsolateXrayRuleTarget(userXrayConfig);
-                if (use == FullXrayUse::PinnedRule || ctx.ignoreXrayRouting || custom->ignoreXrayRouting) {
-                    auto pinned = PinXrayExit(std::move(userXrayConfig), custom->routeExitTag);
-                    if (!pinned.error.isEmpty()) {
-                        out.error = custom->DisplayName() + ": " + pinned.error;
-                        return out;
-                    }
-                    userXrayConfig = std::move(pinned.object);
-                }
                 // A pre-probed 0 means the caller's probe failed; re-probe rather than bake in a dead port.
                 BridgeEndpoint bridge{.port = req.xrayFullConfigPort};
                 if (bridge.port <= 0) bridge.port = MkManyPorts(1, bridge.host)[0];
@@ -402,7 +390,23 @@ namespace Configs {
                     {"destOverride", QJsonArray{"http", "tls", "quic"}},
                     {"routeOnly", false}
                 };
-                auto inbounds = ctx.policy.listeners && use == FullXrayUse::Profile ? userXrayConfig["inbounds"].toArray() : QJsonArray{};
+                RouteXrayListenerRulesViaBridge(userXrayConfig);
+                if (req.xrayRuleTarget) {
+                    // A second instance must not reopen the subscription's listeners or process-wide services.
+                    static const QSet<QString> isolated = {"inbounds", "api", "metrics", "reverse", "env", "geodata"};
+                    for (const auto &key : userXrayConfig.keys())
+                        if (isolated.contains(key.toLower())) userXrayConfig.remove(key);
+                }
+                auto inbounds = (!ctx.policy.listeners || req.soleXrayInbound) ? QJsonArray()
+                                                                               : userXrayConfig["inbounds"].toArray();
+                if (req.pinXrayExit || ctx.ignoreXrayRouting || custom->ignoreXrayRouting) {
+                    auto pinned = PinXrayExit(std::move(userXrayConfig), custom->routeExitTag);
+                    if (!pinned.error.isEmpty()) {
+                        out.error = custom->DisplayName() + ": " + pinned.error;
+                        return out;
+                    }
+                    userXrayConfig = std::move(pinned.object);
+                }
                 inbounds.prepend(bridgeInbound);
                 userXrayConfig["inbounds"] = inbounds;
                 if (dataManager->settingsRepo->xray_use_system_ca) {

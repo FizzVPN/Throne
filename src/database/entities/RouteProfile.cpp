@@ -373,13 +373,12 @@ namespace Configs {
         }
         auto rule = std::make_shared<RouteRule>();
         // The caller sets it too; validation needs it now, since simple rules have fixed actions.
-        rule->ignoreXrayRouting.reset(); // Older shared rules did not carry an explicit choice.
         rule->type = tokenToRuleType(obj.value("type").toString());
         for (const auto& key: obj.keys()) {
             if (key == "name" || key == "type") continue;
             auto val = obj.value(key);
             if (key == "ignore_xray_routing") {
-                if (val.isBool()) rule->ignoreXrayRouting = val.toBool();
+                rule->ignoreXrayRouting = val.toBool();
                 continue;
             }
             if (key == "disabled") {
@@ -901,7 +900,7 @@ namespace Configs {
     }
 
     QJsonArray RouteProfile::get_route_rules(bool forView, std::map<int, QString> outboundMap, QList<int>* sourceIndexes,
-                                            const QHash<int, QString>& ruleExitTags) {
+                                            const std::map<int, QString>& pinnedOutbounds) {
         QJsonArray res;
         if (sourceIndexes) sourceIndexes->clear();
         bool added_adblock = false;
@@ -917,8 +916,8 @@ namespace Configs {
             const auto &item = Rules.at(index);
             if (item->disabled || (item->type != custom && item->isEmpty())) continue;
             auto outboundTag = QString();
-            if (const auto it = ruleExitTags.constFind(static_cast<int>(index)); it != ruleExitTags.cend()) outboundTag = it.value();
-            else if (outboundMap.contains(item->outboundID)) outboundTag = outboundMap[item->outboundID];
+            const auto& tags = item->type == custom && item->ignoreXrayRouting && pinnedOutbounds.contains(item->outboundID) ? pinnedOutbounds : outboundMap;
+            if (auto it = tags.find(item->outboundID); it != tags.end()) outboundTag = it->second;
             // an endpoint that left the list has no tag to gate on; skip instead of aborting the build
             if (!forView && item->type == endpointPreferredBy && outboundTag.isEmpty()) {
                 MW_show_log("Skipping an endpoint rule whose endpoint is no longer in the routing profile");
@@ -994,11 +993,11 @@ namespace Configs {
         return defaultChain;
     }
 
-    std::shared_ptr<QList<int>> RouteProfile::get_used_outbounds() {
-        auto res = std::make_shared<QList<int>>();
+    QList<std::pair<int, bool>> RouteProfile::get_used_outbounds() {
+        QList<std::pair<int, bool>> res;
         if (isRaw) {
             // Raw ids must be collected too, so their servers get built and their domains added to direct DNS.
-            *res = CollectRawOutboundIds(QString2QJsonObject(rawRoute));
+            for (int id : CollectRawOutboundIds(QString2QJsonObject(rawRoute))) res.emplaceBack(id, false);
             return res;
         }
         for (const auto& item: Rules) {
@@ -1006,7 +1005,7 @@ namespace Configs {
             if (item->disabled || item->type == endpointPreferredBy) continue;
             // Only these emit their outbound; a stale id left on another action must not fail the build.
             if (const auto action = item->effective_action(); action != "route" && action != "bypass") continue;
-            res->push_back(item->outboundID);
+            res.emplaceBack(item->outboundID, item->type == custom && item->ignoreXrayRouting);
         }
         return res;
     }

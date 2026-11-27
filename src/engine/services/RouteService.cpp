@@ -177,7 +177,7 @@ namespace Engine::RouteService {
                 {"remote", rule.remote},
                 {"attributes", attributes},
             };
-            if (rule.type == Configs::custom && rule.ignoreXrayRouting) json["ignore_xray_routing"] = *rule.ignoreXrayRouting;
+            if (rule.type == Configs::custom) json["ignore_xray_routing"] = rule.ignoreXrayRouting;
             return json;
         }
 
@@ -272,7 +272,7 @@ namespace Engine::RouteService {
                 }
             }
             if (disabled && type != Configs::endpointPreferredBy) rule->disabled = *disabled;
-            if (type == Configs::custom) rule->ignoreXrayRouting = ignoreXray;
+            if (type == Configs::custom) rule->ignoreXrayRouting = ignoreXray.value_or(false);
             // Echoed back from a read, it keeps the rule replaced by the next update.
             if (remote && type != Configs::endpointPreferredBy) rule->remote = *remote;
             *out = rule;

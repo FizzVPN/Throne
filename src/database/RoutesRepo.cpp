@@ -166,7 +166,7 @@ namespace Configs {
                 tls_fragment_fallback_delay TEXT,
                 tls_record_fragment INTEGER NOT NULL DEFAULT 0,
                 disabled INTEGER NOT NULL DEFAULT 0,
-                ignore_xray_routing INTEGER NOT NULL DEFAULT -1,
+                ignore_xray_routing INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY (route_profile_id, rule_order),
                 FOREIGN KEY(route_profile_id) REFERENCES route_profiles(id) ON DELETE CASCADE
             )
@@ -190,7 +190,7 @@ namespace Configs {
         if (!routeRulesColumnExists("disabled"))
             db.exec("ALTER TABLE route_rules ADD COLUMN disabled INTEGER NOT NULL DEFAULT 0");
         if (!routeRulesColumnExists("ignore_xray_routing"))
-            db.exec("ALTER TABLE route_rules ADD COLUMN ignore_xray_routing INTEGER NOT NULL DEFAULT -1");
+            db.exec("ALTER TABLE route_rules ADD COLUMN ignore_xray_routing INTEGER NOT NULL DEFAULT 0");
     }
 
     bool RoutesRepo::routeRulesColumnExists(const char* columnName) const {
@@ -308,7 +308,7 @@ namespace Configs {
             const RouteRule& r = *rule;
             const auto insert = db.queryThrow(routesRepoRuleInsert(), id, ruleOrder++, r.name.toStdString(), r.type, r.outboundID,
                                               r.action.toStdString(), routesRepoListJson(r.sniffers), r.disabled ? 1 : 0,
-                                              r.ignoreXrayRouting ? int(*r.ignoreXrayRouting) : -1);
+                                              int(r.ignoreXrayRouting));
             // Bound here, as execThrow takes a fixed argument list.
             int index = 9;
             for (const auto& attr : RouteRule::attribute_table()) {
@@ -334,7 +334,7 @@ namespace Configs {
         // The editor used to switch endpoint rules off by accident; they cannot be disabled.
         rule->disabled = stmt.getColumn(col++).getInt() != 0 && rule->type != endpointPreferredBy;
         const int pin = stmt.getColumn(col++).getInt();
-        rule->ignoreXrayRouting = pin < 0 ? std::nullopt : std::optional<bool>(pin != 0);
+        rule->ignoreXrayRouting = pin < 0 ? rule->outboundID >= 0 : pin != 0;
         for (const auto& attr : RouteRule::attribute_table()) {
             if (attr.column == nullptr) continue;
             const SQLite::Column column = stmt.getColumn(col++);

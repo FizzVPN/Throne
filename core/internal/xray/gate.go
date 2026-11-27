@@ -364,7 +364,7 @@ func (g *Gate) startInstance(holdProbes bool) (*core.Instance, []string, error) 
 	if err != nil {
 		return nil, nil, err
 	}
-	instance, err := createXrayInstance(context.Background(), config)
+	instance, err := CreateXrayInstance(config)
 	if err != nil {
 		return nil, nil, err
 	}
